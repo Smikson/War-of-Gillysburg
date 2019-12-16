@@ -9,7 +9,7 @@ public class TurnCounter {
 	// Constructor
 	public TurnCounter() {
 		this.characterTurns = 0;
-		this.totalCombatants = BattleSimulator.numCombatants();
+		this.totalCombatants = BattleSimulator.getInstance().getNumCombatants();
 	}
 	
 	

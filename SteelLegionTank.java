@@ -55,7 +55,7 @@ public class SteelLegionTank extends Character {
 		String ret = super.beginTurn(combatants);
 		
 		// Checks to see if it is the beginning of the round (Rank 15 of Professional Laughter gives Taunt)
-		if (BattleSimulator.round() == 1 && this.ProfessionalLaughter.rank() >= 15) {
+		if (BattleSimulator.getInstance().getRound() == 1 && this.ProfessionalLaughter.rank() >= 15) {
 			ret += "You have \"Taunt\" for 2 rounds.\n";
 		}
 		

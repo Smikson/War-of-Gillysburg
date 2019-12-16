@@ -38,6 +38,7 @@ public class Character {
 	private Stat STDup;
 	
 	private int CurrentHealth;
+	private int Shields;
 	
 	private HashSet<String> resistances;
 	private HashSet<String> vulnerabilities;
@@ -80,6 +81,7 @@ public class Character {
 		this.STDup = new Stat(stdUp, Stat.STANDARD_DEVIATION_UP);
 		
 		this.CurrentHealth = this.Health.getTotal();
+		this.Shields = 0;
 		
 		this.resistances = resis;
 		this.vulnerabilities = vuls;
@@ -183,6 +185,9 @@ public class Character {
 	
 	public int getCurrentHealth() {
 		return this.CurrentHealth;
+	}
+	public int getShields() {
+		return this.Shields;
 	}
 	public void setCurrentHealth(int newCurrentHealth) {
 		if (newCurrentHealth < this.getHealth()) {
@@ -606,6 +611,17 @@ public class Character {
 	}
 	// Takes damage by numerical amount
 	protected void takeDamage(int damageDealt) {
+		if (this.Shields > 0) {
+			int remainingShields = this.Shields - damageDealt;
+			if (remainingShields > 0) {
+				this.Shields = remainingShields;
+				return;
+			}
+			else {
+				this.Shields = 0;
+				damageDealt -= this.Shields;
+			}
+		}
 		this.setCurrentHealth(this.getCurrentHealth() - damageDealt);
 	}
 	

@@ -1,20 +1,74 @@
 package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
+// Singleton class for running a battle -- Also contains helpful info for some class Abilities
 public class BattleSimulator {
-	// Holds the number of combatants in the current battle (default of 1 for testing)
-	private static int numCombatants = 1;
-	private static int round = 1;
-	private static List<Character> allyList;
-	private static List<Enemy> enemyList;
-	private static List<Character> combatantList;
+	// The instance of the simulator
+	private static BattleSimulator instance;
+	
+	// Holds the info about combatants and rounds
+	private int round;
+	private LinkedList<Character> allyList;
+	private LinkedList<Enemy> enemyList;
+	private LinkedList<Character> combatantList;
+	
+	// Constructor
+	private BattleSimulator() {
+		this.round = 1;
+		this.allyList = new LinkedList<Character>();
+		this.enemyList = new LinkedList<Enemy>();
+		this.combatantList = new LinkedList<Character>();
+	}
+	
+	// synchronized method to control simultaneous access
+	synchronized public static BattleSimulator getInstance() {
+		// Lazy instantiation
+		if (instance == null) {
+			instance = new BattleSimulator();
+		}
+		return instance;
+	}
+	
+	// Get methods:
+	public int getNumCombatants() {
+		return this.combatantList.size();
+	}
+	public int getRound() {
+		return this.round;
+	}
+	public void printAllies() {
+		for (Character ally : this.allyList) {
+			System.out.println(ally.getName());
+		}
+	}
+	public void printEnemies() {
+		for (Character enemy : this.enemyList) {
+			System.out.println(enemy.getName());
+		}
+	}
+	public void printCombatants() {
+		for (Character combatant : this.combatantList) {
+			System.out.println(combatant.getName());
+		}
+	}
+	
+	// Add methods
+	public void addAlly(Character ally) {
+		allyList.add(ally);
+		combatantList.add(ally);
+	}
+	
+	public void addEnemy(Enemy enemy) {
+		enemyList.add(enemy);
+		combatantList.add(enemy);
+	}
 	
 	
 	// Methods to set up battles
-	private static LinkedList<Character> setOrder(List<Character> combatants) {
+	private void setOrder() {
 		List<Character> temp = new LinkedList<>();
-		for (int x = 0; x<combatants.size(); x++) {
-			temp.add(combatants.get(x));
+		for (int x = 0; x<combatantList.size(); x++) {
+			temp.add(combatantList.get(x));
 		}
 		LinkedList<Character> ret = new LinkedList<>();
 		Dice d;
@@ -40,39 +94,19 @@ public class BattleSimulator {
 				position += temp.get(x).getAttackSpeed();
 			}
 		}
-		return ret;
+		combatantList = ret;
 	}
 	
-	public static LinkedList<Character> initiate(List<Character> allies, List<Enemy> enemies) {
-		// Stores all allies and enemies for the battle
-		BattleSimulator.allyList = allies;
-		BattleSimulator.enemyList = enemies;
-		
-		// Puts everyone in a Combatants List
-		List<Character> combatants = new LinkedList<>();
-		for (int x = 0; x<enemies.size(); x++) {
-			combatants.add(enemies.get(x));
-		}
-		for (int x = 0; x<allies.size(); x++) {
-			combatants.add(allies.get(x));
-		}
-		// Stores the number of combatants and the list (in battle, this will be done before all Conditions/Abilities use this value for TurnCounters)
-		BattleSimulator.numCombatants = combatants.size();
-		BattleSimulator.combatantList = combatants;
-		
-		
+	public void initiate() {
 		// Sets Threat and TacticalThreat for each Enemy
-		for (int x = 0; x<enemies.size(); x++) {
-			enemies.get(x).setThreatOrder(allies);
+		for (int x = 0; x<enemyList.size(); x++) {
+			enemyList.get(x).setThreatOrder(allyList);
 		}
 		
-		return BattleSimulator.setOrder(combatants);
+		// Then sets the turn order
+		setOrder();
+		
+		// Add stuff here for how turns work (first person begins turn, etc.)
 	}
 	
-	public static int numCombatants() {
-		return BattleSimulator.numCombatants;
-	}
-	public static int round() {
-		return BattleSimulator.round;
-	}
 }
