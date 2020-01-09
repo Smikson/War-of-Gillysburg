@@ -1,61 +1,68 @@
 package WyattWitemeyer.WarOfGillysburg;
-import java.util.*;
 
-public class StatusEffect extends Condition {
+// See WyattWitemeyer.WarOfGillysburg.Condition.java for implementation of: Requirement and DualRequirement.
+
+enum StatusEffectType {
+	BASIC, INCOMING, OUTGOING;
+}
+
+public class StatusEffect {
 	// Variables
-	private Stat altered;
+	private StatVersion altered;
 	private double value;
 	public int amountAdded;
 	
 	// Specifications
+	private Requirement applyRequirement;
+	private DualRequirement applyDualRequirement;
+	private StatusEffectType seType;
 	private boolean isFlat;
-	private boolean isIncoming;
+	private boolean affectsSelf;
 	public boolean isApplied;
 	
 	// Constructors
-	public StatusEffect(String name, int duration, HashSet<Condition> linkedConditions, Stat altered, double value) {
-		super(name, duration, linkedConditions);
+	public StatusEffect(StatVersion altered, double value, StatusEffectType type) {
 		this.altered = altered;
 		this.value = value;
-		
 		this.amountAdded = 0;
+		
+		this.applyRequirement = (Character withEffect) -> {return true;};
+		this.applyDualRequirement = (Character withEffect, Character other) -> {return true;};
+		this.seType = type;
 		this.isFlat = false;
-		this.isIncoming = false;
+		this.affectsSelf = true;
 		this.isApplied = false;
 	}
-	public StatusEffect(String name, int duration, Stat altered, double value) {
-		super(name, duration);
-		this.altered = altered;
-		this.value = value;
-		
-		this.amountAdded = 0;
-		this.isFlat = false;
-		this.isIncoming = false;
-		this.isApplied = false;
+	public StatusEffect(StatVersion altered, double value) {
+		this(altered, value, StatusEffectType.BASIC);
 	}
 	public StatusEffect() {
-		super();
-		this.altered = null;
-		this.value = 0;
-		this.amountAdded = 0;
-		this.isFlat = false;
-		this.isIncoming = false;
-		this.isApplied = false;
+		this(StatVersion.EMPTY, 0);
 	}
 	
 	// Get methods
-	public Stat getAlteredStat() {
+	public StatVersion getAlteredStat() {
 		return this.altered;
 	}
 	public double getValue() {
 		return this.value;
 	}
+	public Requirement getApplyRequirement() {
+		return this.applyRequirement;
+	}
+	public DualRequirement getApplyDualRequirement() {
+		return this.applyDualRequirement;
+	}
+	public StatusEffectType getType() {
+		return this.seType;
+	}
 	public boolean isFlat() {
 		return this.isFlat;
 	}
-	public boolean isIncoming() {
-		return this.isIncoming;
+	public boolean affectsSelf() {
+		return this.affectsSelf;
 	}
+	
 	
 	
 	// Methods to change functionality of Status Effect when applied.
@@ -63,9 +70,17 @@ public class StatusEffect extends Condition {
 	public void makeFlat() {
 		this.isFlat = true;
 	}
-	// Changes the status effect to affect Characters attacking the wearer rather than the default: affecting the wearer
-	public void makeIncoming() {
-		this.isIncoming = true;
+	// Changes the status effect to affect an "other" enemy (attacking if Incoming, defender if Outgoing)
+	public void makeAffectOther() {
+		this.affectsSelf = false;
+	}
+	// Sets the requirement for a basic Status Effect
+	public void setBasicRequirement(Requirement appReq) {
+		this.applyRequirement = appReq;
+	}
+	// Sets the dual-requirement for a non-basic status effect (incoming or outgoing)
+	public void setDualRequirement(DualRequirement appReq) {
+		this.applyDualRequirement = appReq;
 	}
 	
 	// To String methods for clarity when playing
@@ -78,15 +93,14 @@ public class StatusEffect extends Condition {
 		if (!this.isFlat()) {
 			ret += "%";
 		}
-		ret += " " + this.getAlteredStat().getName();
+		if (this.seType != StatusEffectType.BASIC) {
+			ret += " " + this.seType.toString();
+		}
+		ret += " " + this.getAlteredStat().toString();
 		return ret;
 	}
 	@Override
 	public String toString() {
-		String ret = this.getName() + ": ";
-		ret += this.valueString();
-		ret += ", " + (this.duration() - this.turnCount.value()) + " turns left";
-		
-		return ret;
+		return this.valueString();
 	}
 }

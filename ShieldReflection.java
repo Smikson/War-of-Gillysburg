@@ -10,9 +10,10 @@ public class ShieldReflection extends Ability {
 	// Keeps track of if a previous attack has been blocked
 	public boolean didBlock;
 	
-	public ShieldReflection(int rank, int ShieldSkillsRank) {
+	public ShieldReflection(Character source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
 		super();
+		this.owner = source;
 		this.name = "Ability 2: \"Shield Reflection\"";
 		this.ssRank = ShieldSkillsRank;
 		this.didBlock = false;
@@ -28,7 +29,7 @@ public class ShieldReflection extends Ability {
 		this.setBlind();
 	}
 	public ShieldReflection(int rank) {
-		this(rank, 0);
+		this(Character.EMPTY, rank, 0);
 	}
 	
 	// Calculates the basic values for this Ability
@@ -76,11 +77,20 @@ public class ShieldReflection extends Ability {
 		}
 		
 		// Sets the blind effect
-		this.blind = new Blind("Shield Reflection Blind", blindDuration);
+		this.blind = new Blind("Shield Reflection: Blind", blindDuration);
+		this.blind.setSource(this.owner);
 	}
 	
-	// Get method for additional blind effect
+	// Get methods for additional effects as necessary
 	public Blind getBlindEffect() {
+		// For good habit and in case of future changes, should still set it again before returning it
+		this.setBlind();
 		return this.blind;
+	}
+	@Override
+	public double getScaler() {
+		// Returns the scaler, but sets it again first in case things changed because of "didBlock" or "numMisses"
+		this.setScaler();
+		return this.scaler;
 	}
 }

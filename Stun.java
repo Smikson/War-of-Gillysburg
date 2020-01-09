@@ -1,23 +1,17 @@
 package WyattWitemeyer.WarOfGillysburg;
-import java.util.*;
 
-public class Stun extends CrowdControl{
+public class Stun extends Condition{
 	// Constructs a stun
-	public Stun(String name, int duration, HashSet<Condition> linkedConditions) {
-		super(name, duration, linkedConditions);
+	public Stun(String name, int duration, Requirement actReq) {
+		super(name, duration, actReq);
 		
-		StatusEffect dodgeReduction = new StatusEffect(name, duration, linkedConditions, Stat.DODGE, -100);
-		StatusEffect blockReduction = new StatusEffect(name, duration, linkedConditions, Stat.BLOCK, -75);
-		this.effects.add(dodgeReduction);
-		this.effects.add(blockReduction);
+		StatusEffect dodgeReduction = new StatusEffect(StatVersion.DODGE, -100, StatusEffectType.BASIC);
+		StatusEffect blockReduction = new StatusEffect(StatVersion.BLOCK, -75, StatusEffectType.BASIC);
+		this.addStatusEffect(dodgeReduction);
+		this.addStatusEffect(blockReduction);
 	}
 	public Stun(String name, int duration) {
-		super(name, duration);
-		
-		StatusEffect dodgeReduction = new StatusEffect(name, duration, Stat.DODGE, -100);
-		StatusEffect blockReduction = new StatusEffect(name, duration, Stat.BLOCK, -75);
-		this.effects.add(dodgeReduction);
-		this.effects.add(blockReduction);
+		this(name, duration, (Character withEffect) -> {return true;});
 	}
 	
 	@Override

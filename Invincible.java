@@ -1,10 +1,9 @@
 package WyattWitemeyer.WarOfGillysburg;
-import java.util.*;
 
-public class Invincible extends CrowdControl {
+public class Invincible extends Condition {
 	// Constructs an "invincible" effect
-	public Invincible(String name, int duration, HashSet<Condition> linkedConditions) {
-		super(name, duration, linkedConditions);
+	public Invincible(String name, int duration, Requirement actReq) {
+		super(name, duration, actReq);
 	}
 	public Invincible(String name, int duration) {
 		super(name, duration);

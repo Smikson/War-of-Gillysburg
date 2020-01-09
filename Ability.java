@@ -3,6 +3,7 @@ package WyattWitemeyer.WarOfGillysburg;
 public class Ability {
 	// Variables, only the turnCount can be accessed outside the Ability itself
 	protected String name;
+	protected Character owner;
 	protected int rank;
 	protected int cooldown;
 	public int turnCount;
@@ -11,6 +12,7 @@ public class Ability {
 	// Constructors
 	public Ability() {
 		this.name = "Blank Ability";
+		this.owner = Character.EMPTY;
 		this.rank = 0;
 		this.cooldown = 0;
 		this.turnCount = 0;
@@ -29,6 +31,9 @@ public class Ability {
 	}
 	
 	// Get methods
+	public Character getOwner() {
+		return this.owner;
+	}
 	public int rank() {
 		return this.rank;
 	}

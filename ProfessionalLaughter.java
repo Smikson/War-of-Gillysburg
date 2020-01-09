@@ -6,9 +6,10 @@ public class ProfessionalLaughter extends Ability {
 	private int bonusTacticalThreat;
 	private int bonusHealth;
 	
-	public ProfessionalLaughter(int rank) {
+	public ProfessionalLaughter(Character source, int rank) {
 		// Initialize all Ability variables to defaults
 		super();
+		this.owner = source;
 		this.name = "Base Passive Ability: \"Professional Laughter\"";
 		
 		// Set the rest based on rank
@@ -18,6 +19,9 @@ public class ProfessionalLaughter extends Ability {
 		this.setThreatBonus();
 		this.setTacticalThreatBonus();
 		this.setHealthBonus();
+	}
+	public ProfessionalLaughter(int rank) {
+		this(Character.EMPTY, rank);
 	}
 	
 	// Calculates the values for the additional stats of this Ability

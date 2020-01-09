@@ -1,26 +1,20 @@
 package WyattWitemeyer.WarOfGillysburg;
-import java.util.*;
 
-public class Slow extends CrowdControl {
+public class Slow extends Condition {
 	// Added Variable
 	private double value;
 	
 	// Constructs a slow
-	public Slow(String name, int duration, HashSet<Condition> linkedConditions, double value) {
-		super(name, duration, linkedConditions);
-		this.value = -value;
+	public Slow(String name, int duration, double val, Requirement actReq) {
+		super(name, duration, actReq);
+		this.value = -val;
 		
-		StatusEffect speedReduction = new StatusEffect(name, duration, linkedConditions, Stat.SPEED, value);
-		speedReduction.makeFlat();
-		this.effects.add(speedReduction);
+		StatusEffect speedReductionEffect = new StatusEffect(StatVersion.SPEED, this.getValue(), StatusEffectType.BASIC);
+		speedReductionEffect.makeFlat();
+		this.addStatusEffect(speedReductionEffect);
 	}
-	public Slow(String name, int duration, double value) {
-		super(name, duration);
-		this.value = -value;
-		
-		StatusEffect speedReduction = new StatusEffect(name, duration, Stat.SPEED, value);
-		speedReduction.makeFlat();
-		this.effects.add(speedReduction);
+	public Slow(String name, int duration, double val) {
+		this(name, duration, val, (Character withEffect) -> {return true;});
 	}
 	public Slow() {
 		super();

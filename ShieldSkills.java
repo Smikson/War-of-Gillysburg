@@ -5,9 +5,10 @@ public class ShieldSkills extends Ability {
 	private double scalerBlind3;
 	private double scalerBlind5;
 	
-	public ShieldSkills(int rank) {
+	public ShieldSkills(Character source, int rank) {
 		// Initialize all Ability variables to defaults
 		super();
+		this.owner = source;
 		this.name = "Base Passive Ability: \"Shield Skills\"";
 		
 		// Set the rest based on rank
@@ -32,7 +33,7 @@ public class ShieldSkills extends Ability {
 		this.scaler = this.scalerBlind3;
 	}
 	
-	// Get methods for additional scalers
+	// Get methods for additional scalers and source
 	public double getScalerBlind3() {
 		return this.scalerBlind3;
 	}

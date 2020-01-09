@@ -1,68 +1,43 @@
 package WyattWitemeyer.WarOfGillysburg;
+
+enum StatVersion {
+	HEALTH, DAMAGE, ARMOR, ARMOR_PIERCING, ACCURACY, DODGE, BLOCK, CRITICAL_CHANCE, SPEED, ATTACK_SPEED, RANGE, THREAT, TACTICAL_THREAT, STANDARD_DEVIATION_DOWN, STANDARD_DEVIATION_UP, EMPTY;
+}
+
 public class Stat {
-	// Creates constant universal stats for "version" in order to remember specific versions of stats
-	public static final Stat HEALTH = new Stat("Health");
-	public static final Stat DAMAGE = new Stat("Damage");
-	public static final Stat ARMOR = new Stat("Armor");
-	public static final Stat ARMOR_PIERCING = new Stat("Armor Piercing");
-	public static final Stat ACCURACY = new Stat("Accuracy");
-	public static final Stat DODGE = new Stat("Dodge");
-	public static final Stat BLOCK = new Stat("Block");
-	public static final Stat CRITICAL_CHANCE = new Stat("Critical Chance");
-	public static final Stat SPEED = new Stat("Speed");
-	public static final Stat ATTACK_SPEED = new Stat("Attack Speed");
-	public static final Stat RANGE = new Stat("Range");
-	public static final Stat THREAT = new Stat("Threat");
-	public static final Stat TACTICAL_THREAT = new Stat("Tactical Threat");
-	public static final Stat STANDARD_DEVIATION_DOWN = new Stat("Standard Deviation Down");
-	public static final Stat STANDARD_DEVIATION_UP = new Stat("Standard Deviation Up");
-	
-	public Stat statVersion; // Used to match the constants.
+	private StatVersion version; // Used to match the constants.
 	private int total;
 	public int bonus;
-	private String name;
 	
-	public Stat(int value, int extra, String statName) {
-		total = value;
-		bonus = extra;
-		name = statName;
-		statVersion = this;
-	}
-	public Stat(int value, int extra, Stat version) {
-		total = value;
-		bonus = extra;
-		statVersion = version;
-		name = version.name;
-	}
 	
-	public Stat(int value, String statName) {
-		this(value, 0, statName);
+	public Stat(int value, int extra, StatVersion type) {
+		this.total = value;
+		this.bonus = extra;
+		this.version = type;
 	}
-	public Stat(int value, Stat version) {
-		this(value, 0, version);
+	public Stat(int value, StatVersion type) {
+		this(value, 0, type);
 	}
-	
-	public Stat(String statName) {
-		this(0, 0, statName);
+	public Stat(StatVersion type) {
+		this(0, 0, type);
 	}
-	public Stat(Stat version) {
-		this(0, 0, version);
-	}
-	
 	public Stat() {
-		this(0,0,"");
+		this(0,0, StatVersion.EMPTY);
 	}
 	
 	
 	public int getTotal() {
-		return total;
+		return this.total;
 	}
-	public String getName() {
-		return this.name;
+	public StatVersion getVersion() {
+		return this.version;
 	}
 	
 	@Override
 	public String toString() {
-		return this.name + " = " + (this.total + this.bonus);
+		String ret = this.version.toString();
+		String firstLetter = "" + ret.charAt(0);
+		ret = firstLetter + ret.toLowerCase().substring(1);
+		return ret + " = " + (this.total + this.bonus);
 	}
 }

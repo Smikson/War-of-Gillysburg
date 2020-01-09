@@ -2,8 +2,8 @@ package WyattWitemeyer.WarOfGillysburg;
 
 public class LeaderStrike extends Ability {
 	// Additional variables for the Ability
-	private StatusEffect accuracyBonus;
-	private StatusEffect damageBonus;
+	private Condition selfPreAttackBonus;
+	private Condition allyDamageBonus;
 	private double healingScaler;
 	
 	// Holds the rank of the Shield Skills Ability (since it affects some of the Status Effects)
@@ -12,9 +12,10 @@ public class LeaderStrike extends Ability {
 	// Keeps track of the number of previous Leader Strike misses (for bonus effects)
 	public int numMisses;
 	
-	public LeaderStrike(int rank, int ShieldSkillsRank) {
+	public LeaderStrike(Character source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
 		super();
+		this.owner = source;
 		this.name = "Ability 4: \"Leader Strike\"";
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
@@ -27,8 +28,8 @@ public class LeaderStrike extends Ability {
 		this.setScaler();
 		
 		// Set the additional effects of the Ability
-		this.setAccuracyBonus();
-		this.setDamageBonus();
+		this.setPreAttackBonus();
+		this.setAllyDamageBonus();
 		this.setHealingScaler();
 	}
 	
@@ -65,15 +66,20 @@ public class LeaderStrike extends Ability {
 	}
 	
 	// Calculates the values for the additional Effects for this Ability
-	private void setAccuracyBonus() {
+	private void setPreAttackBonus() {
 		int amount = 0;
 		if (this.ssRank >= 15) {
 			amount = 40;
 		}
-		this.accuracyBonus = new StatusEffect("Shield Skills Accuracy Bonus to Leader Strike", 0, Stat.ACCURACY, amount);
+		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, amount*this.numMisses, StatusEffectType.OUTGOING);
+		
+		// Creates the pre-attack condition with accuracy bonus as needed
+		this.selfPreAttackBonus = new Condition("Taunting Attack: Pre Attack Bonus", 0);
+		this.selfPreAttackBonus.setSource(this.owner);
+		this.selfPreAttackBonus.addStatusEffect(accuracyBonus);
 	}
 	
-	private void setDamageBonus() {
+	private void setAllyDamageBonus() {
 		// At rank 1, this damage bonus starts at 20% and lasts 1 turn
 		int amount = 20;
 		int duration = 1;
@@ -96,8 +102,14 @@ public class LeaderStrike extends Ability {
 				duration++;
 			}
 		}
-		this.damageBonus = new StatusEffect("Leader Strike Damage Bonus", duration, Stat.DAMAGE, amount);
-		this.damageBonus.makeEndOfTurn();
+		StatusEffect damageBonus = new StatusEffect(StatVersion.DAMAGE, amount, StatusEffectType.OUTGOING);
+		
+		// Creates the damage bonus condition with the damage bonus status effect
+		this.allyDamageBonus = new Condition("Leader Strike: Damage Bonus", duration);
+		this.allyDamageBonus.setSource(this.owner);
+		this.allyDamageBonus.addStatusEffect(damageBonus);
+		this.allyDamageBonus.makeSourceIncrementing();
+		this.allyDamageBonus.makeEndOfTurn();
 	}
 	
 	private void setHealingScaler() {
@@ -106,29 +118,27 @@ public class LeaderStrike extends Ability {
 		for (int walker = 2; walker <= this.rank; walker++) {
 			// Ranks 2,8 grants +1% to scaler
 			if (walker == 2 || walker == 8) {
-				this.scaler += .01;
+				this.healingScaler += .01;
 			}
 			// Ranks 4,9 grant +1.5% to scaler
 			else if (walker == 4 || walker == 9) {
-				this.scaler += .015;
+				this.healingScaler += .015;
 			}
 			// Ranks 6,10 grant +2.5% to scaler
 			else if (walker == 6 || walker == 10) {
-				this.scaler += .025;
+				this.healingScaler += .025;
 			}
 		}
 	}
 	
 	// Get methods for additional variables for this Ability
-	public StatusEffect getAccuracyBonus() {
-		// The Accuracy Bonus is based on the current number of misses (it's value is multiplied by the number of misses)
-		return new StatusEffect(this.accuracyBonus.getName(), 
-				this.accuracyBonus.duration(), 
-				this.accuracyBonus.getAlteredStat(), 
-				this.accuracyBonus.getValue() * this.numMisses);            // This is the only line that is changed.
+	public Condition getPreAttackBonus() {
+		// Returns the condition, but sets it again first in case things changed because of "numMisses"
+		this.setPreAttackBonus();
+		return this.selfPreAttackBonus;
 	}
-	public StatusEffect getDamageBonus() {
-		return this.damageBonus;
+	public Condition getAllyDamageBonus() {
+		return this.allyDamageBonus;
 	}
 	public double getHealingScaler() {
 		return this.healingScaler;

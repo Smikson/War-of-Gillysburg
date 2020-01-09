@@ -1,14 +1,12 @@
 package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
-import WyattWitemeyer.WarOfGillysburg.Character;
-
 public class SteelLegionTank extends Character {
 	// Passive Abilities
 	private HoldItRightThere HoldItRightThere; // Unique Passive Ability (UPA)
 	private EnchantedArmor EnchantedArmor;
 	private ShieldSkills ShieldSkills;
-	private ProfessionalLaughter ProfessionalLaughter;
+	private ProfessionalLaughter ProfessionalLaughter = new ProfessionalLaughter(5);
 	
 	// Base Abilities
 	private ShieldBash ShieldBash;
@@ -24,39 +22,117 @@ public class SteelLegionTank extends Character {
 	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
 		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
-		this.HoldItRightThere = new HoldItRightThere(upaRank);
-		this.EnchantedArmor = new EnchantedArmor(eArmorRank);
-		this.ShieldSkills = new ShieldSkills(sSkillsRank);
-		this.ProfessionalLaughter = new ProfessionalLaughter(profLaughRank);
-		this.ShieldBash = new ShieldBash(sBashRank, sSkillsRank);
-		this.ShieldReflection = new ShieldReflection(sReflectRank, sSkillsRank);
-		this.TauntingAttack = new TauntingAttack(tAttackRank, sSkillsRank);
-		this.LeaderStrike = new LeaderStrike(lStrikeRank, sSkillsRank);
-		this.HaHaHaYouCantKillMe = new HaHaHaYouCantKillMe(haRank);
+		this.HoldItRightThere = new HoldItRightThere(this, upaRank);
+		this.EnchantedArmor = new EnchantedArmor(this, eArmorRank);
+		this.ShieldSkills = new ShieldSkills(this, sSkillsRank);
+		this.ProfessionalLaughter = new ProfessionalLaughter(this, profLaughRank);
+		this.ShieldBash = new ShieldBash(this, sBashRank, sSkillsRank);
+		this.ShieldReflection = new ShieldReflection(this, sReflectRank, sSkillsRank);
+		this.TauntingAttack = new TauntingAttack(this, tAttackRank, sSkillsRank);
+		this.LeaderStrike = new LeaderStrike(this, lStrikeRank, sSkillsRank);
+		this.HaHaHaYouCantKillMe = new HaHaHaYouCantKillMe(this, haRank);
 		
-		abilities.add(this.HoldItRightThere);
-		abilities.add(this.EnchantedArmor);
-		abilities.add(this.ShieldSkills);
-		abilities.add(this.ProfessionalLaughter);
-		abilities.add(this.ShieldBash);
-		abilities.add(this.ShieldReflection);
-		abilities.add(this.TauntingAttack);
-		abilities.add(this.LeaderStrike);
-		abilities.add(this.HaHaHaYouCantKillMe);
+		// Add Abilities to a list for Cooldown purposes
+		this.abilities = new LinkedList<>();
+		this.abilities.add(this.HoldItRightThere);
+		this.abilities.add(this.EnchantedArmor);
+		this.abilities.add(this.ShieldSkills);
+		this.abilities.add(this.ProfessionalLaughter);
+		this.abilities.add(this.ShieldBash);
+		this.abilities.add(this.ShieldReflection);
+		this.abilities.add(this.TauntingAttack);
+		this.abilities.add(this.LeaderStrike);
+		this.abilities.add(this.HaHaHaYouCantKillMe);
+		
+		// Add new commands for Abilities
+		this.addCommand(1, "Shield Bash");
+		this.addCommand(2, "Shield Reflection");
+		this.addCommand(3, "Taunting Attack");
+		this.addCommand(4, "Leader Strike");
+		this.addCommand(5, "HaHaHaYouCantKillMe");
 	}
-	public SteelLegionTank(Character copy) {
+	public SteelLegionTank(SteelLegionTank copy) {
 		super(copy);
+		this.HoldItRightThere = new HoldItRightThere(this, copy.HoldItRightThere.rank());
+		this.EnchantedArmor = new EnchantedArmor(this, copy.EnchantedArmor.rank());
+		this.ShieldSkills = new ShieldSkills(this, copy.ShieldSkills.rank());
+		this.ProfessionalLaughter = new ProfessionalLaughter(this, copy.ProfessionalLaughter.rank());
+		this.ShieldBash = new ShieldBash(this, copy.ShieldBash.rank(), copy.ShieldSkills.rank());
+		this.ShieldReflection = new ShieldReflection(this, copy.ShieldReflection.rank(), copy.ShieldSkills.rank());
+		this.TauntingAttack = new TauntingAttack(this, copy.TauntingAttack.rank(), copy.ShieldSkills.rank());
+		this.LeaderStrike = new LeaderStrike(this, copy.LeaderStrike.rank(), copy.ShieldSkills.rank());
+		this.HaHaHaYouCantKillMe = new HaHaHaYouCantKillMe(this, copy.HaHaHaYouCantKillMe.rank());
+		
+		// Add Abilities to a list for Cooldown purposes
+		this.abilities = new LinkedList<>();
+		this.abilities.add(this.HoldItRightThere);
+		this.abilities.add(this.EnchantedArmor);
+		this.abilities.add(this.ShieldSkills);
+		this.abilities.add(this.ProfessionalLaughter);
+		this.abilities.add(this.ShieldBash);
+		this.abilities.add(this.ShieldReflection);
+		this.abilities.add(this.TauntingAttack);
+		this.abilities.add(this.LeaderStrike);
+		this.abilities.add(this.HaHaHaYouCantKillMe);
+		
+		// Add new commands for Abilities
+		this.addCommand(1, "Shield Bash");
+		this.addCommand(2, "Shield Reflection");
+		this.addCommand(3, "Taunting Attack");
+		this.addCommand(4, "Leader Strike");
+		this.addCommand(5, "HaHaHaYouCantKillMe");
 	}
 	
+	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)
+	public int getHoldItRightThereRank() {
+		return this.HoldItRightThere.rank();
+	}
+	public int getEnchantedArmorRank() {
+		return this.EnchantedArmor.rank();
+	}
+	public int getShieldSkillsRank() {
+		return this.ShieldSkills.rank();
+	}
+	public int getProfessionalLaughterRank() {
+		return this.ProfessionalLaughter.rank();
+	}
+	public int getShieldBashRank() {
+		return this.ShieldBash.rank();
+	}
+	public int getShieldReflectionRank() {
+		return this.ShieldReflection.rank();
+	}
+	public int getTauntingAttackRank() {
+		return this.TauntingAttack.rank();
+	}
+	public int getLeaderStrikeRank() {
+		return this.LeaderStrike.rank();
+	}
+	public int getHaHaHaYouCantKillMeRank() {
+		return this.HaHaHaYouCantKillMe.rank();
+	}
+	
+	
 	// Overrides the begin and end turn function of Character to include reducing the Cooldowns of Abilities.
+	// Start of Turn override
 	@Override
-	public String beginTurn(LinkedList<Character> combatants) {
-		// Does the same as all Characters
-		String ret = super.beginTurn(combatants);
+	public void beginTurn() {
+		// Base Setup
+		this.beginTurnSetup();
 		
+		// State if Character is dead
+		if (this.getCurrentHealth() < 0) {
+			System.out.println(this.getName() + " is dead. Have turn anyway? Y or N");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				this.endTurn();
+				return;
+			}
+		}
+		
+		// Setup for Class
 		// Checks to see if it is the beginning of the round (Rank 15 of Professional Laughter gives Taunt)
 		if (BattleSimulator.getInstance().getRound() == 1 && this.ProfessionalLaughter.rank() >= 15) {
-			ret += "You have \"Taunt\" for 2 rounds.\n";
+			System.out.println("You have \"Taunt\" for 2 rounds.\n");
 		}
 		
 		// Reduces the Cooldown of all Abilities that need it.
@@ -66,32 +142,103 @@ public class SteelLegionTank extends Character {
 			}
 		}
 		
-		// Displays possible  actions to be taken
-		ret += "Possible Actions:\n";
-		for (String option : this.commands()) {
-			ret += option + "\n";
+		// Do action based on command given
+		boolean flag = true;
+		while (flag) {
+			// Display available actions
+			this.beginTurnDisplay();
+			
+			System.out.print("Choice? ");
+			String responce = BattleSimulator.getInstance().getPrompter().nextLine();
+			Character target;
+			switch(responce)
+	        {
+	            case "1": // Basic Attack
+	                target = BattleSimulator.getInstance().targetSingle();
+	                if (target.equals(Character.EMPTY)) {
+	                	break;
+	                }
+	                System.out.println(this.attack(target));
+	                flag = false;
+	                break;
+	            case "2": // Shield Bash
+	            	target = BattleSimulator.getInstance().targetSingle();
+	                if (target.equals(Character.EMPTY)) {
+	                	break;
+	                }
+	                System.out.println(this.useShieldBash(target));
+	                flag = false;
+	                break;
+	            case "3": // Shield Reflection
+	            	System.out.println("Choose enemies hit by attack:");
+	            	LinkedList<Character> attackTargets = BattleSimulator.getInstance().targetMultiple();
+	                if (attackTargets.isEmpty()) {
+	                	break;
+	                }
+	                System.out.println("Choose enemies blinded (0 no longer takes back, will remain empty list):");
+	                LinkedList<Character> blindedTargets = BattleSimulator.getInstance().targetMultiple();
+	                System.out.println(this.useShieldReflection(attackTargets, blindedTargets));
+	                flag = false;
+	                break;
+	            case "4": // Taunting Attack
+	            	target = BattleSimulator.getInstance().targetSingle();
+	                if (target.equals(Character.EMPTY)) {
+	                	break;
+	                }
+	                System.out.println(this.useTauntingAttack(target));
+	                flag = false;
+	                break;
+	            case "5": // Leader Strike
+	            	target = BattleSimulator.getInstance().targetSingle();
+	                if (target.equals(Character.EMPTY)) {
+	                	break;
+	                }
+	                System.out.println(this.useLeaderStrike(target));
+	                flag = false;
+	                break;
+	            case "6": // HaHaHaYouCantKillMe
+	            	System.out.println(this.useHahahaYouCantKillMe());
+	                flag = false;
+	                break;
+	            case "7": // Add Condition
+	            	Character chosen = BattleSimulator.getInstance().targetSingle();
+	                if (chosen.equals(Character.EMPTY)) {
+	                	break;
+	                }
+	                chosen.promptConditionAdd();
+	                break;
+	            case "8": // Remove Condition
+	            	Character choice = BattleSimulator.getInstance().targetSingle();
+	                if (choice.equals(Character.EMPTY)) {
+	                	break;
+	                }
+	                choice.promptConditionRemove();
+	                break;
+	            case "9": // End Turn
+	                flag = false;
+	                break;
+	            default:
+	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
+	        }
 		}
 		
-		return ret;
+		this.endTurn();
 	}
-	
+	// End of Turn Override
 	@Override
-	public LinkedList<String> commands() {
-		LinkedList<String> ret = super.commands();
-		ret.add(1, "Shield Bash");
-		ret.add(2, "Shield Reflection");
-		ret.add(3, "Taunting Attack");
-		ret.add(4, "Leader Strike");
-		ret.add(5, "HaHaHaYouCantKillMe");
+	public void endTurn() {
+		// Setup
+		this.endTurnSetup();
 		
-		return ret;
-	}
-	
-	@Override
-	public String endTurn(LinkedList<Character> combatants) {
-		String ret = this.useEnchantedArmorHealing();
-		ret += super.endTurn(combatants);
-		return ret;
+		// Use Enchanted Armor Healing (end of turn effect)
+		System.out.println(this.useEnchantedArmorHealing());
+		
+		// State facts
+		System.out.println(this.getName() + "'s turn is over.");
+		
+		// Return
+		System.out.println("Enter something the press enter to continue.");
+		BattleSimulator.getInstance().getPrompter().nextLine();
 	}
 	
 	// Overrides "avoidAttack" in order to also store the fact that an attack was blocked in "Shield Bash" and "Shield Reflection"
@@ -101,13 +248,33 @@ public class SteelLegionTank extends Character {
 		this.ShieldBash.didBlock = true;
 		this.ShieldReflection.didBlock = true;
 	}
+	// Overrides "receivedAttack" for death effect 
+	@Override
+	protected void receivedAttack(Attack atk) {
+		super.receivedAttack(atk);
+		if (this.isDead() && this.HaHaHaYouCantKillMe.rank() >= 3) {
+			this.useDeathHaHaHaYouCantKillMe(BattleSimulator.getInstance().getAllies());
+		}
+	}
 	
 	// Methods to use "Hold It Right There" Unique Passive
-	public StatusEffect getHoldItRightThereBlockBonus() {
-		return this.HoldItRightThere.getBlockBonus();
+	public void addHoldItRightThereBlockBonus() {
+		// Do not add Condition if already present
+		for (Condition c : this.getAllConditions()) {
+			if (c.getName() == this.HoldItRightThere.getSelfBlockCondition().getName()) {
+				return;
+			}
+		}
+		this.addCondition(this.HoldItRightThere.getSelfBlockCondition());
 	}
 	public void useHoldItRightThereHaltCondition(Character enemy) {
-		enemy.addCondition(this.HoldItRightThere.getDamageBonus());
+		// If condition is present, remove it first
+		for (Condition c : enemy.getAllConditions()) {
+			if (c.getName() == this.HoldItRightThere.getEnemyHaltCondition().getName()) {
+				enemy.removeCondition(c);
+			}
+		}
+		enemy.addCondition(this.HoldItRightThere.getEnemyHaltCondition());
 	}
 	
 	// Deals with the healing from the "Enchanted Armor" Passive
@@ -152,18 +319,15 @@ public class SteelLegionTank extends Character {
 		// Initialize return String
 		String ret = "";
 		
-		// Apply bonus pre-conditions (will have 0 value if rank is not big enough)
-		StatusEffect accuracyBonus = this.ShieldBash.getAccuracyBonus();
-		StatusEffect critBonus = this.ShieldBash.getCritBonus();
-		this.applySE(accuracyBonus);
-		this.applySE(critBonus);
+		// Apply bonus pre-condition (will have 0 value if rank is not big enough)
+		Condition preCondition = this.ShieldBash.getSelfPreAttackBonus();
+		this.apply(preCondition);
 		
 		// Make the attack
 		ret += this.attack(enemy, this.ShieldBash.getScaler());
 		
 		// Unapply the bonus pre-conditions
-		this.unapplySE(accuracyBonus);
-		this.unapplySE(critBonus);
+		this.unapply(preCondition);
 		
 		// Change the didCrit of "Shield Bash" to match if the Ability critically struck (this may affect the effects below when received)
 		this.ShieldBash.didCrit = this.previousAttack().didCrit();
@@ -172,13 +336,9 @@ public class SteelLegionTank extends Character {
 		if (this.previousAttack().didHit()) {
 			// Add all conditions to enemy hit
 			Stun stunEffect = this.ShieldBash.getStunEffect();
-			StatusEffect damageBonus = this.ShieldBash.getDamageBonus();
-			StatusEffect accuracyReduction = this.ShieldBash.getAccuracyReduction();
-			StatusEffect secondAccuracyReduction = this.ShieldBash.getSecondAccuracyReduction();
 			enemy.addCondition(stunEffect);
-			enemy.addCondition(damageBonus);
-			enemy.addConsecutiveCondition(stunEffect, accuracyReduction);
-			enemy.addConsecutiveCondition(accuracyReduction, secondAccuracyReduction);
+			Condition accuracyReduction = this.ShieldBash.getEnemyAccuracyReduction();
+			enemy.addCondition(accuracyReduction);
 			
 			// Change numMisses back to 0
 			this.ShieldBash.numMisses = 0;
@@ -206,7 +366,7 @@ public class SteelLegionTank extends Character {
 	}
 	
 	// Deals the Damage from the "Shield Reflection" Ability (Ability 2) to multiple enemies
-	public String useShieldReflection(List<Enemy> enemies, List<Enemy> blinded) {
+	public String useShieldReflection(LinkedList<Character> enemies, LinkedList<Character> blinded) {
 		// Before anything, put Shield Reflection "on Cooldown"
 		this.ShieldReflection.resetCounter();
 		
@@ -233,7 +393,7 @@ public class SteelLegionTank extends Character {
 		// Return the result
 		return ret;
 	}
-	public String useShieldReflection(List<Enemy> enemies) {
+	public String useShieldReflection(LinkedList<Character> enemies) {
 		return this.useShieldReflection(enemies, enemies);
 	}
 	
@@ -246,22 +406,22 @@ public class SteelLegionTank extends Character {
 		String ret = "";
 		
 		// Apply bonus accuracy pre-condition (will have 0 value if rank is not big enough)
-		StatusEffect accuracyBonus = this.TauntingAttack.getAccuracyBonus();
-		this.applySE(accuracyBonus);
+		Condition preCondition = this.TauntingAttack.getPreAttackBonus();
+		this.apply(preCondition);
 		
 		// Make the attack
 		ret += this.attack(enemy, this.TauntingAttack.getScaler());
 		
 		// Unapply the bonus accuracy pre-condition
-		this.unapplySE(accuracyBonus);
+		this.unapply(preCondition);
 		
-		// If the attack hit, apply all the taunt condition (will be 0 if not effective due to rank) and revert numMisses to 0
+		// If the attack hit, apply the taunt condition (will be 0 if not effective due to rank) and revert numMisses to 0
 		if (this.previousAttack().didHit()) {
 			// Add taunt condition to enemy hit
 			Condition tauntEffect = this.TauntingAttack.getTauntEffectHit();
 			if (tauntEffect.duration() > 0) {
 				enemy.addCondition(tauntEffect);
-				ret += "\n" + enemy.getName() + " is also taunted for " + tauntEffect.duration() + " turns!";
+				ret += "\n" + enemy.getName() + " is also taunted for " + tauntEffect.duration() + " turns!\n";
 			}
 			
 			// Change numMisses back to 0
@@ -270,14 +430,16 @@ public class SteelLegionTank extends Character {
 		// If the attack missed, still apply the taunt condition if it is effective (will be 0 if not) and increment numMisses
 		else {
 			// Add taunt condition to enemy hit
-			Condition tauntEffect = this.TauntingAttack.getTauntEffectMiss(enemy.getLevel());
+			Condition tauntEffect = this.TauntingAttack.getTauntEffectMiss(enemy);
 			if (tauntEffect.duration() > 0) {
 				enemy.addCondition(tauntEffect);
-				ret += "\n" + enemy.getName() + " is also taunted for " + tauntEffect.duration() + " turns!";
+				ret += "\n" + enemy.getName() + " is also taunted for " + tauntEffect.duration() + " turns!\n";
 			}
 			
-			// Increment numMisses
-			this.TauntingAttack.numMisses++;
+			// Increment numMisses if necessary (shield skills rank 15)
+			if (this.ShieldSkills.rank() >= 15) {
+				this.TauntingAttack.numMisses++;
+			}
 		}
 		
 		// Return the result
@@ -285,7 +447,7 @@ public class SteelLegionTank extends Character {
 	}
 	
 	// Deals the Damage from the "Leader Strike" Ability (Ability 4) and Calculates the amount healed for allies.
-	public String useLeaderStrike(Character enemy, List<Character> allies) {
+	public String useLeaderStrike(Character enemy) {
 		// Before anything, put Tauning Attack "on Cooldown"
 		this.LeaderStrike.resetCounter();
 		
@@ -293,27 +455,30 @@ public class SteelLegionTank extends Character {
 		String ret = "";
 		
 		// Apply bonus accuracy pre-condition (will have 0 value if rank is not big enough)
-		StatusEffect accuracyBonus = this.LeaderStrike.getAccuracyBonus();
-		this.applySE(accuracyBonus);
+		Condition preCondition = this.LeaderStrike.getPreAttackBonus();
+		this.apply(preCondition);
 		
 		// Make the attack
 		ret += this.attack(enemy, this.LeaderStrike.getScaler());
 		
 		// Unapply the bonus accuracy pre-condition
-		this.unapplySE(accuracyBonus);
+		this.unapply(preCondition);
 		
 		// If the attack hit revert numMisses to 0, if it missed, increment numMisses
 		if (this.previousAttack().didHit()) {
 			this.LeaderStrike.numMisses = 0;
 		}
 		else {
-			this.LeaderStrike.numMisses++;
+			// Increment numMisses if necessary (shield skills rank 15)
+			if (this.ShieldSkills.rank() >= 15) {
+				this.TauntingAttack.numMisses++;
+			}
 		}
 		
 		
-		// Past rank 3, this Character is included for the buffs in "allies", either way, create a copy of the list so the original is unchanged
+		// Past rank 3, this Character is included for the buffs in "allies", either way, create a copy of the list so the original is unchanged (extra safety net)
 		LinkedList<Character> alliesCopy = new LinkedList<>();
-		for (Character ally : allies) {
+		for (Character ally : BattleSimulator.getInstance().getAllies()) {
 			alliesCopy.add(ally);
 		}
 		if (!alliesCopy.contains(this) && this.LeaderStrike.rank() >= 3) {  // Adds this if not present and should be
@@ -332,7 +497,7 @@ public class SteelLegionTank extends Character {
 			ret += ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth() + "\n";
 			
 			// Applies the damage boost to each ally affected
-			ally.addCondition(this.LeaderStrike.getDamageBonus());
+			ally.addCondition(this.LeaderStrike.getAllyDamageBonus());
 			
 			// Checks to see if each ally's attack will stun the next target, and adds it to the return if so.
 			if (this.LeaderStrike.willStun()) {
@@ -355,8 +520,10 @@ public class SteelLegionTank extends Character {
 		ret += this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth() + "\n";
 		
 		// Apply Additional Conditions
-		this.addCondition(this.HaHaHaYouCantKillMe.getArmorBonus());
-		this.addCondition(this.HaHaHaYouCantKillMe.getDamageReduction());
+		this.addCondition(this.HaHaHaYouCantKillMe.getSelfArmorBonus());
+		for (Character enemy : BattleSimulator.getInstance().getEnemies()) {
+			enemy.addCondition(this.HaHaHaYouCantKillMe.getEnemyTauntEffect(enemy));
+		}
 		
 		return ret;
 	}
@@ -370,15 +537,17 @@ public class SteelLegionTank extends Character {
 		if (this.HaHaHaYouCantKillMe.rank() >= 3) {
 			// Restore each ally for 25% of their max Health and give each ally the damage buff from the Ability
 			for (Character ally : allies) {
-				// Calculates the healing amount for the ally in the list
-				int healing = (int)Math.round(ally.getHealth() * .25);
-				
-				healing = ally.restoreHealth(healing);
-				ret += ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth() + "\n";
-				
-				// Gives each ally the Damage buff and Invincibility for 1 turn
-				ally.addCondition(this.HaHaHaYouCantKillMe.getDamageBonus());
-				ally.addCondition(new Invincible("HaHaHa You Can't Kill Me Invincibility", 1));
+				if (!ally.equals(this)) {
+					// Calculates the healing amount for the ally in the list
+					int healing = (int)Math.round(ally.getHealth() * .25);
+					
+					healing = ally.restoreHealth(healing);
+					ret += ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth() + "\n";
+					
+					// Gives each ally the Damage buff and Invincibility for 1 turn
+					ally.addCondition(this.HaHaHaYouCantKillMe.getAllyDamageBonus());
+					ally.addCondition(new Invincible("HaHaHa You Can't Kill Me: Invincibility", 1));
+				}
 			}
 		}
 		

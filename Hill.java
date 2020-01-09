@@ -4,28 +4,36 @@ public class Hill extends Terrain {
 	public Hill(int eAccBonus, int eCritBonus, int eDodgeBlockBonus, int eEnemyAccBonus, int eEnemyCritBonus) {
 		super("Hill");
 		
+		// Create the requirement
+		DualRequirement melee = (Character withEffect, Character other) -> {
+			return (other.getRange() == 1);
+		};
+		DualRequirement nonMelee = (Character withEffect, Character other) -> {
+			return (other.getRange() > 1);
+		};
+		
 		// Add Bonuses
-		StatusEffect accuracyBonus = new StatusEffect("Accuracy Bonus", -1, Stat.ACCURACY, 15 + eAccBonus);
+		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, 15 + eAccBonus, StatusEffectType.BASIC);
 		
-		StatusEffect critBonus = new StatusEffect("Critical Chance Bonus", -1, Stat.CRITICAL_CHANCE, 5 + eCritBonus);
+		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, 5 + eCritBonus, StatusEffectType.BASIC);
 		
-		StatusEffect dodgeBonus = new StatusEffect("Melee Dodge Bonus", -1, Stat.DODGE, 10 + eDodgeBlockBonus);
-		dodgeBonus.addRequirementEqualTo(false, Stat.RANGE, 1);
-		StatusEffect blockBonus = new StatusEffect("Melee Block Bonus", -1, Stat.BLOCK, 10 + eDodgeBlockBonus);
-		blockBonus.addRequirementEqualTo(false, Stat.RANGE, 1);
+		StatusEffect dodgeBonus = new StatusEffect(StatVersion.DODGE, 10 + eDodgeBlockBonus, StatusEffectType.INCOMING);
+		dodgeBonus.setDualRequirement(melee);
+		StatusEffect blockBonus = new StatusEffect(StatVersion.BLOCK, 10 + eDodgeBlockBonus, StatusEffectType.INCOMING);
+		blockBonus.setDualRequirement(melee);
 		
-		StatusEffect enemyAccuracyBonus = new StatusEffect("Incoming Ranged Accuracy Bonus", -1, Stat.ACCURACY, 15 + eEnemyAccBonus);
-		enemyAccuracyBonus.addRequirementGreaterThan(false, Stat.RANGE, 1);
-		enemyAccuracyBonus.makeIncoming();
-		StatusEffect enemyCritBonus = new StatusEffect("Incoming Ranged Crit Bonus", -1, Stat.CRITICAL_CHANCE, 5 + eEnemyCritBonus);
-		enemyCritBonus.addRequirementGreaterThan(false, Stat.RANGE, 1);
-		enemyCritBonus.makeIncoming();
+		StatusEffect enemyAccuracyBonus = new StatusEffect(StatVersion.ACCURACY, 15 + eEnemyAccBonus, StatusEffectType.INCOMING);
+		enemyAccuracyBonus.setDualRequirement(nonMelee);
+		enemyAccuracyBonus.makeAffectOther();
+		StatusEffect enemyCritBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, 5 + eEnemyCritBonus, StatusEffectType.INCOMING);
+		enemyCritBonus.setDualRequirement(nonMelee);
+		enemyCritBonus.makeAffectOther();
 		
-		this.effects.add(accuracyBonus);
-		this.effects.add(critBonus);
-		this.effects.add(dodgeBonus);
-		this.effects.add(blockBonus);
-		this.effects.add(enemyAccuracyBonus);
+		this.addStatusEffect(accuracyBonus);
+		this.addStatusEffect(critBonus);
+		this.addStatusEffect(dodgeBonus);
+		this.addStatusEffect(blockBonus);
+		this.addStatusEffect(enemyAccuracyBonus);
 	}
 	public Hill() {
 		this(0,0,0,0,0);

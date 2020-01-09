@@ -2,57 +2,79 @@ package WyattWitemeyer.WarOfGillysburg;
 
 import java.util.*;
 
+// Implementation of lambda function for requirements.
+interface Requirement {
+	// Function to define a requirement for a given Condition action
+	boolean evaluate(Character withEffect);
+	
+	// Default is that the Condition action always occurs
+	default boolean evalDefault() {
+		return true;
+	}
+}
+
+// Used more for Status Effects, allows requirements for two Characters (usually one with the effect on them, and one other (usually attacker))
+interface DualRequirement {
+	// Function to define a requirement for a given Condition action
+	boolean evaluate(Character withEffect, Character other);
+	
+	// Default is that the Condition action always occurs
+	default boolean evalDefault() {
+		return true;
+	}
+}
+
 public class Condition {
-	// Variables
+	// Descriptive Variables
+	private Character source;
 	private String name;
 	private int duration;
+	private boolean isSourceIncrementing;
 	private boolean isPermanent;
 	private boolean isEndOfTurn;
-	public TurnCounter turnCount;
+	private boolean isActive;
 	
-	// Linked conditions are removed when one from the list is removed.
+	// Functionality Variables
+	public int turnCount;
+	private LinkedList<StatusEffect> effects;
+	private Requirement activeRequirement;
 	private HashSet<Condition> linkedConditions;
 	
-	// Some Conditions have requirements to apply
-	private LinkedList<Requirement> requirements = new LinkedList<>();
 	
 	// Constructors
-	public Condition(String name, int duration, HashSet<Condition> linkedConditions) {
+	public Condition(String name, int duration, Requirement actReq) {
+		this.source = Character.EMPTY;
 		this.name = name;
 		this.duration = duration;
-		this.linkedConditions = linkedConditions;
+		this.isSourceIncrementing = false;
 		this.isPermanent = false;
 		this.isEndOfTurn = false;
+		this.isActive = false;
 		
-		this.turnCount = new TurnCounter();
+		this.turnCount = 0;
+		this.effects = new LinkedList<StatusEffect>();
+		this.activeRequirement = actReq;
+		this.linkedConditions = new HashSet<Condition>();
 	}
 	public Condition(String name, int duration) {
-		this.name = name;
-		this.duration = duration;
-		this.linkedConditions = new HashSet<>();
-		this.isPermanent = false;
-		this.isEndOfTurn = false;
-		
-		this.turnCount = new TurnCounter();
+		this(name, duration, (Character withEffect) -> {return true;});
 	}
 	public Condition() {
-		this.name = "Empty";
-		this.duration = 0;
-		this.turnCount = null;
-		this.linkedConditions = null;
-		this.isPermanent = false;
-		this.isEndOfTurn = false;
+		this("Empty", 0);
 	}
 	
 	// Get methods
+	public Character getSource() {
+		return this.source;
+	}
 	public String getName() {
 		return this.name;
 	}
 	public int duration() {
 		return this.duration;
 	}
-	public HashSet<Condition> getLinkedConditions() {
-		return this.linkedConditions;
+	public boolean isSourceIncrementing() {
+		return this.isSourceIncrementing;
 	}
 	public boolean isPermanent() {
 		return this.isPermanent;
@@ -60,16 +82,40 @@ public class Condition {
 	public boolean isEndOfTurn() {
 		return this.isEndOfTurn;
 	}
-	public LinkedList<Requirement> getRequirements() {
-		return this.requirements;
+	public boolean isActive() {
+		return this.isActive;
 	}
-	public boolean hasRequirements() {
-		return !this.requirements.isEmpty();
+	public LinkedList<StatusEffect> getStatusEffects() {
+		return this.effects;
+	}
+	public Requirement getActiveRequirement() {
+		return this.activeRequirement;
+	}
+	public HashSet<Condition> getLinkedConditions() {
+		return this.linkedConditions;
 	}
 	
-	// Function to add an additional linked condition
+	// Add/Set functions
+	public void addStatusEffect(StatusEffect se) {
+		this.effects.add(se);
+	}
 	public void addLinkedCondition(Condition added) {
 		this.linkedConditions.add(added);
+	}
+	public void setSource(Character c) {
+		this.source = c;
+	}
+	public void makeSourceIncrementing() {
+		this.isSourceIncrementing = true;
+	}
+	public void makePermanent() {
+		this.isPermanent = true;
+	}
+	public void makeEndOfTurn() {
+		this.isEndOfTurn = true;
+	}
+	public void activate() {
+		this.isActive = true;
 	}
 	
 	// Method to determine if the duration of the condition is expired
@@ -79,50 +125,9 @@ public class Condition {
 			return false;
 		}
 		
-		return this.turnCount.value() >= this.duration();
+		return this.turnCount >= this.duration();
 	}
 	
-	// Methods for requirements to apply the condition based on Stats of Character affected or the one attacking the Character affected
-	protected void addRequirementGreaterThan(boolean testsAttachedCharacter, Stat requiredStat, int threshold) {
-		this.requirements.add(new Requirement(testsAttachedCharacter, requiredStat, threshold, 1));
-	}
-	protected void addRequirementLessThan(boolean testsAttachedCharacter, Stat requiredStat, int threshold) {
-		this.requirements.add(new Requirement(testsAttachedCharacter, requiredStat, threshold, -1));
-	}
-	protected void addRequirementEqualTo(boolean testsAttachedCharacter, Stat requiredStat, int threshold) {
-		this.requirements.add(new Requirement(testsAttachedCharacter, requiredStat, threshold, 0));
-	}
-	public boolean passRequirements(Character affected, Character attacking) {
-		// Checks all requirements. If one does not pass, it returns false
-		for (Requirement req : this.requirements) {
-			if (!req.passRequirement(affected, attacking)) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	// For Conditions that occur before combat (no enemy involved in any of the requirements)
-	public boolean passRequirements(Character affected) {
-		// Checks all requirements. If one does not pass, it returns false
-		for (Requirement req : this.requirements) {
-			if (!req.passRequirement(affected)) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	// To make an existing Condition permanent (will never automatically be removed, but can still be removed manually)
-	public void makePermanent() {
-		this.isPermanent = true;
-	}
-	
-	// To make an existing Condition removed at the end of the Character's turn in which it expires rather than the beginning
-	public void makeEndOfTurn() {
-		this.isEndOfTurn = true;
-	}
 	
 	// To String override for clarity when playing
 	@Override
@@ -132,7 +137,16 @@ public class Condition {
 			ret += "Permanent Effect";
 		}
 		else {
-			ret += (this.duration() - this.turnCount.value()) + " turns left";
+			ret += (this.duration() - this.turnCount) + " turns left - Source: " + this.getSource().getName();
+		}
+		if (this.isSourceIncrementing) {
+			ret += " (Increments on source)";
+		}
+		if (this.isEndOfTurn()) {
+			ret += " (End of Turn Condition)";
+		}
+		for (StatusEffect se : this.effects) {
+			ret += "\n\t\t" + se.toString();
 		}
 		
 		return ret;

@@ -1,27 +1,22 @@
 package WyattWitemeyer.WarOfGillysburg;
-import java.util.*;
 
-public class Blind extends CrowdControl {
+public class Blind extends Condition {
 	// Constructs a blind
-	public Blind(String name, int duration, HashSet<Condition> linkedConditions) {
-		super(name, duration, linkedConditions);
+	public Blind(String name, int duration, Requirement actReq) {
+		super(name, duration, actReq);
 		
-		StatusEffect dodgeReduction = new StatusEffect(name, duration, linkedConditions, Stat.DODGE, -90);
-		StatusEffect blockReduction = new StatusEffect(name, duration, linkedConditions, Stat.BLOCK, -70);
-		StatusEffect speedReduction = new StatusEffect(name, duration, linkedConditions, Stat.SPEED, -50);
-		this.effects.add(dodgeReduction);
-		this.effects.add(blockReduction);
-		this.effects.add(speedReduction);
+		StatusEffect dodgeReduction = new StatusEffect(StatVersion.DODGE, -90, StatusEffectType.BASIC);
+		StatusEffect blockReduction = new StatusEffect(StatVersion.BLOCK, -70, StatusEffectType.BASIC);
+		StatusEffect speedReduction = new StatusEffect(StatVersion.SPEED, -50, StatusEffectType.BASIC);
+		this.addStatusEffect(dodgeReduction);
+		this.addStatusEffect(blockReduction);
+		this.addStatusEffect(speedReduction);
 	}
 	public Blind(String name, int duration) {
-		super(name, duration);
-		
-		StatusEffect dodgeReduction = new StatusEffect(name, duration, Stat.DODGE, -90);
-		StatusEffect blockReduction = new StatusEffect(name, duration, Stat.BLOCK, -70);
-		StatusEffect speedReduction = new StatusEffect(name, duration, Stat.SPEED, -50);
-		this.effects.add(dodgeReduction);
-		this.effects.add(blockReduction);
-		this.effects.add(speedReduction);
+		this(name, duration, (Character withEffect) -> {return true;});
+	}
+	public Blind() {
+		super();
 	}
 	
 	@Override

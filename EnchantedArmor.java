@@ -6,9 +6,10 @@ public class EnchantedArmor extends Ability {
 	private int bonusBlock;
 	
 	// Constructors
-	public EnchantedArmor(int rank) {
+	public EnchantedArmor(Character source, int rank) {
 		// Initialize all Ability variables to defaults
 		super();
+		this.owner = source;
 		this.name = "Base Passive Ability: \"Enchanted Armor\"";
 		
 		// Set the rest based on rank
@@ -18,6 +19,9 @@ public class EnchantedArmor extends Ability {
 		this.setScaler();
 		this.setArmorBonus();
 		this.setBlockBonus();
+	}
+	public EnchantedArmor(int rank) {
+		this(Character.EMPTY, rank);
 	}
 	public EnchantedArmor() {
 		super();
@@ -97,7 +101,7 @@ public class EnchantedArmor extends Ability {
 		}
 	}
 	
-	// Get methods for additional stats of this Ability
+	// Get methods for additional stats of this Ability and source
 	public int getBonusArmor() {
 		return this.bonusArmor;
 	}

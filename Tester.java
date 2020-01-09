@@ -2,12 +2,12 @@ package WyattWitemeyer.WarOfGillysburg;
 import java.io.*;
 import java.util.*;
 
-import WyattWitemeyer.WarOfGillysburg.Character;
 public class Tester {
 	public static void main(String args[]) throws IOException {
 		// Creates lists for the allies and enemies
 		List<Character> allies = new LinkedList<>();
 		List<Enemy> enemies = new LinkedList<>();
+		
 		
 		// Creates Players with respective classes and adds them to the allies list
 		SteelLegionWarrior Ian = PlayerDataBase.IAN;
@@ -34,6 +34,7 @@ public class Tester {
 		enemies.add(spi1);
 		enemies.add(spi2);
 		enemies.add(spi3);
+		
 		
 		// Gets all characters CurrentHealth from the file BattleHealthData.txt and stores in the CurrentHealthStatus List
 		Scanner sc = new Scanner(new File("BattleHealthData.txt"));
@@ -70,8 +71,14 @@ public class Tester {
 		group.add(spi3);
 		
 		// THE ACTION TAKES PLACE HERE
+		//LinkedList<Character> listed = new LinkedList<>();
 		SteelLegionTank tester = new SteelLegionTank(PlayerDataBase.TEST);
-		System.out.println(tester);
+		SteelLegionTank enemy1 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 1").build();
+		SteelLegionTank enemy2 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 2").build();
+		BattleSimulator.getInstance().addAlly(tester);
+		BattleSimulator.getInstance().addEnemy(enemy1);
+		BattleSimulator.getInstance().addEnemy(enemy2);
+		BattleSimulator.getInstance().initiate();
 		
 		// Writes CurrentHealth of all characters to the BattleHealthData.txt File.
 		BufferedWriter writer = new BufferedWriter(new FileWriter("BattleHealthData.txt"));
@@ -82,5 +89,6 @@ public class Tester {
 			writer.write(enemy.getName() + ": " + enemy.getCurrentHealth() + "\n");
 		}
 		writer.close();
+		
 	}
 }

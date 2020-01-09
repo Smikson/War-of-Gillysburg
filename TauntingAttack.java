@@ -2,7 +2,7 @@ package WyattWitemeyer.WarOfGillysburg;
 
 public class TauntingAttack extends Ability {
 	// Additional Conditions for the Ability
-	private StatusEffect accuracyBonus;
+	private Condition selfPreAttackBonus;
 	private Condition taunt;
 	
 	// Holds the rank of the Shield Skills Ability (since it affects some of the Status Effects)
@@ -11,9 +11,10 @@ public class TauntingAttack extends Ability {
 	// Keeps track of the number of previous Taunting Attack misses (for bonus effects)
 	public int numMisses;
 	
-	public TauntingAttack(int rank, int ShieldSkillsRank) {
+	public TauntingAttack(Character source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
 		super();
+		this.owner = source;
 		this.name = "Ability 3: \"Taunting Attack\"";
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
@@ -26,7 +27,7 @@ public class TauntingAttack extends Ability {
 		this.setScaler();
 		
 		// Set the additional effects of the Ability
-		this.setAccuracyBonus();
+		this.setPreAttackBonus();
 		this.setTauntEffect();
 	}
 	
@@ -59,12 +60,17 @@ public class TauntingAttack extends Ability {
 	}
 	
 	// Calculates the values for the additional Effects for this Ability
-	private void setAccuracyBonus() {
+	private void setPreAttackBonus() {
 		int amount = 0;
 		if (this.ssRank >= 15) {
 			amount = 40;
 		}
-		this.accuracyBonus = new StatusEffect("Shield Skills Accuracy Bonus to Taunting Attack", 0, Stat.ACCURACY, amount);
+		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, amount*this.numMisses, StatusEffectType.OUTGOING);
+		
+		// Creates the pre-attack condition with accuracy bonus as needed
+		this.selfPreAttackBonus = new Condition("Taunting Attack: Pre Attack Bonus", 0);
+		this.selfPreAttackBonus.setSource(this.owner);
+		this.selfPreAttackBonus.addStatusEffect(accuracyBonus);
 	}
 	
 	private void setTauntEffect() {
@@ -72,14 +78,15 @@ public class TauntingAttack extends Ability {
 		if (this.rank >= 10) {
 			duration = 2;
 		}
-		this.taunt = new Condition("Taunt: Taunting Attack", duration);
+		this.taunt = new Condition("Taunting Attack: Taunted", duration);
 	}
 	
 	// Get methods for additional effects of this Ability
 	public Condition getTauntEffectHit() {
 		return this.taunt;
 	}
-	public Condition getTauntEffectMiss(int enemyLevel) {
+	
+	public Condition getTauntEffectMiss(Character enemy) {
 		// If the Ability misses, there is still a chance (based on rank) that a Taunt effect occurs (returns a Condition with duration = 0 if it does not occur)
 		int basicChance = 0;  // For Normal and Advanced Enemies (Level = 1,2)
 		int eliteChance = 0;  // For Elite Enemies (Level = 3)
@@ -120,19 +127,19 @@ public class TauntingAttack extends Ability {
 		int result = percent.roll();
 		int tauntDuration = 0;
 		// If basic enemy (Level = 1 or 2)
-		if (enemyLevel == 1 || enemyLevel == 2) {
+		if (enemy.getLevel() == 1 || enemy.getLevel() == 2) {
 			if (result <= basicChance) {
 				tauntDuration = 1;
 			}
 		}
 		// If Elite enemy (Level = 3)
-		else if (enemyLevel == 3) {
+		else if (enemy.getLevel() == 3) {
 			if (result <= eliteChance) {
 				tauntDuration = 1;
 			}
 		}
 		// If Boss enemy (Level = 4)
-		else if (enemyLevel == 4) {
+		else if (enemy.getLevel() == 4) {
 			if (result <= bossChance) {
 				tauntDuration = 1;
 			}
@@ -141,11 +148,10 @@ public class TauntingAttack extends Ability {
 		// Return the result
 		return new Condition(this.taunt.getName(), tauntDuration);
 	}
-	public StatusEffect getAccuracyBonus() {
-		// The Accuracy Bonus is based on the current number of misses (it's value is multiplied by the number of misses)
-		return new StatusEffect(this.accuracyBonus.getName(), 
-				this.accuracyBonus.duration(), 
-				this.accuracyBonus.getAlteredStat(), 
-				this.accuracyBonus.getValue() * this.numMisses);            // This is the only line that is changed.
+	
+	public Condition getPreAttackBonus() {
+		// Returns the condition, but sets it again first in case things changed because of "numMisses"
+		this.setPreAttackBonus();
+		return this.selfPreAttackBonus;
 	}
 }

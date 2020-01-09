@@ -1,10 +1,9 @@
 package WyattWitemeyer.WarOfGillysburg;
-import java.util.*;
 
-public class Invulnerable extends CrowdControl {
+public class Invulnerable extends Condition {
 	// Constructs an "invulnerable" effect
-	public Invulnerable(String name, int duration, HashSet<Condition> linkedConditions) {
-		super(name, duration, linkedConditions);
+	public Invulnerable(String name, int duration, Requirement actReq) {
+		super(name, duration, actReq);
 	}
 	public Invulnerable(String name, int duration) {
 		super(name, duration);

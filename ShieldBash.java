@@ -3,10 +3,8 @@ package WyattWitemeyer.WarOfGillysburg;
 public class ShieldBash extends Ability {
 	// Additional Conditions for the Ability
 	private Stun stun;
-	private StatusEffect accuracyReduction;
-	private StatusEffect damageBonus;
-	private StatusEffect accuracyBonus;
-	private StatusEffect critBonus;
+	private Condition enemyAccReduction;
+	private Condition selfPreAttackBonus;
 	
 	// Holds the rank of the Shield Skills Ability (since it affects some of the Status Effects)
 	private int ssRank;
@@ -17,9 +15,10 @@ public class ShieldBash extends Ability {
 	public boolean didCrit;
 	
 	
-	public ShieldBash(int rank, int ShieldSkillsRank) {
+	public ShieldBash(Character source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
 		super();
+		this.owner = source;
 		this.name = "Ability 1: \"Shield Bash\"";
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
@@ -35,17 +34,11 @@ public class ShieldBash extends Ability {
 		
 		// Sets the additional effects of the Ability
 		this.setStun();
-		this.setAccuracyReduction();
-		this.setDamageBonus();
-		this.setAccuracyBonus();
-		this.setCritBonus();
-		
-		// Adds the appropriate linked Conditions to the additional effects
-		this.stun.addLinkedCondition(this.damageBonus);
-		this.damageBonus.addLinkedCondition(this.stun);
+		this.setEnemyAccReduction();
+		this.setPreAttackBonus();
 	}
 	public ShieldBash(int rank) {
-		this(rank, 0);
+		this(Character.EMPTY, rank, 0);
 	}
 	
 	// Calculates the basic values for this Ability
@@ -91,13 +84,15 @@ public class ShieldBash extends Ability {
 	
 	// Calculates the values for the additional Effects for this Ability
 	private void setStun() {
-		// Creates the Conditions for the Ability	
 		int stunDuration = 1;
 		
 		// Checks based on this Ability's rank
-		// Rank 10 increases the duration to 2
+		// Rank 10 increases the duration to 2, then is increased by an additional turn if the Ability didCrit
 		if (this.rank >= 10) {
 			stunDuration = 2;
+			if (this.didCrit) {
+				stunDuration++;
+			}
 		}
 		
 		// Bonuses for "Shield Skills" rank
@@ -108,9 +103,34 @@ public class ShieldBash extends Ability {
 		
 		// Sets the calculated Stun
 		this.stun = new Stun("Shield Bash Stun", stunDuration);
+		this.stun.setSource(this.owner);
+		
+		// Adds Damage Bonus While Stunned after rank 5
+		if (this.rank >= 5) {
+			int amount = 0;
+			for (int walker = 1; walker <= this.rank; walker++) {
+				// Rank 5 grants +20% damage to the stunned target
+				if (walker == 5) {
+					amount += 20;
+				}
+				// Ranks 6,10 grants +5% damage to the stunned target
+				if (walker == 6 || walker == 10) {
+					amount += 5;
+				}
+			}
+			// the value "amount" doubles when you critically strike at rank 10
+			if (this.rank >= 10 && this.didCrit) {
+				amount *= 2;
+			}
+			
+			// Sets the Calculated Status Effect and adds it to the stun
+			StatusEffect damageBonus = new StatusEffect(StatVersion.DAMAGE, amount, StatusEffectType.INCOMING);
+			damageBonus.makeAffectOther();
+			this.stun.addStatusEffect(damageBonus);
+		}
 	}
 	
-	private void setAccuracyReduction() {
+	private void setEnemyAccReduction() {
 		int amount = 0;
 		// Checks based on this Ability's rank
 		for (int walker = 1; walker <= this.rank; walker++) {
@@ -136,132 +156,100 @@ public class ShieldBash extends Ability {
 			}
 		}
 		
-		// Sets the Calculated Status Effect
-		this.accuracyReduction = new StatusEffect("Shield Bash Accuracy Reduction", 1, Stat.ACCURACY, -amount);
-	}
-	
-	private void setDamageBonus() {
-		int amount = 0;
-		// Checks based on this Ability's rank
-		for (int walker = 1; walker <= this.rank; walker++) {
-			// Rank 5 grants +20% damage to the stunned target
-			if (walker == 5) {
-				amount += 20;
-			}
-			// Ranks 6,10 grants +5% damage to the stunned target
-			if (walker == 6 || walker == 10) {
-				amount += 5;
-			}
+		// the value "amount" doubles when you critically strike at rank 10
+		if (this.rank >= 10 && this.didCrit) {
+			amount *= 2;
 		}
 		
+		// Creates the requirement of the Condition to become Active (occurs after stun)
+		Requirement actReq = (Character withEffect) -> {
+			return !withEffect.getAllConditions().contains(this.stun);
+		};
+		
+		// Finds the duration: 2 when >= 8
+		int duration = this.rank < 8? 1 : 2;
+		
+		// Create the Enemy Accuracy Reduction Condition with the correct Status Effect based on the numbers calculated
+		this.enemyAccReduction = new Condition("Shield Bash: Accuracy Reduction", duration, actReq);
+		this.enemyAccReduction.setSource(this.owner);
 		// Sets the Calculated Status Effect
-		this.damageBonus = new StatusEffect("Shield Bash Damage Aplification", this.stun.duration(), Stat.DAMAGE, amount);
-		this.damageBonus.makeIncoming();
+		StatusEffect accReduction = new StatusEffect(StatVersion.ACCURACY, -amount, StatusEffectType.OUTGOING);
+		this.enemyAccReduction.addStatusEffect(accReduction);
 	}
 	
-	private void setAccuracyBonus() {
+	private void setPreAttackBonus() {
+		// Accuracy Bonus:
 		// Bonuses for "Shield Skills" rank
-		int amount = 0;
+		int accAmount = 0;
 		
 		// Base of 10%, increases for each rank
 		if (this.ssRank >= 1) {
-			amount += 10;
+			accAmount += 10;
 		}
 		for (int walker = 1; walker <= this.ssRank; walker++) {
 			// Ranks 1-5 grant +1% Accuracy (starting at 10%)
 			if (walker <= 5) {
-				amount += 1;
+				accAmount += 1;
 			}
 			// Ranks 6-10 grant +2% Accuracy
 			else if (walker <= 10) {
-				amount += 2;
+				accAmount += 2;
 			}
 			// Ranks 11-15 grant +3% Accuracy
 			else if (walker <= 15) {
-				amount += 3;
+				accAmount += 3;
 			}
 		}
+		// Creates the Calculated Status Effect based on the number of misses
+		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, accAmount*this.numMisses, StatusEffectType.OUTGOING);
 		
-		// Sets the Calculated Status Effect
-		this.accuracyBonus = new StatusEffect("Shield Skills Accuracy Bonus to Shield Bash", 0, Stat.ACCURACY, amount);
-	}
-	
-	private void setCritBonus() {
+		// Crit Bonus:
 		// Bonuses for "Shield Skills" rank
-		int amount = 0;
+		int critAmount = 0;
 		for (int walker = 6; walker <= this.ssRank; walker++) {
 			// Ranks 6-10 grant +2% Critical Chance
 			if (walker <= 10) {
-				amount += 2;
+				critAmount += 2;
 			}
 			// Ranks 11-15 grant +3% Critical Chance
 			else if (walker <= 15) {
-				amount += 3;
+				critAmount += 3;
 			}
 		}
+		// Creates the calculated Status Effect
+		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, critAmount, StatusEffectType.OUTGOING);
 		
-		// Sets the calculated Status Effect
-		this.critBonus = new StatusEffect("Shield Skills Crit Bonus to Shield Bash", 0, Stat.CRITICAL_CHANCE, amount);
+		// Creates the pre-attack condition with accuracy and crit bonuses as needed
+		this.selfPreAttackBonus = new Condition("Shield Bash: Pre Attack Bonus", 0);
+		this.selfPreAttackBonus.setSource(this.owner);
+		this.selfPreAttackBonus.addStatusEffect(accuracyBonus);
+		this.selfPreAttackBonus.addStatusEffect(critBonus);
 	}
 	
 	
 	// Get methods for additional effects
 	public Stun getStunEffect() {
-		// The stun lasts an additional turn at rank 10 if this ability critically hit (must be calculated after constructing)
-		if (this.rank >= 10 && this.didCrit) {
-			return new Stun(this.stun.getName(), this.stun.duration() + 1);
-		}
+		// Returns the stun, but sets it again first in case things changed because of "didCrit" or "didBlock" or "numMisses"
+		this.setStun();
 		return this.stun;
 	}
 	
-	public StatusEffect getAccuracyReduction() {
-		// The value of the accuracy reduction is doubled at rank 10 if the ability critically hit (must be calculated after constructing)
-		if (this.rank >= 10 && this.didCrit) {
-			return new StatusEffect(this.accuracyReduction.getName(),
-					this.accuracyReduction.duration(),
-					this.accuracyReduction.getAlteredStat(),
-					this.accuracyReduction.getValue() * 2);
-		}
-		return this.accuracyReduction;
-	}
-	// Above rank 8, and additional turn of the Accuracy Reduction occurs at varying strength, this is simulated with a second consecutive condition
-	public StatusEffect getSecondAccuracyReduction() {
-		// Initializes default value to 0 (will have no effect until rank 8)
-		double value = 0;
-		if (this.rank >= 8) {
-			value = this.getAccuracyReduction().getValue() / 2;
-		}
-		if (this.rank == 10) {
-			value = this.getAccuracyReduction().getValue();
-		}
-		
-		// Returns the simulated Status Effect to be added consecutively (the two are also linked)
-		StatusEffect secondAccuracyReduction = new StatusEffect(this.accuracyReduction.getName(), 1, this.accuracyReduction.getAlteredStat(), value);
-		secondAccuracyReduction.addLinkedCondition(this.accuracyReduction);
-		this.accuracyReduction.addLinkedCondition(secondAccuracyReduction);
-		return secondAccuracyReduction;
+	public Condition getEnemyAccuracyReduction() {
+		// Returns the condition, but sets it again first in case things changed because of "didCrit" or "didBlock" or "numMisses"
+		this.setEnemyAccReduction();
+		return this.enemyAccReduction;
 	}
 	
-	public StatusEffect getDamageBonus() {
-		// The value of the damage bonus is doubled at rank 10 if the ability critically hit (must be calculated after constructing)
-		if (this.rank >= 10 && this.didCrit) {
-			return new StatusEffect(this.damageBonus.getName(),
-					this.damageBonus.duration(),
-					this.damageBonus.getAlteredStat(),
-					this.damageBonus.getValue() * 2);
-		}
-		return this.damageBonus;
+	public Condition getSelfPreAttackBonus() {
+		// Returns the condition, but sets it again first in case things changed because of "didCrit" or "didBlock" or "numMisses"
+		this.setPreAttackBonus();
+		return this.selfPreAttackBonus;
 	}
 	
-	public StatusEffect getAccuracyBonus() {
-		// The Accuracy Bonus is based on the current number of misses (it's value is multiplied by the number of misses)
-		return new StatusEffect(this.accuracyBonus.getName(), 
-				this.accuracyBonus.duration(), 
-				this.accuracyBonus.getAlteredStat(), 
-				this.accuracyBonus.getValue() * this.numMisses);            // This is the only line that is changed.
-	}
-	
-	public StatusEffect getCritBonus() {
-		return this.critBonus;
+	@Override
+	public double getScaler() {
+		// Returns the scaler, but sets it again first in case things changed because of "didCrit" or "didBlock" or "numMisses"
+		this.setScaler();
+		return this.scaler;
 	}
 }

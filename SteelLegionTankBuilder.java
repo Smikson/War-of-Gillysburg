@@ -13,8 +13,8 @@ public class SteelLegionTankBuilder extends CharacterBuilder{
 	private int HaHaHaYouCantKillMeRank;
 	
 	// Constructs a SteelLegionTankBuilder (populating the CharacterBuilder variables) based on the constant stats from Character
-	public SteelLegionTankBuilder() {
-		super(Character.STEEL_LEGION_TANK);
+	public SteelLegionTankBuilder(Character base) {
+		super(base);
 		this.HoldItRightThereRank = 0;
 		this.EnchantedArmorRank = 0;
 		this.ShieldSkillsRank = 0;
@@ -24,6 +24,21 @@ public class SteelLegionTankBuilder extends CharacterBuilder{
 		this.TauntingAttackRank = 0;
 		this.LeaderStrikeRank = 0;
 		this.HaHaHaYouCantKillMeRank = 0;
+	}
+	public SteelLegionTankBuilder(SteelLegionTank base) {
+		super(base);
+		this.HoldItRightThereRank = base.getHoldItRightThereRank();
+		this.EnchantedArmorRank = base.getEnchantedArmorRank();
+		this.ShieldSkillsRank = base.getShieldSkillsRank();
+		this.ProfessionalLaughterRank = base.getProfessionalLaughterRank();
+		this.ShieldBashRank = base.getShieldBashRank();
+		this.ShieldReflectionRank = base.getShieldReflectionRank();
+		this.TauntingAttackRank = base.getTauntingAttackRank();
+		this.LeaderStrikeRank = base.getLeaderStrikeRank();
+		this.HaHaHaYouCantKillMeRank = base.getHaHaHaYouCantKillMeRank();
+	}
+	public SteelLegionTankBuilder() {
+		this(Character.STEEL_LEGION_TANK);
 	}
 	
 	

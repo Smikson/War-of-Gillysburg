@@ -6,8 +6,13 @@ public class PlayerDataBase {
 			.Level(10)
 			.bonusHealth(50)
 			.bonusDamage(10)
+			.setHoldItRightThereRank(3)
 			.setEnchantedArmorRank(15)
 			.setShieldSkillsRank(15)
+			.setShieldBashRank(10)
+			.setShieldReflectionRank(10)
+			.setTauntingAttackRank(10)
+			.setLeaderStrikeRank(10)
 			.build();
 	public static final SilentDeathShadow JAIME = new CharacterBuilder()
 			.Name("Jaime")

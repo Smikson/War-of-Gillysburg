@@ -4,19 +4,24 @@ public class Cover extends Terrain {
 	public Cover(int eDodgeBlockBonus, int eEnemyAccDeduction) {
 		super("Cover");
 		
+		// Create the requirement
+		DualRequirement nonMelee = (Character withEffect, Character other) -> {
+			return (other.getRange() > 1);
+		};
+		
 		// Add Bonuses
-		StatusEffect dodgeBonus = new StatusEffect("Ranged Dodge Bonus", -1, Stat.DODGE, 5 + eDodgeBlockBonus);
-		dodgeBonus.addRequirementGreaterThan(false, Stat.RANGE, 1);
-		StatusEffect blockBonus = new StatusEffect("Ranged Block Bonus", -1, Stat.BLOCK, 5 + eDodgeBlockBonus);
-		blockBonus.addRequirementGreaterThan(false, Stat.RANGE, 1);
+		StatusEffect dodgeBonus = new StatusEffect(StatVersion.DODGE, 5 + eDodgeBlockBonus, StatusEffectType.INCOMING);
+		dodgeBonus.setDualRequirement(nonMelee);
+		StatusEffect blockBonus = new StatusEffect(StatVersion.BLOCK, 5 + eDodgeBlockBonus, StatusEffectType.INCOMING);
+		blockBonus.setDualRequirement(nonMelee);
 		
-		StatusEffect accuracyDeduction = new StatusEffect("Incoming Ranged Accuracy Reduction", -1, Stat.ACCURACY, -5 + eEnemyAccDeduction);
-		accuracyDeduction.addRequirementGreaterThan(false, Stat.RANGE, 1);
-		accuracyDeduction.makeIncoming();
+		StatusEffect accuracyDeduction = new StatusEffect(StatVersion.ACCURACY, -5 + eEnemyAccDeduction, StatusEffectType.INCOMING);
+		accuracyDeduction.setDualRequirement(nonMelee);
+		accuracyDeduction.makeAffectOther();
 		
-		this.effects.add(dodgeBonus);
-		this.effects.add(blockBonus);
-		this.effects.add(accuracyDeduction);
+		this.addStatusEffect(dodgeBonus);
+		this.addStatusEffect(blockBonus);
+		this.addStatusEffect(accuracyDeduction);
 	}
 	public Cover() {
 		this(0,0);
