@@ -12,12 +12,12 @@ public class SteelLegionWarrior extends Character {
 	}
 	
 	// Deals the Damage from the "Vengeance Strike" Passive Ability
-	public String useVengeanceStrike(Character enemy) {
-		return this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+	public void useVengeanceStrike(Character enemy) {
+		this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 	}
 	// Used for when "Deflection" is active
-	public String useDeflectionVengeanceStrike(Character enemy) {
-		return this.attackDeflection(enemy, 1.2); // Deflection Attack, Targeted, 1.2x Damage
+	public void useDeflectionVengeanceStrike(Character enemy) {
+		this.attackDeflection(enemy, 1.2); // Deflection Attack, Targeted, 1.2x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Swordplay Prowess" Passive Ability for purposes of Calculation only.
@@ -34,7 +34,7 @@ public class SteelLegionWarrior extends Character {
 	}
 	
 	// Deals with the healing portion of the "Agile Fighter" Passive Ability
-	public String useAgileFighterHealing(int numSpaces, boolean didUseAbility) {
+	public void useAgileFighterHealing(int numSpaces, boolean didUseAbility) {
 		// Calculates the healing done by Maximum Health.
 		int healing = (int) Math.round(.01 * numSpaces * this.getHealth());
 		if (!didUseAbility) {
@@ -44,79 +44,67 @@ public class SteelLegionWarrior extends Character {
 		
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
 		healing = this.restoreHealth(healing);
-		return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
+		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
 	}
 	
 	// Deals the Damage from the "Sweep" Ability (Ability 1) to multiple enemies
-	public String useSweep(List<Character> enemies) {
-		String ret = "";
+	public void useSweep(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attack(enemy, .8, false) + "\n"; // Attack, AOE, .8x Damage
+			this.attack(enemy, .8, false); // Attack, AOE, .8x Damage
 		}
-		return ret;
 	}
 	// Used for when "Deflection" is active
-	public String useDeflectionSweep(List<Character> enemies) {
-		String ret = "";
+	public void useDeflectionSweep(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attackDeflection(enemy, .8, false) + "\n"; // Deflection Attack, AOE, .8x Damage
+			this.attackDeflection(enemy, .8, false); // Deflection Attack, AOE, .8x Damage
 		}
-		return ret;
 	}
 	
 	// Deals the Damage from the "CHARGE!" Ability (Ability 2) to multiple enemies with a primary target
-	public String useCharge(List<Character> enemies, Character primary) {
-		String ret = "";
+	public void useCharge(List<Character> enemies, Character primary) {
 		for (Character enemy : enemies) {
-			ret += this.attack(enemy, .5, false) + "\n"; // Attack, AOE, .5x Damage
+			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
 		}
 		
 		// Attacks Primary with bonus effect.
-		ret += new SteelLegionWarrior(new CharacterBuilder(this).CriticalChance(this.getCriticalChance()+10).buildSLW()) // Bonus effect
-				.attack(primary) + "\n"; // Attack, Targeted, 1x Damage
-		return ret;
+		new SteelLegionWarrior(new CharacterBuilder(this).CriticalChance(this.getCriticalChance()+10).buildSLW()) // Bonus effect
+				.attack(primary); // Attack, Targeted, 1x Damage
 	}
 	// Deals the Damage from the "CHARGE!" Ability (Ability 2) to multiple enemies without a primary target
-	public String useCharge(List<Character> enemies) {
-		String ret = "";
+	public void useCharge(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attack(enemy, .5, false) + "\n"; // Attack, AOE, .5x Damage
+			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
 		}
-		return ret;
 	}
 	// First Version With Primary: Used for when "Deflection" is active
-	public String useDeflectionCharge(List<Character> enemies, Character primary) {
-		String ret = "";
+	public void useDeflectionCharge(List<Character> enemies, Character primary) {
 		for (Character enemy : enemies) {
-			ret += this.attackDeflection(enemy, .5, false) + "\n"; // Deflection Attack, AOE, .5x Damage
+			this.attackDeflection(enemy, .5, false); // Deflection Attack, AOE, .5x Damage
 		}
 		
 		// Attacks Primary with bonus effect.
-		ret += new SteelLegionWarrior(new CharacterBuilder(this).CriticalChance(this.getCriticalChance()+10).buildSLW()) // Bonus effect
-				.attackDeflection(primary) + "\n"; // Deflection Attack, Targeted, 1x Damage
-		return ret;
+		new SteelLegionWarrior(new CharacterBuilder(this).CriticalChance(this.getCriticalChance()+10).buildSLW()) // Bonus effect
+				.attackDeflection(primary); // Deflection Attack, Targeted, 1x Damage
 	}
 	// Second Version Without Primary: Used for when "Deflection" is active
-	public String useDeflectionCharge(List<Character> enemies) {
-		String ret = "";
+	public void useDeflectionCharge(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attackDeflection(enemy, .5, false) + "\n"; // Deflection Attack, AOE, .5x Damage
+			this.attackDeflection(enemy, .5, false); // Deflection Attack, AOE, .5x Damage
 		}
-		return ret;
 	}
 	
 	// Deals the Damage from the "Flip Strike" Ability (Ability 3)
-	public String useFlipStrike(Character enemy) {
-		return this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+	public void useFlipStrike(Character enemy) {
+		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	// Used for when "Deflection" is active
-	public String useDeflectionFlipStrike(Character enemy) {
-		return this.attackDeflection(enemy, 1.5); // Deflection Attack, Targeted, 1.5x Damage
+	public void useDeflectionFlipStrike(Character enemy) {
+		this.attackDeflection(enemy, 1.5); // Deflection Attack, Targeted, 1.5x Damage
 	}
 	
 	
 	// Creates a copy of "attack" Character function specifically to be used specifically when "Deflection" is activated
-	public String attackDeflection(Character enemy, double scaler, boolean isTargeted, boolean canMiss) {
+	public void attackDeflection(Character enemy, double scaler, boolean isTargeted, boolean canMiss) {
 		// Attack always hits unless it is a Targeted attack and can miss (some targeted attacks cannot miss)
 		boolean didHit = true;
 		
@@ -127,7 +115,7 @@ public class SteelLegionWarrior extends Character {
 		
 		// If the attack missed
 		if (!didHit) {
-			return this.getName() + " missed " + enemy.getName() + "!";
+			System.out.println(this.getName() + " missed " + enemy.getName() + "!");
 		}
 		// If the attack hits, now calculate Damage
 		else {
@@ -166,23 +154,23 @@ public class SteelLegionWarrior extends Character {
 			int damageDealt = normalDamage + bonusDamage + armorDamage;
 			
 			// Damages the enemy and determines whether enemy died
-			return this.dealDamage(enemy, damageDealt, didCrit);
+			this.dealDamage(enemy, damageDealt, didCrit);
 		}
 	}
-	public String attackDeflection(Character enemy, double scaler) {
-		return this.attackDeflection(enemy, scaler, true, true);
+	public void attackDeflection(Character enemy, double scaler) {
+		this.attackDeflection(enemy, scaler, true, true);
 	}
-	public String attackDeflection(Character enemy) {
-		return this.attackDeflection(enemy, 1);
+	public void attackDeflection(Character enemy) {
+		this.attackDeflection(enemy, 1);
 	}
-	public String attackDeflection(Character enemy, double scaler, boolean isTargeted) {
-		return this.attackDeflection(enemy, scaler, isTargeted, true);
+	public void attackDeflection(Character enemy, double scaler, boolean isTargeted) {
+		this.attackDeflection(enemy, scaler, isTargeted, true);
 	}
-	public String attackDeflection(Character enemy, boolean isTargeted) {
-		return this.attackDeflection(enemy, 1, isTargeted);
+	public void attackDeflection(Character enemy, boolean isTargeted) {
+		this.attackDeflection(enemy, 1, isTargeted);
 	}
 	
-	public String attackedDeflection(Character enemy) {
+	public void attackedDeflection(Character enemy) {
 		// Calculates the total/average/normal Damage dealt.
 		LinkedList<String> electricType = new LinkedList<>();
 		electricType.add("Electric");
@@ -195,6 +183,6 @@ public class SteelLegionWarrior extends Character {
 		totalDamage += damageAdded;
 		
 		// Damages the enemy and determines whether enemy died
-		return this.dealDamage(enemy, totalDamage);
+		this.dealDamage(enemy, totalDamage);
 	}
 }

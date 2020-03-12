@@ -22,51 +22,43 @@ public class SentinelSpecialist extends Character{
 	}
 	
 	// Deals the Damage from the "Flaming Arrow" Ability (Ability 1)
-	public String useFlamingArrow(Character enemy) {
-		return this.attack(enemy, 1); // Attack, Targeted, 1x Damage
+	public void useFlamingArrow(Character enemy) {
+		this.attack(enemy, 1); // Attack, Targeted, 1x Damage
 	}
 	// Deals the Damage from the burn effect of the "Flaming Arrow" Ability
-	public String useFlamingArrowBurn(Character enemy) {
-		return this.attack(enemy, .2, false); // Attack, AOE, .2x Damage
+	public void useFlamingArrowBurn(Character enemy) {
+		this.attack(enemy, .2, false); // Attack, AOE, .2x Damage
 	}
 	
 	// Deals the Damage from the "Frozen Arrow" Ability (Ability 2)
-	public String useFrozenArrow(Character enemy) {
-		return this.attack(enemy, .8); // Attack, Targeted, .8x Damage
+	public void useFrozenArrow(Character enemy) {
+		this.attack(enemy, .8); // Attack, Targeted, .8x Damage
 	}
 	
 	// Deals the Damage from the "Exploding Arrow" Ability (Ability 3) to multiple enemies with a primary target
-	public String useExplodingArrow(Character enemy, List<Character> enemies) {
-		String ret;
-		ret = this.attack(enemy, .5) + "\n"; // Attack, Targeted, .5x Damage
+	public void useExplodingArrow(Character enemy, List<Character> enemies) {
+		this.attack(enemy, .5); // Attack, Targeted, .5x Damage
 		
 		for (Character enemyHitByAOE:enemies) {
-			ret += this.attack(enemyHitByAOE, .75, false) + "\n"; // Attack, AOE, .75x Damage
+			this.attack(enemyHitByAOE, .75, false); // Attack, AOE, .75x Damage
 		}
-		
-		return ret;
 	}
 	
 	// Deals the Damage from the "Penetration Arrow" Ability (Ability 4) to multiple enemies
-	public String usePenetrationArrow(List<Character> enemies) {
-		String ret = "";
+	public void usePenetrationArrow(List<Character> enemies) {
 		for (Character enemy:enemies) {
-			ret += this.attack(enemy, .75) + "\n"; // Attack AOE, .75x Damage
+			this.attack(enemy, .75); // Attack AOE, .75x Damage
 		}
-		
-		return ret;
 	}
 	// Deals the Damage from the "Penetration Arrow" Ability when used with the "Empowered Arrows" Passive Ability
-	public String usePenetrationArrowEmpowered(List<Character> enemies) {
-		String ret = "";
+	public void usePenetrationArrowEmpowered(List<Character> enemies) {
 		for (Character enemy:enemies) {
-			ret += this.attack(enemy, .75, true, false, false) + "\n"; // Attack, Targeted, Cannot Miss, Ignores Armor, .75x Damage
+			this.attack(enemy, .75, true, false, false); // Attack, Targeted, Cannot Miss, Ignores Armor, .75x Damage
 		}
-		return ret;
 	}
 	
 	// Deals the Damage from the "Black Arrow" ULTIMATE Ability
-	public String useBlackArrow(Character enemy) {
-		return this.attack(enemy, 3, true, true, false); // Attack, Targeted, Ignores Armor, 3x Damage
+	public void useBlackArrow(Character enemy) {
+		this.attack(enemy, 3, true, true, false); // Attack, Targeted, Ignores Armor, 3x Damage
 	}
 }

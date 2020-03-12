@@ -116,13 +116,10 @@ public class KinitchuOrderArcana extends Character{
 		return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
 	}
 	// Deals the Damage from the "Raw, Magical Power" Passive Ability upon death. Big explosion.
-	public String useRawMagicalPowerExplosion(List<Character> enemies) {
-		String ret = "";
+	public void useRawMagicalPowerExplosion(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attack(enemy, 5, false) + "\n"; // Attack, AOE, 5x Damage
+			this.attack(enemy, 5, false); // Attack, AOE, 5x Damage
 		}
-		
-		return ret;
 	}
 	
 	// Deals with the chance to succeed in the extra turn attempt in the "Quick Caster" Passive Ability
@@ -141,39 +138,34 @@ public class KinitchuOrderArcana extends Character{
 	}
 	
 	// Deals the Damage from the "Magic Missiles" Ability (Ability 1).
-	public String useMagicMissiles(Character enemy) {
+	public void useMagicMissiles(Character enemy) {
 		// Two Attacks, Targeted, Cannot Miss, .75x Damage
-		return this.attack(enemy, .75, true, false) + "\n" + this.attack(enemy, .75, true, false);
+		this.attack(enemy, .75, true, false);
+		this.attack(enemy, .75, true, false);
 	}
 	
 	// Deals the Damage from the "Arcane Repulse" Ability (Ability 2).
-	public String useArcaneRepulse(List<Character> innerEnemies, List<Character> outerEnemies) {
-		String ret = "";
+	public void useArcaneRepulse(List<Character> innerEnemies, List<Character> outerEnemies) {
 		for (Character enemy : innerEnemies) {
-			ret += this.attack(enemy, 1, false) + "\n"; // Attack, AOE, 1x Damage
+			this.attack(enemy, 1, false); // Attack, AOE, 1x Damage
 		}
 		for (Character enemy : outerEnemies) {
-			ret += this.attack(enemy, .5, false) + "\n"; // Attack, AOE, .5x Damage
+			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
 		}
-		
-		return ret;
 	}
 	
 	// Deals the Damage from the "Teleport" Ability (Ability 3) bonus attack.
-	public String useTeleportBonusAttack(Character enemy) {
-		return this.attack(enemy, .5); // Attack, Targeted, .5x Damage
+	public void useTeleportBonusAttack(Character enemy) {
+		this.attack(enemy, .5); // Attack, Targeted, .5x Damage
 	}
 	
 	// Deals the Damage from the "Arcane Beam" Ability (Ability 4) Targeted Option
-	public String useArcaneBeam(List<Character> enemiesHit, Character primaryEnemy) {
-		String ret = "";
-		
+	public void useArcaneBeam(List<Character> enemiesHit, Character primaryEnemy) {
 		for (Character enemy : enemiesHit) {
-			ret += this.attack(enemy, .25, false) + "\n"; // Attack, AOE, .25x Damage
+			this.attack(enemy, .25, false); // Attack, AOE, .25x Damage
 		}
 		
-		ret += this.attack(primaryEnemy, 1.5); // Attack, Targeted, 1.5x Damage
-		return ret;
+		this.attack(primaryEnemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Returns a new character with improved stats based on the "Supercharged" ULTIMATE Ability for purposes of calculation only.

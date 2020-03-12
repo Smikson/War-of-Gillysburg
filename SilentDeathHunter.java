@@ -11,7 +11,7 @@ public class SilentDeathHunter extends Character{
 	}
 	
 	// Deals the Damage from the "Keen Hearing" Passive Ability
-	public String useKeenHearing(Character enemy, int numOutside) {
+	public void useKeenHearing(Character enemy, int numOutside) {
 		double accuracyReduction = 0;
 		if (numOutside > 3 ) {
 			accuracyReduction = .20;
@@ -20,7 +20,7 @@ public class SilentDeathHunter extends Character{
 			accuracyReduction = .05 * numOutside;
 		}
 		
-		return new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * (1 - accuracyReduction))).buildSDH().attack(enemy, 1); // Attack, Targeted, 1x Damage
+		new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * (1 - accuracyReduction))).buildSDH().attack(enemy, 1); // Attack, Targeted, 1x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Law of Stealth" and "Camouflage" Passive Abilities for purposes of Calculation only.
@@ -44,28 +44,24 @@ public class SilentDeathHunter extends Character{
 	}
 	
 	// Deals the Damage from the "Snare Trap" Ability (Ability 1)
-	public String useSnareTrap(Character enemy, boolean usedAsUlt) {
+	public void useSnareTrap(Character enemy, boolean usedAsUlt) {
 		if (usedAsUlt) {
-			return this.attack(enemy, 2.5, true, false); // Attack, Targeted, Cannot miss, 2.5x Damage
+			this.attack(enemy, 2.5, true, false); // Attack, Targeted, Cannot miss, 2.5x Damage
 		}
 		else {
-			return this.attack(enemy, 2, true, false); // Attack, Targeted, Cannot Miss, 2x Damage
+			this.attack(enemy, 2, true, false); // Attack, Targeted, Cannot Miss, 2x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Blade Trap" Ability (Ability 2)
-	public String useBladeTrap(List<Character> enemies) {
-		String ret = "";
+	public void useBladeTrap(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attack(enemy, 1.2, false) + "\n"; // Attack, AOE, 1.2x Damage
+			this.attack(enemy, 1.2, false); // Attack, AOE, 1.2x Damage
 		}
-		
-		return ret;
 	}
 	
 	// Deals the Damage from the "Floor Trap" Ability (Ability 3)
-	public String useFloorTrap(List<Character> enemies) {
-		String ret = "";
+	public void useFloorTrap(List<Character> enemies) {
 		for (Character enemy : enemies) {
 			
 			// Calculates the total/average/normal Damage dealt by maximum Health, then casting it.
@@ -74,13 +70,12 @@ public class SilentDeathHunter extends Character{
 				damageDealt = this.getDamage() * 5;
 			}
 			
-			ret += this.dealDamage(enemy, damageDealt); // Deals Damage
+			this.dealDamage(enemy, damageDealt); // Deals Damage
 		}
-		return ret;
 	}
 
 	// Deals the Damage from the "Iron Gauntlets" Ability (Ability 4)
-	public String useIronGauntlets(Character enemy) {
-		return this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+	public void useIronGauntlets(Character enemy) {
+		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 }

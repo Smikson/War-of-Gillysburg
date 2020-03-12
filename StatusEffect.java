@@ -70,6 +70,10 @@ public class StatusEffect {
 	public void makeFlat() {
 		this.isFlat = true;
 	}
+	// A method that changes the value to a percentage if something is flat by default (slows) and is meant as a percentage.
+	public void makePercentage() {
+		this.isFlat = false;
+	}
 	// Changes the status effect to affect an "other" enemy (attacking if Incoming, defender if Outgoing)
 	public void makeAffectOther() {
 		this.affectsSelf = false;

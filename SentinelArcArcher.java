@@ -11,8 +11,8 @@ public class SentinelArcArcher extends Character{
 	}
 	
 	// Deals the Damage from the "Quick Shot" Passive Ability
-	public String useQuickShot(Character enemy) {
-		return this.attack(enemy, .75); // Attack, Targeted, .75x Damage
+	public void useQuickShot(Character enemy) {
+		this.attack(enemy, .75); // Attack, Targeted, .75x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Combat Roll" Passive Ability for purposes of Calculation only.
@@ -26,20 +26,14 @@ public class SentinelArcArcher extends Character{
 	}
 	
 	// Deals the Damage from the "Multi-Shot" Ability (Ability 1) to multiple enemies
-	public String useMultiShot(List<Character> enemies) {
-		String ret = "";
-		
+	public void useMultiShot(List<Character> enemies) {
 		for (Character enemy:enemies) {
-			ret += this.attack(enemy, .5, false) + "\n"; // Attack, AOE, .5x Damage
+			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
 		}
-		
-		return ret;
 	}
 	
 	// Deals the Damage from the first arrow of the "Double Shredder" Ability (Ability 2)
-	public String useDoubleShredder1(Character enemy) {
-		String ret = "";
-		
+	public void useDoubleShredder1(Character enemy) {
 		// THINGS THAT CHANGE FOR ABILITY RIGHT HERE
 		double scaler = .5;
 		
@@ -50,12 +44,10 @@ public class SentinelArcArcher extends Character{
 		
 		// If the attack (Arrow 1) missed
 		if (!didHit) {
-			ret += this.getName() + " missed the first arrow shot at " + enemy.getName() + "!\n";
+			System.out.println(this.getName() + " missed the first arrow shot at " + enemy.getName() + "!");
 			
 			// The second arrow strikes with 0% Critical Chance
-			ret += new CharacterBuilder(this).CriticalChance(0).buildSAA().attack(enemy, 1); // Attack, Targeted, 1x Damage (0% crit)
-			
-			return ret;
+			new CharacterBuilder(this).CriticalChance(0).buildSAA().attack(enemy, 1); // Attack, Targeted, 1x Damage (0% crit)
 		}
 		// If the attack (Arrow 1) hits, now calculate Damage
 		else {
@@ -78,7 +70,7 @@ public class SentinelArcArcher extends Character{
 			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
 			
 			// Damages the enemy and determines whether enemy died
-			ret += this.dealDamage(enemy, damageDealt, didCrit) + "\n";
+			this.dealDamage(enemy, damageDealt, didCrit);
 			
 			
 			// The second arrow strikes with a 60% chance to ignore all armor.
@@ -102,7 +94,7 @@ public class SentinelArcArcher extends Character{
 				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
 				
 				// Damages the enemy and determines whether enemy died
-				ret += this.dealDamage(enemy, damageDealt, didCrit);
+				this.dealDamage(enemy, damageDealt, didCrit);
 			}
 			// Otherwise, same thing but attack does not ignore all armor
 			else {
@@ -121,12 +113,9 @@ public class SentinelArcArcher extends Character{
 				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
 				
 				// Damages the enemy and determines whether enemy died
-				ret += this.dealDamage(enemy, damageDealt, didCrit);
+				this.dealDamage(enemy, damageDealt, didCrit);
 			}
-			
-			return ret;
 		}
-	
 	}
 	
 	// Returns a new Character with improved stats based on the "Concentration" Ability (Ability 3) for purposes of Calculation only.
@@ -140,20 +129,16 @@ public class SentinelArcArcher extends Character{
 	}
 	
 	// Deals the Damage from the "Flip Trick Shot" Ability (Ability 4)
-	public String useFlipTrickShot(Character enemy) {
-		return this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+	public void useFlipTrickShot(Character enemy) {
+		this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 	}
 	
 	// Deals the Damage from the "Rain of Arrows" ULTIMATE Ability to multiple enemies
-	public String useRainOfArrows(List<Character> enemies) {
-		String ret = "";
-		
+	public void useRainOfArrows(List<Character> enemies) {
 		for (int x = 0; x < enemies.size() - 1; x++) {
 			Character enemy = enemies.get(x);
-			ret += this.attack(enemy, .5, false) + "\n"; // Attack, AOE, .5x Damage
+			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
 		}
-		ret += this.attack(enemies.get(enemies.size()-1), .75, false); // Attack, AOE, .75x Damage
-		
-		return ret;
+		this.attack(enemies.get(enemies.size()-1), .75, false); // Attack, AOE, .75x Damage
 	}
 }

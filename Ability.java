@@ -64,3 +64,32 @@ public class Ability {
 		return this.name;
 	}
 }
+
+
+class UltimateAbility extends Ability {
+	private boolean onCdown;
+	
+	// Constructors
+	public UltimateAbility() {
+		super();
+		this.onCdown = false;
+	}
+	public UltimateAbility(int rank) {
+		super(rank);
+		this.onCdown = false;
+	}
+	public UltimateAbility(int rank, double scaler) {
+		super(rank, 0, scaler);
+	}
+	
+	// Slightly Different Cooldown Functions since it can only be used once by default
+	@Override
+	public void resetCounter() {
+		this.onCdown = true;
+	}
+	
+	@Override
+	public boolean onCooldown() {
+		return this.onCdown;
+	}
+}

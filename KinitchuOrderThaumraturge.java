@@ -11,8 +11,7 @@ public class KinitchuOrderThaumraturge extends Character{
 	}
 	
 	// Deals the Damage from the "Ice Barrier" Passive Ability
-	public String useIceBarrier(List<Character> enemies) {
-		String ret = "";
+	public void useIceBarrier(List<Character> enemies) {
 		for (Character enemy : enemies) {
 			
 			// Calculates the total/average/normal Damage dealt by maximum Health, then casting it.
@@ -22,9 +21,8 @@ public class KinitchuOrderThaumraturge extends Character{
 			}
 			
 			// Damages the enemy and determines whether enemy died
-			return this.dealDamage(enemy, damageDealt); // Deals Damage
+			this.dealDamage(enemy, damageDealt); // Deals Damage
 		}
-		return ret;
 	}
 	
 	// Returns a new Character with improved stats based on the "Cold Execution" Passive Ability for purposes of Calculation only.
@@ -38,52 +36,48 @@ public class KinitchuOrderThaumraturge extends Character{
 	}
 	
 	// Deals the Damage from the "Slick, Hard Ice Armor Spikes"
-	public String useIceSpikes(Character enemy, boolean didDodge, boolean isIceArmored) {
+	public void useIceSpikes(Character enemy, boolean didDodge, boolean isIceArmored) {
 		if (isIceArmored) {
-			return this.attack(enemy, .1 * 3, true, false); // Attack, Targeted, Cannot Miss, .1*3x Damage
+			this.attack(enemy, .1 * 3, true, false); // Attack, Targeted, Cannot Miss, .1*3x Damage
 		}
 		else if (didDodge) {
-			return this.attack(enemy, .1 * 2, true, false); // Attack, Targeted, Cannot Miss, .1*2x Damage
+			this.attack(enemy, .1 * 2, true, false); // Attack, Targeted, Cannot Miss, .1*2x Damage
 		}
 		else {
-			return this.attack(enemy, .1, true, false); // Attack, Targeted, Cannot Miss, .1x Damage
+			this.attack(enemy, .1, true, false); // Attack, Targeted, Cannot Miss, .1x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Ice Shard" Ability (Ability 1)
-	public String useIceShard(Character enemy) {
-		return this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+	public void useIceShard(Character enemy) {
+		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Deals the Damage from the empowered basic attack in the "Ice Armor" Ability (Ability 2)
-	public String useIceArmorAttack(Character enemy) {
-		return this.attack(enemy, 1.1, true, false); // Attack, Targeted, Cannot Miss, 1.1x Damage
+	public void useIceArmorAttack(Character enemy) {
+		this.attack(enemy, 1.1, true, false); // Attack, Targeted, Cannot Miss, 1.1x Damage
 	}
 	
 	// Deals the Damage from the "Ice Cone" Ability (Ability 3) to multiple enemies
-	public String useIceCone(List<Character> enemies) {
-		String ret = "";
-		
+	public void useIceCone(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attack(enemy, .75, false) + "\n"; // Attack, AOE, .75x Damage
+			this.attack(enemy, .75, false); // Attack, AOE, .75x Damage
 		}
-		
-		return ret;
 	}
 	
 	// Deals the Damage from the "Blizzard" Ability (Ability 4) to 1 enemy
-	public String useBlizzardDamage(Character enemy) {
-		return this.attack(enemy, .1); // Attack, AOE, .1x Damage
+	public void useBlizzardDamage(Character enemy) {
+		this.attack(enemy, .1); // Attack, AOE, .1x Damage
 	}
 	// Deals with the Healing from the "Blizzard" Ability (Ability 4) to 1 ally
-	public String useBlizzardHealing(Character ally, boolean isYou) {
+	public void useBlizzardHealing(Character ally, boolean isYou) {
 		if (isYou) {
 			// Calculates the amount of healing based on Damage
 			int healing = (int) Math.round(.05 * 2 * this.getDamage());
 			
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
 			healing = this.restoreHealth(healing);
-			return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
+			System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
 		}
 		else {
 			// Calculates the amount of healing based on Damage
@@ -91,7 +85,7 @@ public class KinitchuOrderThaumraturge extends Character{
 			
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
 			healing = ally.restoreHealth(healing);
-			return ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth();
+			System.out.println(ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth());
 		}
 	}
 	// Returns a new Character with improved stats based on the "Blizzard" Ability (Ability 4) for purposes of Calculation only.
@@ -100,13 +94,9 @@ public class KinitchuOrderThaumraturge extends Character{
 	}
 	
 	// Deals the Damage from the "Freeze Frame!" ULTIMATE Ability
-	public String useFreezeFrame(List<Character> enemies) {
-		String ret = "";
-		
+	public void useFreezeFrame(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attack(enemy, 2, false) + "\n"; // Attack, AOE, 2x Damage
+			this.attack(enemy, 2, false); // Attack, AOE, 2x Damage
 		}
-		
-		return ret;
 	}
 }

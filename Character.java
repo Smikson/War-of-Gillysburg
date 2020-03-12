@@ -250,33 +250,65 @@ public class Character {
 		}
 	}
 	
-	// Terrain Conditions
-	public void addHighGround() {
-		this.addCondition(Terrain.HIGH_GROUND);
-	}
-	public void addHill() {
-		this.addCondition(Terrain.HILL);
-	}
-	public void addCover() {
-		this.addCondition(Terrain.COVER);
-	}
-	public void addTree() {
-		this.addCondition(Terrain.TREE);
-	}
-	public void removeTerrain(Terrain removed) {
-		this.removeCondition(removed);
-	}
-	public LinkedList<Terrain> getTerrainConditions() {
-		LinkedList<Terrain> ret = new LinkedList<>();
-		LinkedList<Condition> possibleConditions = this.getActiveConditions();
-		
-		for (Condition c : possibleConditions) {
-			if (c instanceof Terrain) {
-				ret.add((Terrain) c);
-			}
+	// Add Condition Functions (and Prompt for Add Conditions)
+	private void promptConditionAddCrowdControl() {
+		boolean flag = true;
+		String choice;
+		System.out.println("Choose Crowd Control to Add:");
+		System.out.println("0. None");
+		System.out.println("1. Blind");
+		System.out.println("2. Invincible");
+		System.out.println("3. Invulnerable");
+		System.out.println("4. Slow (-2)");
+		System.out.println("5. Snare");
+		System.out.println("6. Stasis");
+		System.out.println("7. Stun");
+		while (flag) {
+			System.out.print("Choice? ");
+			choice = BattleSimulator.getInstance().getPrompter().nextLine();
+			switch(choice)
+	        {
+	            case "0": // None
+	                return;
+	            case "1": // Blind
+	            	this.addCondition(CrowdControl.BLIND);
+	            	System.out.println("Static Blind Effect was added to " + this.getName());
+	            	flag = false;
+	                return;
+	            case "2": // Invincible
+	            	this.addCondition(CrowdControl.INVINCIBLE);
+	                System.out.println("Static Invincibility Effect was added to " + this.getName());
+	                flag = false;
+	                return;
+	            case "3": // Invulnerable
+	            	this.addCondition(CrowdControl.INVULNERABLE);
+	                System.out.println("Static Invulnerability Effect was added to " + this.getName());
+	                flag = false;
+	                return;
+	            case "4": // Slow
+	            	this.addCondition(CrowdControl.SLOW);
+	            	System.out.println("Static Slow Effect was added to " + this.getName());
+	            	flag = false;
+	            	return;
+	            case "5": // Snare
+	            	this.addCondition(CrowdControl.SNARE);
+	            	System.out.println("Static Snare Effect was added to " + this.getName());
+	            	flag = false;
+	            	return;
+	            case "6": // Stasis
+	            	this.addCondition(CrowdControl.STASIS);
+	            	System.out.println("Static Stasis Effect was added to " + this.getName());
+	            	flag = false;
+	            	return;
+	            case "7": // Stun
+	            	this.addCondition(CrowdControl.STUN);
+	            	System.out.println("Static Stun Effect was added to " + this.getName());
+	            	flag = false;
+	            	return;
+	            default:
+	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
+	        }
 		}
-		
-		return ret;
 	}
 	protected void promptConditionAdd() {
 		boolean flag = true;
@@ -287,6 +319,7 @@ public class Character {
 		System.out.println("2. Hill");
 		System.out.println("3. Cover");
 		System.out.println("4. Tree");
+		System.out.println("5. Crowd Control");
 		while (flag) {
 			System.out.print("Choice? ");
 			choice = BattleSimulator.getInstance().getPrompter().nextLine();
@@ -295,23 +328,28 @@ public class Character {
 	            case "0": // None
 	                return;
 	            case "1": // High Ground
-	            	this.addHighGround();
+	            	this.addCondition(Terrain.HIGH_GROUND);
 	            	System.out.println("High Ground was added to " + this.getName());
 	            	flag = false;
 	                return;
 	            case "2": // Hill
-	                this.addHill();
+	            	this.addCondition(Terrain.HILL);
 	                System.out.println("Hill was added to " + this.getName());
 	                flag = false;
 	                return;
 	            case "3": // Cover
-	                this.addCover();
+	            	this.addCondition(Terrain.COVER);
 	                System.out.println("Cover was added to " + this.getName());
 	                flag = false;
 	                return;
 	            case "4": // Tree
-	            	this.addTree();
+	            	this.addCondition(Terrain.TREE);
 	            	System.out.println("Tree was added to " + this.getName());
+	            	flag = false;
+	            	return;
+	            case "5": // Crowd Control
+	            	System.out.println();
+	            	this.promptConditionAddCrowdControl();
 	            	flag = false;
 	            	return;
 	            default:
@@ -636,7 +674,7 @@ public class Character {
 	                if (enemy.equals(Character.EMPTY)) {
 	                	break;
 	                }
-	                System.out.println(this.attack(enemy));
+	                this.attack(enemy);
 	                flag = false;
 	                break;
 	            case "2": // Add Condition
@@ -854,52 +892,58 @@ public class Character {
 	}
 	
 	// Deals a flat amount of damage to another Character and returns the output string based on damage and stating if they died.
-	protected String dealDamage(Character enemy, int damageDealt, boolean didCrit) {
+	protected void dealDamage(Character enemy, int damageDealt, boolean didCrit) {
 		
 		enemy.takeDamage(damageDealt);
 		
-		String ret = "";
-		
 		// Attack output
 		if (didCrit) {
-			ret += this.getName() + " scored a CRITCAL HIT against " + enemy.getName() + " for a total of " + damageDealt + " damage!\n";
+			System.out.println(this.getName() + " scored a CRITCAL HIT against " + enemy.getName() + " for a total of " + damageDealt + " damage!");
 		}
 		else {
-			ret += this.getName() + " hit " + enemy.getName() + " for a total of " + damageDealt + " damage!\n";
+			System.out.println(this.getName() + " hit " + enemy.getName() + " for a total of " + damageDealt + " damage!");
 		}
 		
 		if (enemy.isDead()) {
-			Dice fundie = new Dice(5);
-			String funword = "";
+			Dice funDie = new Dice(6);
+			String funWord = "";
 			
-			switch(fundie.roll()) {
+			switch(funDie.roll()) {
 				case 1: {
-					funword = "annihilated ";
+					funWord = "utterly annihilated ";
 					break;
 				}
 				case 2: {
-					funword = "defeated ";
+					funWord = "defeated ";
 					break;
 				}
 				case 3: {
-					funword = "obliterated ";
+					funWord = "obliterated ";
 					break;
 				}
 				case 4: {
-					funword = "purged the universe of ";
+					funWord = "purged the universe of ";
 					break;
 				}
 				case 5: {
-					funword = "destroyed ";
+					funWord = "destroyed ";
+					break;
+				}
+				case 6: {
+					funWord = "slew ";
 					break;
 				}
 			}
 			
-			ret += this.getName() + " has " + funword + enemy.getName() + "!";
+			System.out.println(this.getName() + " has " + funWord + enemy.getName() + "!");
 		}
 		else {
-			ret += enemy.getName() + " has " + enemy.getCurrentHealth() + " Health remaining.";
+			System.out.println(enemy.getName() + " has " + enemy.getCurrentHealth() + " Health remaining.");
 		}
+		
+		// Unapply the Incoming/Outgoing Status Effects
+		enemy.unapplyIncomingStatusEffects(this);
+		this.unapplyOutgoingStatusEffects(enemy);
 		
 		// Store the attack made
 		Attack atk = new AttackBuilder()
@@ -912,27 +956,20 @@ public class Character {
 				.build();
 		this.hitAttack(atk);
 		enemy.receivedAttack(atk);
-		
-		// Unapply the Incoming/Outgoing Status Effects
-		enemy.unapplyIncomingStatusEffects(this);
-		this.unapplyOutgoingStatusEffects(enemy);
-		
-		// Return the result
-		return ret;
 	}
-	protected String dealDamage(Character enemy, int damageDealt) {
-		return this.dealDamage(enemy, damageDealt, false);
+	protected void dealDamage(Character enemy, int damageDealt) {
+		this.dealDamage(enemy, damageDealt, false);
 	}
 	
-	public String attack(Character enemy, double scaler, boolean isTargeted, boolean canMiss, boolean armorApplies) {
+	public void attack(Character enemy, double scaler, boolean isTargeted, boolean canMiss, boolean armorApplies) {
 		// Add: Check for being attacked conditions (Steel Legion Tank: Hold It Right There)
 		
 		// Make sure neither target is dead.
 		if (this.isDead()) {
-			return this.getName() + " is dead. Thus, " + this.getName() + " is incapable of attacking.";
+			System.out.println(this.getName() + " is dead. Thus, " + this.getName() + " is incapable of attacking.");
 		}
 		if (enemy.isDead()) {
-			return enemy.getName() + " is already dead. The attack had no effect.";
+			System.out.println(enemy.getName() + " is already dead. The attack had no effect.");
 		}
 		
 		// Apply Incoming/Outgoing Status Effects
@@ -949,6 +986,10 @@ public class Character {
 		
 		// If the attack missed
 		if (!didHit) {
+			// Unapply the Incoming/Outgoing Status Effects
+			enemy.unapplyIncomingStatusEffects(this);
+			this.unapplyOutgoingStatusEffects(enemy);
+			
 			// Store the attack attempt, then return
 			Attack atk = new AttackBuilder()
 					.attacker(this)
@@ -961,11 +1002,8 @@ public class Character {
 			this.missAttack(atk);
 			enemy.avoidAttack(atk);
 			
-			// Unapply the Incoming/Outgoing Status Effects
-			enemy.unapplyIncomingStatusEffects(this);
-			this.unapplyOutgoingStatusEffects(enemy);
-			
-			return this.getName() + " missed " + enemy.getName() + "!";
+			// Print the result
+			System.out.println(this.getName() + " missed " + enemy.getName() + "!");
 		}
 		// If the attack hits, now calculate Damage
 		else {
@@ -992,26 +1030,26 @@ public class Character {
 			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
 			
 			// Damages the enemy and determines whether enemy died (Storing of attacks that hit occur in the "dealDamage" function)
-			return this.dealDamage(enemy, damageDealt, didCrit);
+			this.dealDamage(enemy, damageDealt, didCrit);
 		}
 	}
-	public String attack(Character enemy, double scaler) {
-		return this.attack(enemy, scaler, true, true, true);
+	public void attack(Character enemy, double scaler) {
+		this.attack(enemy, scaler, true, true, true);
 	}
-	public String attack(Character enemy) {
-		return this.attack(enemy, 1);
+	public void attack(Character enemy) {
+		this.attack(enemy, 1);
 	}
-	public String attack(Character enemy, double scaler, boolean isTargeted) {
-		return this.attack(enemy, scaler, isTargeted, true, true);
+	public void attack(Character enemy, double scaler, boolean isTargeted) {
+		this.attack(enemy, scaler, isTargeted, true, true);
 	}
-	public String attack(Character enemy, boolean isTargeted) {
-		return this.attack(enemy, 1, isTargeted);
+	public void attack(Character enemy, boolean isTargeted) {
+		this.attack(enemy, 1, isTargeted);
 	}
-	public String attack(Character enemy, double scaler, boolean isTargeted, boolean canMiss) {
-		return this.attack(enemy, scaler, isTargeted, canMiss, true);
+	public void attack(Character enemy, double scaler, boolean isTargeted, boolean canMiss) {
+		this.attack(enemy, scaler, isTargeted, canMiss, true);
 	}
-	public String attack(Character enemy, boolean isTargeted, boolean canMiss) {
-		return this.attack(enemy, 1, isTargeted, canMiss);
+	public void attack(Character enemy, boolean isTargeted, boolean canMiss) {
+		this.attack(enemy, 1, isTargeted, canMiss);
 	}
 	
 	// Damages a player knocked into an object or another Character
@@ -1033,9 +1071,7 @@ public class Character {
 		
 		return ret;
 	}
-	public String knockBackDamage(Character enemy, Character collided, int extraSpaces) {
-		String ret = "";
-		
+	public void knockBackDamage(Character enemy, Character collided, int extraSpaces) {
 		// See if the collided Character blocked the incoming Character
 		boolean wasBlocked = false;
 		if (collided.getBlock() > 0) {
@@ -1061,13 +1097,6 @@ public class Character {
 				percentage = 20;
 			}
 			
-			// Calculate and apply damage
-			int damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
-			double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
-			int damage = (int)Math.round(damageMax * armorEffect);
-			ret += collided.getName() + " successfully blocked " + enemy.getName() + "!\n";
-			ret += collided.dealDamage(enemy, damage);
-			
 			// Add stun effect
 			int stunDuration = 1;
 			if (percentage >= 15) {
@@ -1079,8 +1108,12 @@ public class Character {
 			Stun stunEffect = new Stun("Knock-Back Stun", stunDuration);
 			enemy.addCondition(stunEffect);
 			
-			// Return the result
-			return ret;
+			// Calculate and apply damage
+			int damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
+			double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
+			int damage = (int)Math.round(damageMax * armorEffect);
+			System.out.println(collided.getName() + " successfully blocked " + enemy.getName() + "!");
+			collided.dealDamage(enemy, damage);
 		}
 		
 		// Otherwise, the Character was not blocked, and both parties take various damage
@@ -1092,17 +1125,17 @@ public class Character {
 			percentage = 15;
 		}
 		
-		// Calculate and apply damage
-		int damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
-		double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
-		int damage = (int)Math.round(damageMax * armorEffect);
-		ret += collided.dealDamage(enemy, damage) + "\n";
-		
 		// Add Accuracy Reduction Effect
 		StatusEffect enemyAccReductionEffect = new StatusEffect(StatVersion.ACCURACY, -75, StatusEffectType.BASIC);
 		Condition enemyAccReduction = new Condition("Kock-back Accuracy Reduction", 1);
 		enemyAccReduction.addStatusEffect(enemyAccReductionEffect);
 		enemy.addCondition(enemyAccReduction);
+		
+		// Calculate and apply damage
+		int damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
+		double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
+		int damage = (int)Math.round(damageMax * armorEffect);
+		collided.dealDamage(enemy, damage);
 		
 		
 		// Second, damage is dealt to the Character knocked into (collided)
@@ -1112,21 +1145,17 @@ public class Character {
 			percentage = 10;
 		}
 		
-		// Calculate and apply damage
-		damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
-		armorEffect = 1.0 * enemy.getArmor() / collided.getArmor();
-		damage = (int)Math.round(damageMax * armorEffect);
-		ret += enemy.dealDamage(collided, damage);
-		
 		// Add Accuracy Reduction Effect
 		StatusEffect collidedAccReductionEffect = new StatusEffect(StatVersion.ACCURACY, -25);
 		Condition collidedAccReduction = new Condition("Knock-back Accuracy Reduction", 1);
 		collidedAccReduction.addStatusEffect(collidedAccReductionEffect);
 		collided.addCondition(collidedAccReduction);
 		
-		
-		// Return the result
-		return ret;
+		// Calculate and apply damage
+		damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
+		armorEffect = 1.0 * enemy.getArmor() / collided.getArmor();
+		damage = (int)Math.round(damageMax * armorEffect);
+		enemy.dealDamage(collided, damage);
 	}
 	
 	

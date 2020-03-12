@@ -21,8 +21,8 @@ public class SilentDeathPoisonSpecialist extends Character {
 	}
 	
 	// Deals the Damage from the "Venomous Strike" Ability (Ability 1)
-	public String useVenomousStrike(Character enemy) {
-		return this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+	public void useVenomousStrike(Character enemy) {
+		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Douse Blade" Ability (Ability 2) for Calculation only.
@@ -31,13 +31,12 @@ public class SilentDeathPoisonSpecialist extends Character {
 	}
 	
 	// Deals the Damage from the "Poison Dart" Ability (Ability 2)
-	public String usePoisonDart(Character enemy) {
-		return this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+	public void usePoisonDart(Character enemy) {
+		this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 	}
 	
 	// Deals the Damage from the "Poisonous Cloud" Ability (Ability 3)
-	public String usePoisonousCloudHit(List<Character> enemies) {
-		String ret = "";
+	public void usePoisonousCloudHit(List<Character> enemies) {
 		for (Character enemy : enemies) {
 			
 			// Calculates the total/average/normal Damage dealt by multiplying the Damage statistic by the scaler, then casting it.
@@ -46,12 +45,10 @@ public class SilentDeathPoisonSpecialist extends Character {
 				damageDealt = this.getDamage() * 3;
 			}
 			
-			ret += this.dealDamage(enemy, damageDealt) + "\n"; // Deals Damage
+			this.dealDamage(enemy, damageDealt); // Deals Damage
 		}
-		return ret;
 	}
-	public String usePoisonousCloudStay(List<Character> enemies) {
-		String ret = "";
+	public void usePoisonousCloudStay(List<Character> enemies) {
 		for (Character enemy : enemies) {
 			
 			// Calculates the total/average/normal Damage dealt by multiplying the Damage statistic by the scaler, then casting it.
@@ -60,21 +57,16 @@ public class SilentDeathPoisonSpecialist extends Character {
 				damageDealt = this.getDamage() * 3;
 			}
 			
-			ret += this.dealDamage(enemy, damageDealt) + "\n"; // Deals Damage
+			this.dealDamage(enemy, damageDealt); // Deals Damage
 		}
-		return ret;
 	}
 	
 	// Deals the Damage from the "Explosive Poison!" ULTIMATE Ability
-	public String useExplosivePoison(List<Character> enemies, List<Integer> stacks, List<Integer> rounds) {
-		String ret = "";
-		
+	public void useExplosivePoison(List<Character> enemies, List<Integer> stacks, List<Integer> rounds) {
 		for (int x = 0; x < enemies.size(); x++) {
 			double scaler = stacks.get(x) * 1 + rounds.get(x) * .5;
 			
-			ret += this.attack(enemies.get(x), scaler, false) + "\n"; // Attack, AOE, Damage depends on stacks and rounds on enemies.
+			this.attack(enemies.get(x), scaler, false); // Attack, AOE, Damage depends on stacks and rounds on enemies.
 		}
-		
-		return ret;
 	}
 }

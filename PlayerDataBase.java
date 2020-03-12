@@ -1,4 +1,5 @@
 package WyattWitemeyer.WarOfGillysburg;
+
 public class PlayerDataBase {
 	// Stats are listed in the form: (Base + bonus (from Passive Abilities or items))
 	public static final SteelLegionTank TEST = new SteelLegionTankBuilder()

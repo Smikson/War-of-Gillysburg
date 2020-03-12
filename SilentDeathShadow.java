@@ -11,8 +11,8 @@ public class SilentDeathShadow extends Character{
 	}
 	
 	// Deals the Damage from the "Riposte" Passive Ability
-	public String useRiposte(Character enemy) {
-		return this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+	public void useRiposte(Character enemy) {
+		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Law of Stealth" and "A Shadow's Stealth" Passive Abilities for purposes of Calculation only.
@@ -26,8 +26,7 @@ public class SilentDeathShadow extends Character{
 	}
 	
 	// Deals the Damage from the "Double Strike" Ability (Ability 2)
-	public String useDoubleStrike(Character enemy, boolean usedFromStealth) {
-		String ret = "";
+	public void useDoubleStrike(Character enemy, boolean usedFromStealth) {
 		// THINGS THAT CHANGE FOR ABILITY RIGHT HERE
 		double scaler = .75;
 		double dodgeDeduction = .1;
@@ -40,10 +39,10 @@ public class SilentDeathShadow extends Character{
 			boolean didHit = this.landAttack(enemy, -reducedToHit);
 			
 			if (didHit) {
-				ret += this.attack(enemy, scaler, true, false, true) + "\n"; // Attack, Targeted, Cannot Miss
+				this.attack(enemy, scaler, true, false, true); // Attack, Targeted, Cannot Miss
 			}
 			else {
-				ret += this.attack(enemy, scaler) + "\n"; // Attack, Targeted
+				this.attack(enemy, scaler); // Attack, Targeted
 			}
 			
 			
@@ -54,7 +53,7 @@ public class SilentDeathShadow extends Character{
 			
 			// If the attack missed
 			if (!didHit) {
-				ret += this.getName() + " missed " + enemy.getName() + "!";
+				System.out.println(this.getName() + " missed " + enemy.getName() + "!");
 			}
 			// If the attack hits, now calculate Damage
 			else {
@@ -77,34 +76,32 @@ public class SilentDeathShadow extends Character{
 				int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
 				
 				// Damages the enemy and determines whether enemy died
-				ret += this.dealDamage(enemy, damageDealt, didCrit);
+				this.dealDamage(enemy, damageDealt, didCrit);
 			}
 		}
 		else {
-			ret += this.attack(enemy, scaler) + "\n"; // Attack, Targeted
-			ret += this.attack(enemy, scaler); // Attack, Targeted
+			this.attack(enemy, scaler); // Attack, Targeted
+			this.attack(enemy, scaler); // Attack, Targeted
 		}
-		
-		return ret;
 	}
 	
 	// Deals the Damage from the "Backstab" Ability (Ability 3)
-	public String useBackStab(Character enemy, boolean usedFromStealth) {
+	public void useBackStab(Character enemy, boolean usedFromStealth) {
 		if (usedFromStealth) {
-			return new CharacterBuilder(this).CriticalChance(this.getCriticalChance() + 50).buildSDS().attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+			new CharacterBuilder(this).CriticalChance(this.getCriticalChance() + 50).buildSDS().attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 		}
 		else {
-			return this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+			this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Blink" Ability (Ability 4)
-	public String useBlink(Character enemy) {
-		return this.attack(enemy, .75); // Attack, Targeted, .75x Damage
+	public void useBlink(Character enemy) {
+		this.attack(enemy, .75); // Attack, Targeted, .75x Damage
 	}
 	
 	// Deals the Damage from the "Execute" ULTIMATE Ability
-	public String useExecute(Character enemy, boolean usedFromStealth) {
+	public void useExecute(Character enemy, boolean usedFromStealth) {
 		// Calculates the total Damage dealt by missing Health, then casting it.
 		int damageDealt = (int)Math.round((enemy.getHealth() - enemy.getCurrentHealth()) * .4);
 		if (damageDealt > this.getDamage() * 10) {
@@ -112,7 +109,7 @@ public class SilentDeathShadow extends Character{
 		}
 		
 		if (usedFromStealth) {
-			return this.dealDamage(enemy, damageDealt); // Deals the damage to the enemy
+			this.dealDamage(enemy, damageDealt); // Deals the damage to the enemy
 		}
 		
 		else {
@@ -121,11 +118,11 @@ public class SilentDeathShadow extends Character{
 			
 			// If the attack missed
 			if (!didHit) {
-				return this.getName() + " missed " + enemy.getName() + "!";
+				System.out.println(this.getName() + " missed " + enemy.getName() + "!");
 			}
 			// If the attack hits, it deals the damage
 			else {
-				return this.dealDamage(enemy, damageDealt); // Deals the damage to the enemy
+				this.dealDamage(enemy, damageDealt); // Deals the damage to the enemy
 			}
 		}
 	}

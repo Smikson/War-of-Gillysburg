@@ -21,42 +21,39 @@ public class SteelLegionBarbarian extends Character {
 	}
 	
 	// Deals the Damage from the "Smash" Ability (Ability 1)
-	public String useSmash(Character enemy) {
-		return this.attack(enemy, 1.8); // Attack, Targeted, 1.8x Damage
+	public void useSmash(Character enemy) {
+		this.attack(enemy, 1.8); // Attack, Targeted, 1.8x Damage
 	}
 	
 	// Deals the Damage from the "Sundering Strike" Ability (Ability 2)
-	public String useSunderingStrike(Character enemy) {
-		return this.attack(enemy, 1); // Attack, Targeted, 1x Damage
+	public void useSunderingStrike(Character enemy) {
+		this.attack(enemy, 1); // Attack, Targeted, 1x Damage
 	}
 	
 	// Deals the Damage from the "Axe Throw" Ability (Ability 3) to multiple enemies
-	public String useAxeThrow(Character enemy1, List<Character> enemies2) {
-		String ret = "";
-		ret += this.attack(enemy1, 1.2) + "\n"; // Attack, Targeted, 1.2x Damage
+	public void useAxeThrow(Character enemy1, List<Character> enemies2) {
+		this.attack(enemy1, 1.2); // Attack, Targeted, 1.2x Damage
 		
 		for (Character enemy : enemies2) {
-			ret += this.attack(enemy, .75, false) + "\n"; // Attack, AOE, .75x Damage
+			this.attack(enemy, .75, false); // Attack, AOE, .75x Damage
 		}
-		
-		return ret;
 	}
 	
 	// Deals with the healing portion of the "War Cry" Ability (Ability 4)
-	public String useWarCry(boolean isDoubled) {
+	public void useWarCry(boolean isDoubled) {
 		// Checks to see if specific conditions are met in which the healing should be doubled
 		if (isDoubled) {
 			// Calculates the healing based on Missing Health (includes the double by multiplying by 2)
 			int healing = (int)Math.round(.15 * 2 *(this.getHealth() - this.getCurrentHealth()));
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
 			healing = this.restoreHealth(healing);
-			return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
+			System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
 		}
 		
 		// Calculates the healing based on Missing Health
 		int healing = (int)Math.round(.15 *(this.getHealth() - this.getCurrentHealth()));
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
 		healing = this.restoreHealth(healing);
-		return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
+		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
 	}
 }

@@ -16,13 +16,10 @@ public class KinitchuOrderDragonFireWizard extends Character{
 	}
 	
 	// Deals the Damage from the "Scorched Earth" Fire-Terrain Passive Ability
-	public String useScorchedEarth(List<Character> enemies) {
-		String ret = "";
+	public void useScorchedEarth(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			ret += this.attack(enemy, .1, false) + "\n"; // Attack, AOE, .1x Damage
+			this.attack(enemy, .1, false); // Attack, AOE, .1x Damage
 		}
-		
-		return ret;
 	}
 	// Returns a new Character with improved stats based on the "Scorched Earth" Passive Ability for purposes of Calculation only.
 	public KinitchuOrderDragonFireWizard useScorchedEarthEnhancement() {
@@ -30,27 +27,23 @@ public class KinitchuOrderDragonFireWizard extends Character{
 	}
 	
 	// Deals the Damage from the "Fireball" Ability (Ability 1)
-	public String useFireball(Character enemy) {
-		return this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+	public void useFireball(Character enemy) {
+		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Deals the Damage from the "Ring of Fire" Ability (Ability 2) to multiple enemies
-	public String useRingOfFire(List<Character> innerEnemies, List<Character> outerEnemies) {
-		String ret = "";
-		
+	public void useRingOfFire(List<Character> innerEnemies, List<Character> outerEnemies) {
 		for (Character enemy : innerEnemies) {
-			ret += this.attack(enemy, 1, false) + "\n"; // Attack, AOE, 1x Damage
+			this.attack(enemy, 1, false); // Attack, AOE, 1x Damage
 		}
 		for (Character enemy : outerEnemies) {
-			ret += this.attack(enemy, .5, false) + "\n"; // Attack, AOE, .5x Damage
+			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
 		}
-		
-		return ret;
 	}
 	
 	// Deals the Basic Attack Damage from the "Summon: Phoenix" Ability (Ability 3)
-	public String usePhoenixBasicAttack(Character enemy) {
-		return this.attack(enemy, 1); // Attack, Targeted, 1x Damage
+	public void usePhoenixBasicAttack(Character enemy) {
+		this.attack(enemy, 1); // Attack, Targeted, 1x Damage
 	}
 	
 	// Details for the ULTIMATE, "Summon: Dragon", are in the separate class: Dragon
