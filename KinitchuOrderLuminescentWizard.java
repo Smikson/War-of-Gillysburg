@@ -5,11 +5,11 @@ import WyattWitemeyer.WarOfGillysburg.Character;
 
 public class KinitchuOrderLuminescentWizard extends Character{
 	// These first two methods help set up the Kinitchu Order Dragon Fire Wizard subclass.
-	public KinitchuOrderLuminescentWizard(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public KinitchuOrderLuminescentWizard(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public KinitchuOrderLuminescentWizard(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	
@@ -30,20 +30,20 @@ public class KinitchuOrderLuminescentWizard extends Character{
 	public void useSearingLight(Character enemy, boolean isBlinded) {
 		// If they're blinded, attack with 50% extra damage
 		if (isBlinded) {
-			this.attack(enemy, 1.25 * 1.5, true, false); // Attack, Targeted, 1.25x Damage (increased by 50%), Cannot Miss
+			this.attackNoMiss(enemy, 1.25 * 1.5); // Attack, Targeted, 1.25x Damage (increased by 50%), Cannot Miss
 		}
 		
 		// Otherwise, just normal
-		this.attack(enemy, 1.25, true, false); // Attack, Targeted, 1.25x Damage, Cannot Miss
+		this.attackNoMiss(enemy, 1.25); // Attack, Targeted, 1.25x Damage, Cannot Miss
 	}
 	// "Luminescent Amplification" AOE version of Ability
 	public void useSearingLight(List<Character> enemies, List<Boolean> isBlinded) {
 		for (int i = 0; i < enemies.size(); i++) {
 			if (isBlinded.get(i)) {
-				this.attack(enemies.get(i), .8 * 1.25 * 1.5, false); // Attack, AOE, 1.25x Damage (decreased to 80% effectiveness, increased by 50%)
+				this.attackAOE(enemies.get(i), .8 * 1.25 * 1.5); // Attack, AOE, 1.25x Damage (decreased to 80% effectiveness, increased by 50%)
 			}
 			else {
-				this.attack(enemies.get(i), .8 * 1.25, false); // Attack, AOE, 1.25x Damage (decreased to 80% effectiveness)
+				this.attackAOE(enemies.get(i), .8 * 1.25); // Attack, AOE, 1.25x Damage (decreased to 80% effectiveness)
 			}
 		}
 	}
@@ -90,7 +90,7 @@ public class KinitchuOrderLuminescentWizard extends Character{
 	// "Luminescent Amplification" AOE version of Ability
 	public void useBlindingLight(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, .8 * .75, false); // Attack, AOE, .75x Damage (reduced to 80% effectiveness)
+			this.attackAOE(enemy, .8 * .75); // Attack, AOE, .75x Damage (reduced to 80% effectiveness)
 		}
 	}
 }

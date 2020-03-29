@@ -3,11 +3,11 @@ import java.util.*;
 
 public class KinitchuOrderThaumraturge extends Character{
 	// These first two methods help set up the Kinitchu Order Dragon Fire Wizard subclass.
-	public KinitchuOrderThaumraturge(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public KinitchuOrderThaumraturge(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public KinitchuOrderThaumraturge(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Deals the Damage from the "Ice Barrier" Passive Ability
@@ -21,7 +21,7 @@ public class KinitchuOrderThaumraturge extends Character{
 			}
 			
 			// Damages the enemy and determines whether enemy died
-			this.dealDamage(enemy, damageDealt); // Deals Damage
+			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals Damage
 		}
 	}
 	
@@ -38,13 +38,13 @@ public class KinitchuOrderThaumraturge extends Character{
 	// Deals the Damage from the "Slick, Hard Ice Armor Spikes"
 	public void useIceSpikes(Character enemy, boolean didDodge, boolean isIceArmored) {
 		if (isIceArmored) {
-			this.attack(enemy, .1 * 3, true, false); // Attack, Targeted, Cannot Miss, .1*3x Damage
+			this.attackNoMiss(enemy, .1 * 3); // Attack, Targeted, Cannot Miss, .1*3x Damage
 		}
 		else if (didDodge) {
-			this.attack(enemy, .1 * 2, true, false); // Attack, Targeted, Cannot Miss, .1*2x Damage
+			this.attackNoMiss(enemy, .1 * 2); // Attack, Targeted, Cannot Miss, .1*2x Damage
 		}
 		else {
-			this.attack(enemy, .1, true, false); // Attack, Targeted, Cannot Miss, .1x Damage
+			this.attackNoMiss(enemy, .1); // Attack, Targeted, Cannot Miss, .1x Damage
 		}
 	}
 	
@@ -55,19 +55,19 @@ public class KinitchuOrderThaumraturge extends Character{
 	
 	// Deals the Damage from the empowered basic attack in the "Ice Armor" Ability (Ability 2)
 	public void useIceArmorAttack(Character enemy) {
-		this.attack(enemy, 1.1, true, false); // Attack, Targeted, Cannot Miss, 1.1x Damage
+		this.attackNoMiss(enemy, 1.1); // Attack, Targeted, Cannot Miss, 1.1x Damage
 	}
 	
 	// Deals the Damage from the "Ice Cone" Ability (Ability 3) to multiple enemies
 	public void useIceCone(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, .75, false); // Attack, AOE, .75x Damage
+			this.attackAOE(enemy, .75); // Attack, AOE, .75x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Blizzard" Ability (Ability 4) to 1 enemy
 	public void useBlizzardDamage(Character enemy) {
-		this.attack(enemy, .1); // Attack, AOE, .1x Damage
+		this.attackAOE(enemy, .1); // Attack, AOE, .1x Damage
 	}
 	// Deals with the Healing from the "Blizzard" Ability (Ability 4) to 1 ally
 	public void useBlizzardHealing(Character ally, boolean isYou) {
@@ -96,7 +96,7 @@ public class KinitchuOrderThaumraturge extends Character{
 	// Deals the Damage from the "Freeze Frame!" ULTIMATE Ability
 	public void useFreezeFrame(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, 2, false); // Attack, AOE, 2x Damage
+			this.attackAOE(enemy, 2); // Attack, AOE, 2x Damage
 		}
 	}
 }

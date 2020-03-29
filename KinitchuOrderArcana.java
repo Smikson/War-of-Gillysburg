@@ -5,11 +5,11 @@ import WyattWitemeyer.WarOfGillysburg.Character;
 
 public class KinitchuOrderArcana extends Character{
 	// These first two methods help set up the Kinitchu Order Arcana subclass.
-	public KinitchuOrderArcana(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public KinitchuOrderArcana(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public KinitchuOrderArcana(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Find the enemy that is vulnerable and the Ability they are vulnerable to from the "Arcane Knowledge" Passive Ability
@@ -118,7 +118,7 @@ public class KinitchuOrderArcana extends Character{
 	// Deals the Damage from the "Raw, Magical Power" Passive Ability upon death. Big explosion.
 	public void useRawMagicalPowerExplosion(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, 5, false); // Attack, AOE, 5x Damage
+			this.attackAOE(enemy, 5); // Attack, AOE, 5x Damage
 		}
 	}
 	
@@ -140,17 +140,17 @@ public class KinitchuOrderArcana extends Character{
 	// Deals the Damage from the "Magic Missiles" Ability (Ability 1).
 	public void useMagicMissiles(Character enemy) {
 		// Two Attacks, Targeted, Cannot Miss, .75x Damage
-		this.attack(enemy, .75, true, false);
-		this.attack(enemy, .75, true, false);
+		this.attackNoMiss(enemy, .75);
+		this.attackNoMiss(enemy, .75);
 	}
 	
 	// Deals the Damage from the "Arcane Repulse" Ability (Ability 2).
 	public void useArcaneRepulse(List<Character> innerEnemies, List<Character> outerEnemies) {
 		for (Character enemy : innerEnemies) {
-			this.attack(enemy, 1, false); // Attack, AOE, 1x Damage
+			this.attackAOE(enemy, 1); // Attack, AOE, 1x Damage
 		}
 		for (Character enemy : outerEnemies) {
-			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
+			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
 	}
 	
@@ -162,7 +162,7 @@ public class KinitchuOrderArcana extends Character{
 	// Deals the Damage from the "Arcane Beam" Ability (Ability 4) Targeted Option
 	public void useArcaneBeam(List<Character> enemiesHit, Character primaryEnemy) {
 		for (Character enemy : enemiesHit) {
-			this.attack(enemy, .25, false); // Attack, AOE, .25x Damage
+			this.attackAOE(enemy, .25); // Attack, AOE, .25x Damage
 		}
 		
 		this.attack(primaryEnemy, 1.5); // Attack, Targeted, 1.5x Damage

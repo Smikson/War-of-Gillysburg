@@ -1199,9 +1199,9 @@ public class SteelLegionTank extends Character {
 	private LinkedList<Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Tank subclass.
-	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
+	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 		this.HoldItRightThere = new HoldItRightThere(this, upaRank);
 		this.EnchantedArmor = new EnchantedArmor(this, eArmorRank);
 		this.ShieldSkills = new ShieldSkills(this, sSkillsRank);
@@ -1338,7 +1338,7 @@ public class SteelLegionTank extends Character {
 	                if (target.equals(Character.EMPTY)) {
 	                	break;
 	                }
-	                this.attack(target);
+	                this.attack(target, AttackType.SLASHING);
 	                flag = false;
 	                break;
 	            case "2": // Shield Bash
@@ -1501,7 +1501,7 @@ public class SteelLegionTank extends Character {
 		this.apply(preCondition);
 		
 		// Make the attack
-		this.attack(enemy, this.ShieldBash.getScaler());
+		this.attack(enemy, this.ShieldBash.getScaler(), AttackType.SMASHING);
 		
 		// Unapply the bonus pre-conditions
 		this.unapply(preCondition);
@@ -1546,7 +1546,7 @@ public class SteelLegionTank extends Character {
 		
 		// Make the attack against all enemies affected
 		for (Character enemy : enemies) {
-			this.attack(enemy, this.ShieldReflection.getScaler(), false); // false - indicates an AOE attack
+			this.attackAOE(enemy, this.ShieldReflection.getScaler(), AttackType.LIGHT); // AOE attack
 		}
 		
 		// Blind all enemies affected
@@ -1575,7 +1575,7 @@ public class SteelLegionTank extends Character {
 		this.apply(preCondition);
 		
 		// Make the attack
-		this.attack(enemy, this.TauntingAttack.getScaler());
+		this.attack(enemy, this.TauntingAttack.getScaler(), AttackType.SLASHING);
 		
 		// Unapply the bonus accuracy pre-condition
 		this.unapply(preCondition);
@@ -1618,7 +1618,7 @@ public class SteelLegionTank extends Character {
 		this.apply(preCondition);
 		
 		// Make the attack
-		this.attack(enemy, this.LeaderStrike.getScaler());
+		this.attack(enemy, this.LeaderStrike.getScaler(), AttackType.SLASHING);
 		
 		// Unapply the bonus accuracy pre-condition
 		this.unapply(preCondition);

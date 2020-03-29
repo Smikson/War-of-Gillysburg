@@ -4,11 +4,11 @@ import java.util.*;
 public class SteelLegionBarbarian extends Character {
 	
 	// These first two methods help set up the Steel Legion Barbarian subclass.
-	public SteelLegionBarbarian(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public SteelLegionBarbarian(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public SteelLegionBarbarian(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Returns a new Character with improved stats based on the "Rage!" Passive Ability for purposes of Calculation only.
@@ -35,7 +35,7 @@ public class SteelLegionBarbarian extends Character {
 		this.attack(enemy1, 1.2); // Attack, Targeted, 1.2x Damage
 		
 		for (Character enemy : enemies2) {
-			this.attack(enemy, .75, false); // Attack, AOE, .75x Damage
+			this.attackAOE(enemy, .75); // Attack, AOE, .75x Damage
 		}
 	}
 	

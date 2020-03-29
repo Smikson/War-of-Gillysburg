@@ -3,11 +3,11 @@ import java.util.*;
 
 public class KinitchuOrderDragonFireWizard extends Character{
 	// These first two methods help set up the Kinitchu Order Dragon Fire Wizard subclass.
-	public KinitchuOrderDragonFireWizard(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public KinitchuOrderDragonFireWizard(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public KinitchuOrderDragonFireWizard(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Returns a new Character with improved stats based on the "Dragon's Rage" Passive Ability for purposes of Calculation only.
@@ -18,7 +18,7 @@ public class KinitchuOrderDragonFireWizard extends Character{
 	// Deals the Damage from the "Scorched Earth" Fire-Terrain Passive Ability
 	public void useScorchedEarth(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, .1, false); // Attack, AOE, .1x Damage
+			this.attackAOE(enemy, .1); // Attack, AOE, .1x Damage
 		}
 	}
 	// Returns a new Character with improved stats based on the "Scorched Earth" Passive Ability for purposes of Calculation only.
@@ -34,10 +34,10 @@ public class KinitchuOrderDragonFireWizard extends Character{
 	// Deals the Damage from the "Ring of Fire" Ability (Ability 2) to multiple enemies
 	public void useRingOfFire(List<Character> innerEnemies, List<Character> outerEnemies) {
 		for (Character enemy : innerEnemies) {
-			this.attack(enemy, 1, false); // Attack, AOE, 1x Damage
+			this.attackAOE(enemy, 1); // Attack, AOE, 1x Damage
 		}
 		for (Character enemy : outerEnemies) {
-			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
+			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
 	}
 	

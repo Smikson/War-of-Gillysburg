@@ -3,11 +3,11 @@ import java.util.*;
 
 public class SilentDeathPoisonSpecialist extends Character {
 	// These first two methods help set up the Silent Death Poison Specialist subclass.
-	public SilentDeathPoisonSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public SilentDeathPoisonSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public SilentDeathPoisonSpecialist(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Returns a new Character with improved stats based on the "Law of Stealth" Passive Ability for purposes of Calculation only.
@@ -45,7 +45,7 @@ public class SilentDeathPoisonSpecialist extends Character {
 				damageDealt = this.getDamage() * 3;
 			}
 			
-			this.dealDamage(enemy, damageDealt); // Deals Damage
+			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals Damage
 		}
 	}
 	public void usePoisonousCloudStay(List<Character> enemies) {
@@ -57,7 +57,7 @@ public class SilentDeathPoisonSpecialist extends Character {
 				damageDealt = this.getDamage() * 3;
 			}
 			
-			this.dealDamage(enemy, damageDealt); // Deals Damage
+			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals Damage
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class SilentDeathPoisonSpecialist extends Character {
 		for (int x = 0; x < enemies.size(); x++) {
 			double scaler = stacks.get(x) * 1 + rounds.get(x) * .5;
 			
-			this.attack(enemies.get(x), scaler, false); // Attack, AOE, Damage depends on stacks and rounds on enemies.
+			this.attackAOE(enemies.get(x), scaler); // Attack, AOE, Damage depends on stacks and rounds on enemies.
 		}
 	}
 }

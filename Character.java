@@ -2,21 +2,21 @@ package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 public class Character {
 	// Static Characters to aid with Character building and leveling up from a base level.
-	public static final Character EMPTY = new Character("Null",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character STEEL_LEGION_TANK = new Character("Tank",0,750,70,185,100,125,0,38,2,3,1,1,20,3,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character STEEL_LEGION_WARRIOR = new Character("Warrior",0,635,85,162,118,125,0,30,5,6,5,1,15,5,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character STEEL_LEGION_BARBARIAN = new Character("Barbarian",0,530,125,158,124,100,0,28,7,6,6,1,12,8,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character SENTINEL_SNIPER = new Character("Sniper",0,400,140,118,146,160,27,0,8,5,8,8,5,20,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character SENTINEL_SPECIALIST = new Character("Specialist",0,500,100,138,140,140,25,0,5,5,7,5,7,18,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character SENTINEL_ARC_ARCHER = new Character("Arc Archer",0,350,85,125,130,150,43,0,7,6,35,6,6,19,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character SILENT_DEATH_SHADOW = new Character("Shadow",0,375,150,117,147,118,33,0,10,7,5,1,2,25,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character SILENT_DEATH_POISON_SPECIALIST = new Character("Poison Specialist",0,480,110,140,128,115,24,0,5,4,4,1,6,15,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character SILENT_DEATH_HUNTER = new Character("Hunter",0,520,100,146,126,125,23,0,6,4,5,4,4,16,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character KINITCHU_ORDER_DRAGON_FIRE_WIZARD = new Character("Pyromancer",0,370,155,121,142,120,20,0,8,4,4,5,4,23,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character KINITCHU_ORDER_THAUMRATURGE = new Character("Ice Wizard",0,510,105,150,121,122,21,0,6,4,4,5,17,7,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character KINITCHU_ORDER_ARCANA = new Character("Arcana",0,325,165,115,152,140,18,0,9,4,6,5,6,17,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character KINITCHU_ORDER_LUMINESCENT_WIZARD = new Character("Luminescent Wizard",0,425,120,120,134,135,21,0,8,4,5,5,3,24,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
-	public static final Character KINITCHU_ORDER_NECROMANCER = new Character("Necromancer",0,410,130,119,138,125,20,0,5,4,4,5,6,19,90,110, new HashSet<String>(), new HashSet<String>(), new LinkedList<String>());
+	public static final Character EMPTY = new Character("Null",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character STEEL_LEGION_TANK = new Character("Tank",0,750,70,185,100,125,0,38,2,3,1,1,20,3,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character STEEL_LEGION_WARRIOR = new Character("Warrior",0,635,85,162,118,125,0,30,5,6,5,1,15,5,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character STEEL_LEGION_BARBARIAN = new Character("Barbarian",0,530,125,158,124,100,0,28,7,6,6,1,12,8,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character SENTINEL_SNIPER = new Character("Sniper",0,400,140,118,146,160,27,0,8,5,8,8,5,20,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character SENTINEL_SPECIALIST = new Character("Specialist",0,500,100,138,140,140,25,0,5,5,7,5,7,18,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character SENTINEL_ARC_ARCHER = new Character("Arc Archer",0,350,85,125,130,150,43,0,7,6,35,6,6,19,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character SILENT_DEATH_SHADOW = new Character("Shadow",0,375,150,117,147,118,33,0,10,7,5,1,2,25,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character SILENT_DEATH_POISON_SPECIALIST = new Character("Poison Specialist",0,480,110,140,128,115,24,0,5,4,4,1,6,15,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character SILENT_DEATH_HUNTER = new Character("Hunter",0,520,100,146,126,125,23,0,6,4,5,4,4,16,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character KINITCHU_ORDER_DRAGON_FIRE_WIZARD = new Character("Pyromancer",0,370,155,121,142,120,20,0,8,4,4,5,4,23,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character KINITCHU_ORDER_THAUMRATURGE = new Character("Ice Wizard",0,510,105,150,121,122,21,0,6,4,4,5,17,7,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character KINITCHU_ORDER_ARCANA = new Character("Arcana",0,325,165,115,152,140,18,0,9,4,6,5,6,17,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character KINITCHU_ORDER_LUMINESCENT_WIZARD = new Character("Luminescent Wizard",0,425,120,120,134,135,21,0,8,4,5,5,3,24,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
+	public static final Character KINITCHU_ORDER_NECROMANCER = new Character("Necromancer",0,410,130,119,138,125,20,0,5,4,4,5,6,19,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>());
 	
 	// Variables of each stat of the character
 	private String name;
@@ -40,9 +40,8 @@ public class Character {
 	private int CurrentHealth;
 	private int Shields;
 	
-	private HashSet<String> resistances;
-	private HashSet<String> vulnerabilities;
-	private LinkedList<String> attackType;
+	private HashMap<AttackType,Double> resistances;
+	private HashMap<AttackType,Double> vulnerabilities;
 	
 	// Contains a list of the basic stats (everything but STDup/down and Current Health) and conditions for looping through
 	protected LinkedList<Stat> stats;
@@ -61,7 +60,7 @@ public class Character {
 	protected LinkedList<Attack> AttacksDefended;
 	
 	// Constructor (sets each stat variable)
-	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
+	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
 		this.name = nam;
 		this.Level = lvl;
 		this.Health = new Stat(hp, StatVersion.HEALTH);
@@ -85,7 +84,6 @@ public class Character {
 		
 		this.resistances = resis;
 		this.vulnerabilities = vuls;
-		this.attackType = aType;
 		
 		// Puts all the basic stats in the list.
 		this.stats = new LinkedList<Stat>();
@@ -118,7 +116,7 @@ public class Character {
 		this.commands.add("End Turn");
 	}
 	public Character(Character copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getAttackType());
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities());
 	}
 	public Character() {
 		this(Character.EMPTY);
@@ -172,14 +170,11 @@ public class Character {
 		return this.TacticalThreat.getTotal() + this.TacticalThreat.bonus;
 	}
 	
-	public HashSet<String> getResistances() {
+	public HashMap<AttackType,Double> getResistances() {
 		return this.resistances;
 	}
-	public HashSet<String> getVulnerabilities() {
+	public HashMap<AttackType,Double> getVulnerabilities() {
 		return this.vulnerabilities;
-	}
-	public LinkedList<String> getAttackType() {
-		return this.attackType;
 	}
 	
 	public int getSTDdown() {
@@ -786,12 +781,19 @@ public class Character {
 		return healingReceived;
 	}
 	// Takes damage by numerical amount
-	protected void takeDamage(int damageDealt) {
+	protected void takeDamage(int damageDealt, AttackType aType) {
 		// Checks for invincibility or stasis
 		for (Condition c : this.getActiveConditions()) {
 			if (c instanceof Invincible || c instanceof Stasis) {
 				damageDealt = 0;
 			}
+		}
+		
+		if (this.getResistances().containsKey(aType)) {
+			damageDealt *= 1 - this.getResistances().get(aType)/100.0;
+		}
+		if (this.getVulnerabilities().containsKey(aType)) {
+			damageDealt *= 1 + this.getVulnerabilities().get(aType)/100.0;
 		}
 		
 		if (this.Shields > 0) {
@@ -854,26 +856,9 @@ public class Character {
 	}
 	
 	// Calculates the final Damage done using the ranges from STDup and STDdown
-	protected int calcFinalDamage(Character enemy, int finalDamageStat, double finalScaler, boolean didCrit, LinkedList<String> attackTypes) {
-		// Count the number of things the enemy resists or is vulnerable to in the single attack (equal amounts of each type)
-		int resistanceCount = 0, vulnerabilityCount = 0;
-		for (String aType : attackTypes) {
-			if (enemy.getResistances().contains(aType)) {
-				resistanceCount++;
-			}
-			if (enemy.getVulnerabilities().contains(aType)) {
-				vulnerabilityCount++;
-			}
-		}
-		
-		// Always just deal normal damage unless there are special attack types in which half the portion of the attack attributed is effected.
-		double percentNormalDamage = 1;
-		if (!attackTypes.isEmpty()) {
-			percentNormalDamage = 1 - (resistanceCount - vulnerabilityCount)/(2.0*attackTypes.size());
-		}
-		
+	protected int calcFinalDamage(Character enemy, int finalDamageStat, double finalScaler, boolean didCrit) {
 		// Calculate the totalDamage before STD is applied
-		int totalDamage = (int)Math.round(finalDamageStat*finalScaler*percentNormalDamage);
+		int totalDamage = (int)Math.round(finalDamageStat*finalScaler);
 		
 		// Calculates the minimum and maximum Damage possible due to Standard Deviation (minimum is removed if you didCrit)
 		int minDamage;
@@ -892,16 +877,16 @@ public class Character {
 	}
 	
 	// Deals a flat amount of damage to another Character and returns the output string based on damage and stating if they died.
-	protected void dealDamage(Character enemy, int damageDealt, boolean didCrit) {
+	protected void dealDamage(Character enemy, int damageDealt, AttackType aType, boolean didCrit) {
 		
-		enemy.takeDamage(damageDealt);
+		enemy.takeDamage(damageDealt, aType);
 		
 		// Attack output
 		if (didCrit) {
-			System.out.println(this.getName() + " scored a CRITCAL HIT against " + enemy.getName() + " for a total of " + damageDealt + " damage!");
+			System.out.println(this.getName() + " scored a CRITCAL HIT against " + enemy.getName() + " for a total of " + damageDealt + " " + aType.toString() + " damage!");
 		}
 		else {
-			System.out.println(this.getName() + " hit " + enemy.getName() + " for a total of " + damageDealt + " damage!");
+			System.out.println(this.getName() + " hit " + enemy.getName() + " for a total of " + damageDealt + " " + aType.toString() + " damage!");
 		}
 		
 		if (enemy.isDead()) {
@@ -957,11 +942,11 @@ public class Character {
 		this.hitAttack(atk);
 		enemy.receivedAttack(atk);
 	}
-	protected void dealDamage(Character enemy, int damageDealt) {
-		this.dealDamage(enemy, damageDealt, false);
+	protected void dealDamage(Character enemy, int damageDealt, AttackType aType) {
+		this.dealDamage(enemy, damageDealt, aType, false);
 	}
 	
-	public void attack(Character enemy, double scaler, boolean isTargeted, boolean canMiss, boolean armorApplies) {
+	public void attack(Character enemy, double scaler, AttackType aType, boolean isTargeted, boolean canMiss, boolean armorApplies) {
 		// Add: Check for being attacked conditions (Steel Legion Tank: Hold It Right There)
 		
 		// Make sure neither target is dead.
@@ -1027,29 +1012,77 @@ public class Character {
 			}
 			
 			// Calculates the final damage dealt over the deviation range
-			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
+			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 			
 			// Damages the enemy and determines whether enemy died (Storing of attacks that hit occur in the "dealDamage" function)
-			this.dealDamage(enemy, damageDealt, didCrit);
+			this.dealDamage(enemy, damageDealt, aType, didCrit);
 		}
 	}
+	// Normal Attack Abbreviations
+	public void attack(Character enemy, double scaler, AttackType aType, boolean armorApplies) {
+		this.attack(enemy, scaler, aType, true, true, armorApplies);
+	}
+	public void attack(Character enemy, double scaler, AttackType aType) {
+		this.attack(enemy, scaler, aType, true);
+	}
+	public void attack(Character enemy, double scaler, boolean armorApplies) {
+		this.attack(enemy, scaler, AttackType.NONE, armorApplies);
+	}
+	public void attack(Character enemy, AttackType aType, boolean armorApplies) {
+		this.attack(enemy, 1, aType, armorApplies);
+	}
 	public void attack(Character enemy, double scaler) {
-		this.attack(enemy, scaler, true, true, true);
+		this.attack(enemy, scaler, true);
+	}
+	public void attack(Character enemy, AttackType aType) {
+		this.attack(enemy, aType, true);
 	}
 	public void attack(Character enemy) {
 		this.attack(enemy, 1);
 	}
-	public void attack(Character enemy, double scaler, boolean isTargeted) {
-		this.attack(enemy, scaler, isTargeted, true, true);
+	// AOE Attack Abbreviations (when isTargeted is false)
+	public void attackAOE(Character enemy, double scaler, AttackType aType, boolean armorApplies) {
+		this.attack(enemy, scaler, aType, false, false, armorApplies);
 	}
-	public void attack(Character enemy, boolean isTargeted) {
-		this.attack(enemy, 1, isTargeted);
+	public void attackAOE(Character enemy, double scaler, AttackType aType) {
+		this.attackAOE(enemy, scaler, aType, true);
 	}
-	public void attack(Character enemy, double scaler, boolean isTargeted, boolean canMiss) {
-		this.attack(enemy, scaler, isTargeted, canMiss, true);
+	public void attackAOE(Character enemy, double scaler, boolean armorApplies) {
+		this.attackAOE(enemy, scaler, AttackType.NONE, armorApplies);
 	}
-	public void attack(Character enemy, boolean isTargeted, boolean canMiss) {
-		this.attack(enemy, 1, isTargeted, canMiss);
+	public void attackAOE(Character enemy, AttackType aType, boolean armorApplies) {
+		this.attackAOE(enemy, 1, aType, armorApplies);
+	}
+	public void attackAOE(Character enemy, double scaler) {
+		this.attackAOE(enemy, scaler, true);
+	}
+	public void attackAOE(Character enemy, AttackType aType) {
+		this.attackAOE(enemy, aType, true);
+	}
+	public void attackAOE(Character enemy) {
+		this.attackAOE(enemy, 1);
+	}
+	// Cannot Miss Attack Abbreviations (when canMiss is false, but isTargeted is true)
+	public void attackNoMiss(Character enemy, double scaler, AttackType aType, boolean armorApplies) {
+		this.attack(enemy, scaler, aType, true, false, armorApplies);
+	}
+	public void attackNoMiss(Character enemy, double scaler, AttackType aType) {
+		this.attackNoMiss(enemy, scaler, aType, true);
+	}
+	public void attackNoMiss(Character enemy, double scaler, boolean armorApplies) {
+		this.attackNoMiss(enemy, scaler, AttackType.NONE, armorApplies);
+	}
+	public void attackNoMiss(Character enemy, AttackType aType, boolean armorApplies) {
+		this.attackNoMiss(enemy, 1, aType, armorApplies);
+	}
+	public void attackNoMiss(Character enemy, double scaler) {
+		this.attackNoMiss(enemy, scaler, true);
+	}
+	public void attackNoMiss(Character enemy, AttackType aType) {
+		this.attackNoMiss(enemy, aType, true);
+	}
+	public void attackNoMiss(Character enemy) {
+		this.attackNoMiss(enemy, 1);
 	}
 	
 	// Damages a player knocked into an object or another Character
@@ -1063,7 +1096,7 @@ public class Character {
 		int damage = (int)Math.round(damageMax * armorEffect);
 		
 		// Deal the damage to the enemy
-		enemy.takeDamage(damage);
+		enemy.takeDamage(damage, AttackType.NONE);
 		ret += "The " + obj.getName() + " dealt " + damage + " to " + enemy.getName() + "!";
 		if (enemy.isDead()) {
 			ret += "\n" + enemy.getName() + " was defeated from the damage taken from the " + obj.getName() + "!";
@@ -1113,7 +1146,7 @@ public class Character {
 			double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
 			int damage = (int)Math.round(damageMax * armorEffect);
 			System.out.println(collided.getName() + " successfully blocked " + enemy.getName() + "!");
-			collided.dealDamage(enemy, damage);
+			collided.dealDamage(enemy, damage, AttackType.NONE);
 		}
 		
 		// Otherwise, the Character was not blocked, and both parties take various damage
@@ -1135,7 +1168,7 @@ public class Character {
 		int damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
 		double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
 		int damage = (int)Math.round(damageMax * armorEffect);
-		collided.dealDamage(enemy, damage);
+		collided.dealDamage(enemy, damage, AttackType.NONE);
 		
 		
 		// Second, damage is dealt to the Character knocked into (collided)
@@ -1155,7 +1188,7 @@ public class Character {
 		damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
 		armorEffect = 1.0 * enemy.getArmor() / collided.getArmor();
 		damage = (int)Math.round(damageMax * armorEffect);
-		enemy.dealDamage(collided, damage);
+		enemy.dealDamage(collided, damage, AttackType.NONE);
 	}
 	
 	

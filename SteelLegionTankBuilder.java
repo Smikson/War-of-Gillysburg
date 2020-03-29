@@ -121,18 +121,13 @@ public class SteelLegionTankBuilder extends CharacterBuilder{
 	}
 	
 	@Override
-	public SteelLegionTankBuilder addResistance(String resistance) {
-		this.resistances.add(resistance);
+	public SteelLegionTankBuilder addResistance(AttackType resistance, double value) {
+		this.resistances.put(resistance, value);
 		return this;
 	}
 	@Override
-	public SteelLegionTankBuilder addVulnerability(String vulnerability) {
-		this.vulnerabilities.add(vulnerability);
-		return this;
-	}
-	@Override
-	public SteelLegionTankBuilder addAttackType(String aType) {
-		this.attackType.add(aType);
+	public SteelLegionTankBuilder addVulnerability(AttackType vulnerability, double value) {
+		this.vulnerabilities.put(vulnerability, value);
 		return this;
 	}
 	
@@ -230,7 +225,6 @@ public class SteelLegionTankBuilder extends CharacterBuilder{
 								   this.STDup,
 								   this.resistances,
 								   this.vulnerabilities,
-								   this.attackType,
 								   this.HoldItRightThereRank,
 								   this.EnchantedArmorRank,
 								   this.ShieldSkillsRank,

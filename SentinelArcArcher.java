@@ -3,11 +3,11 @@ import java.util.*;
 
 public class SentinelArcArcher extends Character{
 	// These first two methods help set up the Sentinel Arc Archer subclass.
-	public SentinelArcArcher(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public SentinelArcArcher(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public SentinelArcArcher(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Deals the Damage from the "Quick Shot" Passive Ability
@@ -28,7 +28,7 @@ public class SentinelArcArcher extends Character{
 	// Deals the Damage from the "Multi-Shot" Ability (Ability 1) to multiple enemies
 	public void useMultiShot(List<Character> enemies) {
 		for (Character enemy:enemies) {
-			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
+			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
 	}
 	
@@ -67,10 +67,10 @@ public class SentinelArcArcher extends Character{
 			}
 			
 			// Calculates the final damage dealt over the deviation range
-			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
+			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 			
 			// Damages the enemy and determines whether enemy died
-			this.dealDamage(enemy, damageDealt, didCrit);
+			this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
 			
 			
 			// The second arrow strikes with a 60% chance to ignore all armor.
@@ -91,10 +91,10 @@ public class SentinelArcArcher extends Character{
 				}
 				
 				// Calculates the final damage dealt over the deviation range
-				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
+				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 				
 				// Damages the enemy and determines whether enemy died
-				this.dealDamage(enemy, damageDealt, didCrit);
+				this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
 			}
 			// Otherwise, same thing but attack does not ignore all armor
 			else {
@@ -110,10 +110,10 @@ public class SentinelArcArcher extends Character{
 				}
 				
 				// Calculates the final damage dealt over the deviation range
-				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
+				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 				
 				// Damages the enemy and determines whether enemy died
-				this.dealDamage(enemy, damageDealt, didCrit);
+				this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
 			}
 		}
 	}
@@ -137,8 +137,8 @@ public class SentinelArcArcher extends Character{
 	public void useRainOfArrows(List<Character> enemies) {
 		for (int x = 0; x < enemies.size() - 1; x++) {
 			Character enemy = enemies.get(x);
-			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
+			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
-		this.attack(enemies.get(enemies.size()-1), .75, false); // Attack, AOE, .75x Damage
+		this.attackAOE(enemies.get(enemies.size()-1), .75); // Attack, AOE, .75x Damage
 	}
 }

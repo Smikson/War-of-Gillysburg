@@ -4,11 +4,11 @@ import java.util.*;
 public class SteelLegionWarrior extends Character {
 	
 	// These first two methods help set up the Steel Legion Warrior subclass.
-	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public SteelLegionWarrior(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Deals the Damage from the "Vengeance Strike" Passive Ability
@@ -50,7 +50,7 @@ public class SteelLegionWarrior extends Character {
 	// Deals the Damage from the "Sweep" Ability (Ability 1) to multiple enemies
 	public void useSweep(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, .8, false); // Attack, AOE, .8x Damage
+			this.attackAOE(enemy, .8); // Attack, AOE, .8x Damage
 		}
 	}
 	// Used for when "Deflection" is active
@@ -63,7 +63,7 @@ public class SteelLegionWarrior extends Character {
 	// Deals the Damage from the "CHARGE!" Ability (Ability 2) to multiple enemies with a primary target
 	public void useCharge(List<Character> enemies, Character primary) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
+			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
 		
 		// Attacks Primary with bonus effect.
@@ -73,7 +73,7 @@ public class SteelLegionWarrior extends Character {
 	// Deals the Damage from the "CHARGE!" Ability (Ability 2) to multiple enemies without a primary target
 	public void useCharge(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, .5, false); // Attack, AOE, .5x Damage
+			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
 	}
 	// First Version With Primary: Used for when "Deflection" is active
@@ -139,12 +139,10 @@ public class SteelLegionWarrior extends Character {
 			}
 			
 			// Calculates the final damage dealt over the deviation range for the normal portion of the attack
-			int normalDamage = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
+			int normalDamage = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 			
 			// Calculates the bonus electrical damage dealt over the deviation range for the electrical portion of the attack
-			LinkedList<String> electricType = new LinkedList<>();
-			electricType.add("Electric");
-			int bonusDamage = this.calcFinalDamage(enemy, this.getDamage(), .2 * scaler, didCrit, electricType);
+			int bonusDamage = this.calcFinalDamage(enemy, this.getDamage(), .2 * scaler, didCrit);
 			int armorDamage = enemy.getArmor();
 			if (armorDamage > this.getDamage() * .3) {
 				armorDamage = (int)Math.round(this.getDamage() * .3);
@@ -154,7 +152,7 @@ public class SteelLegionWarrior extends Character {
 			int damageDealt = normalDamage + bonusDamage + armorDamage;
 			
 			// Damages the enemy and determines whether enemy died
-			this.dealDamage(enemy, damageDealt, didCrit);
+			this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
 		}
 	}
 	public void attackDeflection(Character enemy, double scaler) {
@@ -172,9 +170,7 @@ public class SteelLegionWarrior extends Character {
 	
 	public void attackedDeflection(Character enemy) {
 		// Calculates the total/average/normal Damage dealt.
-		LinkedList<String> electricType = new LinkedList<>();
-		electricType.add("Electric");
-		int totalDamage = this.calcFinalDamage(enemy, this.getDamage(), .25, false, electricType);
+		int totalDamage = this.calcFinalDamage(enemy, this.getDamage(), .25, false);
 		// Adds the bonus Damage from Armor due to Deflection mechanic
 		int damageAdded = this.getArmor();
 		if (damageAdded > this.getDamage() * .3) {
@@ -183,6 +179,6 @@ public class SteelLegionWarrior extends Character {
 		totalDamage += damageAdded;
 		
 		// Damages the enemy and determines whether enemy died
-		this.dealDamage(enemy, totalDamage);
+		this.dealDamage(enemy, totalDamage, AttackType.NONE);
 	}
 }

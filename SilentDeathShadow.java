@@ -3,11 +3,11 @@ import java.util.*;
 
 public class SilentDeathShadow extends Character{
 	// These first two methods help set up the Sentinel Sniper subclass.
-	public SilentDeathShadow(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public SilentDeathShadow(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public SilentDeathShadow(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Deals the Damage from the "Riposte" Passive Ability
@@ -39,7 +39,7 @@ public class SilentDeathShadow extends Character{
 			boolean didHit = this.landAttack(enemy, -reducedToHit);
 			
 			if (didHit) {
-				this.attack(enemy, scaler, true, false, true); // Attack, Targeted, Cannot Miss
+				this.attackNoMiss(enemy, scaler); // Attack, Targeted, Cannot Miss
 			}
 			else {
 				this.attack(enemy, scaler); // Attack, Targeted
@@ -73,10 +73,10 @@ public class SilentDeathShadow extends Character{
 				}
 				
 				// Calculates the final damage dealt over the deviation range
-				int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit, this.getAttackType());
+				int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 				
 				// Damages the enemy and determines whether enemy died
-				this.dealDamage(enemy, damageDealt, didCrit);
+				this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
 			}
 		}
 		else {
@@ -109,7 +109,7 @@ public class SilentDeathShadow extends Character{
 		}
 		
 		if (usedFromStealth) {
-			this.dealDamage(enemy, damageDealt); // Deals the damage to the enemy
+			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals the damage to the enemy
 		}
 		
 		else {
@@ -122,7 +122,7 @@ public class SilentDeathShadow extends Character{
 			}
 			// If the attack hits, it deals the damage
 			else {
-				this.dealDamage(enemy, damageDealt); // Deals the damage to the enemy
+				this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals the damage to the enemy
 			}
 		}
 	}

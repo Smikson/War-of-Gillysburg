@@ -4,11 +4,11 @@ import java.util.*;
 public class SentinelSpecialist extends Character{
 	
 	// These first two methods help set up the Sentinel Specialist subclass.
-	public SentinelSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashSet<String> resis, HashSet<String> vuls, LinkedList<String> aType) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, aType);
+	public SentinelSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
 	}
 	public SentinelSpecialist(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities(), ori.getAttackType());
+		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
 	}
 	
 	// Returns a new Character with improved stats based on the "Empowered Arrows" Passive Ability for purposes of Calculation only.
@@ -27,7 +27,7 @@ public class SentinelSpecialist extends Character{
 	}
 	// Deals the Damage from the burn effect of the "Flaming Arrow" Ability
 	public void useFlamingArrowBurn(Character enemy) {
-		this.attack(enemy, .2, false); // Attack, AOE, .2x Damage
+		this.attackAOE(enemy, .2); // Attack, AOE, .2x Damage
 	}
 	
 	// Deals the Damage from the "Frozen Arrow" Ability (Ability 2)
@@ -40,25 +40,25 @@ public class SentinelSpecialist extends Character{
 		this.attack(enemy, .5); // Attack, Targeted, .5x Damage
 		
 		for (Character enemyHitByAOE:enemies) {
-			this.attack(enemyHitByAOE, .75, false); // Attack, AOE, .75x Damage
+			this.attackAOE(enemyHitByAOE, .75); // Attack, AOE, .75x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Penetration Arrow" Ability (Ability 4) to multiple enemies
 	public void usePenetrationArrow(List<Character> enemies) {
 		for (Character enemy:enemies) {
-			this.attack(enemy, .75); // Attack AOE, .75x Damage
+			this.attackAOE(enemy, .75); // Attack AOE, .75x Damage
 		}
 	}
 	// Deals the Damage from the "Penetration Arrow" Ability when used with the "Empowered Arrows" Passive Ability
 	public void usePenetrationArrowEmpowered(List<Character> enemies) {
 		for (Character enemy:enemies) {
-			this.attack(enemy, .75, true, false, false); // Attack, Targeted, Cannot Miss, Ignores Armor, .75x Damage
+			this.attackNoMiss(enemy, .75, false); // Attack, Targeted, Cannot Miss, Ignores Armor, .75x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Black Arrow" ULTIMATE Ability
 	public void useBlackArrow(Character enemy) {
-		this.attack(enemy, 3, true, true, false); // Attack, Targeted, Ignores Armor, 3x Damage
+		this.attack(enemy, 3, false); // Attack, Targeted, Ignores Armor, 3x Damage
 	}
 }
