@@ -1,5 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.*;
+
 // Terrain are permanent Conditions (until manually removed), and have a set type: HighGround, Hill, Cover, or Tree
 public class Terrain extends Condition {
 	// List of static Terrains to be used for basic computations
@@ -8,6 +10,7 @@ public class Terrain extends Condition {
 	public static final Cover COVER = new Cover();
 	public static final Tree TREE = new Tree();
 	
+	public static final LinkedList<Terrain> TERRAINLIST = getList();
 	
 	// Constructors - Terrain are permanent bonuses (only removed manually)
 	public Terrain(String name) {
@@ -16,6 +19,15 @@ public class Terrain extends Condition {
 	}
 	public Terrain() {
 		super();
+	}
+	
+	private final static LinkedList<Terrain> getList() {
+		LinkedList<Terrain> terrainList = new LinkedList<>();
+		terrainList.add(HIGH_GROUND);
+		terrainList.add(HILL);
+		terrainList.add(COVER);
+		terrainList.add(TREE);
+		return terrainList;
 	}
 }
 

@@ -484,7 +484,7 @@ class ShieldBash extends Ability {
 		}
 		
 		// Sets the calculated Stun
-		this.stun = new Stun("Shield Bash Stun", stunDuration);
+		this.stun = new Stun("Shield Bash: Stun", stunDuration);
 		this.stun.setSource(this.owner);
 		
 		// Adds Damage Bonus While Stunned after rank 5
@@ -1232,35 +1232,7 @@ public class SteelLegionTank extends Character {
 		this.addCommand(5, "HaHaHaYouCantKillMe");
 	}
 	public SteelLegionTank(SteelLegionTank copy) {
-		super(copy);
-		this.HoldItRightThere = new HoldItRightThere(this, copy.HoldItRightThere.rank());
-		this.EnchantedArmor = new EnchantedArmor(this, copy.EnchantedArmor.rank());
-		this.ShieldSkills = new ShieldSkills(this, copy.ShieldSkills.rank());
-		this.ProfessionalLaughter = new ProfessionalLaughter(this, copy.ProfessionalLaughter.rank());
-		this.ShieldBash = new ShieldBash(this, copy.ShieldBash.rank(), copy.ShieldSkills.rank());
-		this.ShieldReflection = new ShieldReflection(this, copy.ShieldReflection.rank(), copy.ShieldSkills.rank());
-		this.TauntingAttack = new TauntingAttack(this, copy.TauntingAttack.rank(), copy.ShieldSkills.rank());
-		this.LeaderStrike = new LeaderStrike(this, copy.LeaderStrike.rank(), copy.ShieldSkills.rank());
-		this.HaHaHaYouCantKillMe = new HaHaHaYouCantKillMe(this, copy.HaHaHaYouCantKillMe.rank());
-		
-		// Add Abilities to a list for Cooldown purposes
-		this.abilities = new LinkedList<>();
-		this.abilities.add(this.HoldItRightThere);
-		this.abilities.add(this.EnchantedArmor);
-		this.abilities.add(this.ShieldSkills);
-		this.abilities.add(this.ProfessionalLaughter);
-		this.abilities.add(this.ShieldBash);
-		this.abilities.add(this.ShieldReflection);
-		this.abilities.add(this.TauntingAttack);
-		this.abilities.add(this.LeaderStrike);
-		this.abilities.add(this.HaHaHaYouCantKillMe);
-		
-		// Add new commands for Abilities
-		this.addCommand(1, "Shield Bash");
-		this.addCommand(2, "Shield Reflection");
-		this.addCommand(3, "Taunting Attack");
-		this.addCommand(4, "Leader Strike");
-		this.addCommand(5, "HaHaHaYouCantKillMe");
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getHoldItRightThereRank(), copy.getEnchantedArmorRank(), copy.getShieldSkillsRank(), copy.getProfessionalLaughterRank(), copy.getShieldBashRank(), copy.getShieldReflectionRank(), copy.getTauntingAttackRank(), copy.getTauntingAttackRank(), copy.getHaHaHaYouCantKillMeRank());
 	}
 	
 	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)
@@ -1290,6 +1262,39 @@ public class SteelLegionTank extends Character {
 	}
 	public int getHaHaHaYouCantKillMeRank() {
 		return this.HaHaHaYouCantKillMe.rank();
+	}
+	
+	// Overrides the prompt to give class conditions
+	@Override
+	public void promptClassConditionGive(Character other) {
+		// Adds class Conditions to a list.
+		LinkedList<Condition> classConditions = new LinkedList<>();
+		classConditions.add(this.HoldItRightThere.getEnemyHaltCondition());
+		classConditions.add(this.HoldItRightThere.getSelfBlockCondition());
+		classConditions.add(this.ShieldBash.getEnemyAccuracyReduction());
+		classConditions.add(this.ShieldBash.getStunEffect());
+		classConditions.add(this.ShieldReflection.getBlindEffect());
+		classConditions.add(this.TauntingAttack.getTauntEffectHit());
+		classConditions.add(this.TauntingAttack.getTauntEffectMiss(other));
+		classConditions.add(this.LeaderStrike.getAllyDamageBonus());
+		classConditions.add(this.HaHaHaYouCantKillMe.getAllyDamageBonus());
+		classConditions.add(this.HaHaHaYouCantKillMe.getEnemyTauntEffect(other));
+		classConditions.add(this.HaHaHaYouCantKillMe.getSelfArmorBonus());
+		
+		// Make a parallel String list for printing
+		LinkedList<String> conditionStringList = new LinkedList<>();
+		for (Condition c : classConditions) {
+			conditionStringList.add(c.toString());
+		}
+		
+		// Add chosen condition to the Character
+		int choice = BattleSimulator.getInstance().promptSelect(conditionStringList);
+		if (choice == 0) {
+			return;
+		}
+		other.addCondition(classConditions.get(choice-1));
+		
+		conditionStringList.clear();
 	}
 	
 	
@@ -1380,21 +1385,14 @@ public class SteelLegionTank extends Character {
 	            	this.useHahahaYouCantKillMe();
 	                flag = false;
 	                break;
-	            case "7": // Add Condition
+	            case "7": // Alter Character
 	            	Character chosen = BattleSimulator.getInstance().targetSingle();
-	                if (chosen.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                chosen.promptConditionAdd();
-	                break;
-	            case "8": // Remove Condition
-	            	Character choice = BattleSimulator.getInstance().targetSingle();
-	                if (choice.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                choice.promptConditionRemove();
-	                break;
-	            case "9": // End Turn
+	            	if (chosen.equals(Character.EMPTY)) {
+	            		break;
+	            	}
+	            	chosen.promptAlterCharacter();
+	            	break;
+	            case "8": // End Turn
 	                flag = false;
 	                break;
 	            default:

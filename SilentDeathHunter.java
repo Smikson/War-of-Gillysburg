@@ -70,7 +70,7 @@ public class SilentDeathHunter extends Character{
 				damageDealt = this.getDamage() * 5;
 			}
 			
-			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals Damage
+			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals Damage
 		}
 	}
 

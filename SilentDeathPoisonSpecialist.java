@@ -45,7 +45,7 @@ public class SilentDeathPoisonSpecialist extends Character {
 				damageDealt = this.getDamage() * 3;
 			}
 			
-			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals Damage
+			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals Damage
 		}
 	}
 	public void usePoisonousCloudStay(List<Character> enemies) {
@@ -57,7 +57,7 @@ public class SilentDeathPoisonSpecialist extends Character {
 				damageDealt = this.getDamage() * 3;
 			}
 			
-			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals Damage
+			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals Damage
 		}
 	}
 	

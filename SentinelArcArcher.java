@@ -70,7 +70,7 @@ public class SentinelArcArcher extends Character{
 			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 			
 			// Damages the enemy and determines whether enemy died
-			this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
+			this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
 			
 			
 			// The second arrow strikes with a 60% chance to ignore all armor.
@@ -94,7 +94,7 @@ public class SentinelArcArcher extends Character{
 				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 				
 				// Damages the enemy and determines whether enemy died
-				this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
+				this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
 			}
 			// Otherwise, same thing but attack does not ignore all armor
 			else {
@@ -113,7 +113,7 @@ public class SentinelArcArcher extends Character{
 				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 				
 				// Damages the enemy and determines whether enemy died
-				this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
+				this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
 			}
 		}
 	}

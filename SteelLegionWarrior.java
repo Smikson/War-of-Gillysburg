@@ -152,7 +152,7 @@ public class SteelLegionWarrior extends Character {
 			int damageDealt = normalDamage + bonusDamage + armorDamage;
 			
 			// Damages the enemy and determines whether enemy died
-			this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
+			this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
 		}
 	}
 	public void attackDeflection(Character enemy, double scaler) {
@@ -179,6 +179,6 @@ public class SteelLegionWarrior extends Character {
 		totalDamage += damageAdded;
 		
 		// Damages the enemy and determines whether enemy died
-		this.dealDamage(enemy, totalDamage, AttackType.NONE);
+		this.dealDamage(enemy, totalDamage, AttackType.TRUE);
 	}
 }

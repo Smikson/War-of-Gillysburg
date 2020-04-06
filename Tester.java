@@ -75,15 +75,15 @@ public class Tester {
 		SteelLegionTank ally1 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 1").build();
 		SteelLegionTank ally2 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 2").build();
 		SteelLegionTank ally3 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 3").build();
-		SteelLegionTank enemy1 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 1").build();
-		SteelLegionTank enemy2 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 2").build();
-		SteelLegionTank enemy3 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 3").build();
+		//SteelLegionTank enemy1 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 1").build();
+		//SteelLegionTank enemy2 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 2").build();
+		//SteelLegionTank enemy3 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 3").build();
 		BattleSimulator.getInstance().addAlly(ally1);
 		BattleSimulator.getInstance().addAlly(ally2);
 		BattleSimulator.getInstance().addAlly(ally3);
-		BattleSimulator.getInstance().addEnemy(enemy1);
-		BattleSimulator.getInstance().addEnemy(enemy2);
-		BattleSimulator.getInstance().addEnemy(enemy3);
+		BattleSimulator.getInstance().addEnemy(spi1);
+		BattleSimulator.getInstance().addEnemy(spi2);
+		BattleSimulator.getInstance().addEnemy(spi3);
 		BattleSimulator.getInstance().initiate();
 		
 		// Writes CurrentHealth of all characters to the BattleHealthData.txt File.

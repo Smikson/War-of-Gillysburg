@@ -111,8 +111,7 @@ public class Character {
 		// Initializes the possible commands for a basic Character
 		this.commands = new LinkedList<>();
 		this.commands.add("Basic Attack");
-		this.commands.add("Add Condition");
-		this.commands.add("Remove Condition");
+		this.commands.add("Alter Character");
 		this.commands.add("End Turn");
 	}
 	public Character(Character copy) {
@@ -245,150 +244,7 @@ public class Character {
 		}
 	}
 	
-	// Add Condition Functions (and Prompt for Add Conditions)
-	private void promptConditionAddCrowdControl() {
-		boolean flag = true;
-		String choice;
-		System.out.println("Choose Crowd Control to Add:");
-		System.out.println("0. None");
-		System.out.println("1. Blind");
-		System.out.println("2. Invincible");
-		System.out.println("3. Invulnerable");
-		System.out.println("4. Slow (-2)");
-		System.out.println("5. Snare");
-		System.out.println("6. Stasis");
-		System.out.println("7. Stun");
-		while (flag) {
-			System.out.print("Choice? ");
-			choice = BattleSimulator.getInstance().getPrompter().nextLine();
-			switch(choice)
-	        {
-	            case "0": // None
-	                return;
-	            case "1": // Blind
-	            	this.addCondition(CrowdControl.BLIND);
-	            	System.out.println("Static Blind Effect was added to " + this.getName());
-	            	flag = false;
-	                return;
-	            case "2": // Invincible
-	            	this.addCondition(CrowdControl.INVINCIBLE);
-	                System.out.println("Static Invincibility Effect was added to " + this.getName());
-	                flag = false;
-	                return;
-	            case "3": // Invulnerable
-	            	this.addCondition(CrowdControl.INVULNERABLE);
-	                System.out.println("Static Invulnerability Effect was added to " + this.getName());
-	                flag = false;
-	                return;
-	            case "4": // Slow
-	            	this.addCondition(CrowdControl.SLOW);
-	            	System.out.println("Static Slow Effect was added to " + this.getName());
-	            	flag = false;
-	            	return;
-	            case "5": // Snare
-	            	this.addCondition(CrowdControl.SNARE);
-	            	System.out.println("Static Snare Effect was added to " + this.getName());
-	            	flag = false;
-	            	return;
-	            case "6": // Stasis
-	            	this.addCondition(CrowdControl.STASIS);
-	            	System.out.println("Static Stasis Effect was added to " + this.getName());
-	            	flag = false;
-	            	return;
-	            case "7": // Stun
-	            	this.addCondition(CrowdControl.STUN);
-	            	System.out.println("Static Stun Effect was added to " + this.getName());
-	            	flag = false;
-	            	return;
-	            default:
-	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
-	        }
-		}
-	}
-	protected void promptConditionAdd() {
-		boolean flag = true;
-		String choice;
-		System.out.println("Choose Condition to Add:");
-		System.out.println("0. None");
-		System.out.println("1. High Ground");
-		System.out.println("2. Hill");
-		System.out.println("3. Cover");
-		System.out.println("4. Tree");
-		System.out.println("5. Crowd Control");
-		while (flag) {
-			System.out.print("Choice? ");
-			choice = BattleSimulator.getInstance().getPrompter().nextLine();
-			switch(choice)
-	        {
-	            case "0": // None
-	                return;
-	            case "1": // High Ground
-	            	this.addCondition(Terrain.HIGH_GROUND);
-	            	System.out.println("High Ground was added to " + this.getName());
-	            	flag = false;
-	                return;
-	            case "2": // Hill
-	            	this.addCondition(Terrain.HILL);
-	                System.out.println("Hill was added to " + this.getName());
-	                flag = false;
-	                return;
-	            case "3": // Cover
-	            	this.addCondition(Terrain.COVER);
-	                System.out.println("Cover was added to " + this.getName());
-	                flag = false;
-	                return;
-	            case "4": // Tree
-	            	this.addCondition(Terrain.TREE);
-	            	System.out.println("Tree was added to " + this.getName());
-	            	flag = false;
-	            	return;
-	            case "5": // Crowd Control
-	            	System.out.println();
-	            	this.promptConditionAddCrowdControl();
-	            	flag = false;
-	            	return;
-	            default:
-	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
-	        }
-		}
-	}
-	protected void promptConditionRemove() {
-		boolean flag = true;
-		int choice = 1;
-		// Display options
-		System.out.println("Select Condition to Remove:");
-		System.out.println("0. None");
-		for (int i = 0; i < this.getAllConditions().size(); i++) {
-			System.out.println("" + (i+1) + ". " + this.getAllConditions().get(i).toString());
-		}
-		System.out.print("Choice? ");
-		while (flag) {
-			// Get result
-			if (BattleSimulator.getInstance().getPrompter().hasNextInt()) {
-				choice = BattleSimulator.getInstance().getPrompter().nextInt();
-				BattleSimulator.getInstance().getPrompter().nextLine();
-				if (choice <= this.getAllConditions().size()) {
-					if (choice == 0) {
-						return;
-					}
-					flag = false;
-				}
-				else {
-					System.out.println("Invalid responce. Please enter a valid responce.");
-					System.out.print("Choice? ");
-				}
-			}
-			else {
-				String responce = BattleSimulator.getInstance().getPrompter().nextLine();
-				System.out.println("\""+responce+"\" is not a valid responce. Please enter a valid responce.");
-				System.out.print("Choice? ");
-			}
-		}
-		if (choice == 0) {
-			return;
-		}
-		this.removeCondition(this.getAllConditions().get(choice-1));
-	}
+	
 	
 	// To see all Conditions in a single list (just active ones or all)
 	protected LinkedList<Condition> getActiveConditions() {
@@ -593,6 +449,153 @@ public class Character {
 			System.out.println("" + (i+1) + ". " + this.commands.get(i));
 		}
 	}
+	
+	// Prompts for altering a Character
+	// Add Condition Functions (and Prompt for Add Conditions)
+	// Adding Crowd Control Conditions
+	private void promptConditionAddCrowdControl() {
+		// Make a parallel String list for printing
+		LinkedList<String> ccStrings = new LinkedList<>();
+		for (CrowdControl cc : CrowdControl.CCLIST) {
+			ccStrings.add(cc.getName());
+		}
+		
+		// Add chosen Condition to Character
+		int choice = BattleSimulator.getInstance().promptSelect(ccStrings);
+		if (choice == 0) {
+			return;
+		}
+		this.addCondition(CrowdControl.CCLIST.get(choice-1));
+		
+		ccStrings.clear();
+	}
+	// Adding Terrain Conditions
+	private void promptConditionAddTerrain() {
+		// Make a parallel String list for printing
+		LinkedList<String> terrainStrings = new LinkedList<>();
+		for (Terrain t : Terrain.TERRAINLIST) {
+			terrainStrings.add(t.getName());
+		}
+		
+		// Add chosen Condition to Character
+		int choice = BattleSimulator.getInstance().promptSelect(terrainStrings);
+		if (choice == 0) {
+			return;
+		}
+		this.addCondition(Terrain.TERRAINLIST.get(choice-1));
+		
+		terrainStrings.clear();
+	}
+	
+	// Overwritten in other classes, used to apply a Class Condition from this Character to a different Character
+	public void promptClassConditionGive(Character other) {
+		System.out.println(this.getName() + " has no Class Conditions to add.");
+	}
+	
+	// The Add Condition Prompt
+	protected void promptConditionAdd() {
+		String choice;
+		System.out.println("Choose Type of Condition to Add:");
+		System.out.println("0. None (Go back)");
+		System.out.println("1. Crowd Control");
+		System.out.println("2. Terrain");
+		System.out.println("3. Class Condition");
+		while (true) {
+			System.out.print("Choice? ");
+			choice = BattleSimulator.getInstance().getPrompter().nextLine();
+			switch(choice)
+	        {
+	            case "0": // None
+	                return;
+	            case "1": // Crowd Control
+	            	System.out.println();
+	            	this.promptConditionAddCrowdControl();
+	                return;
+	            case "2": // Terrain
+	            	System.out.println();
+	            	this.promptConditionAddTerrain();
+	                return;
+	            case "3": // Class Condition
+	            	System.out.println();
+	            	Character chosenClass = BattleSimulator.getInstance().targetSingle();
+	                if (chosenClass.equals(Character.EMPTY)) {
+	                	break;
+	                }
+	                chosenClass.promptClassConditionGive(this);
+	                return;
+	            default:
+	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
+	        }
+		}
+	}
+	
+	
+	// Used to remove a chosen Condition from a Character (Remove Condition Prompt)
+	protected void promptConditionRemove() {
+		// Make a parallel String list for printing
+		LinkedList<String> conditionStrings = new LinkedList<>();
+		for (Condition c : this.getAllConditions()) {
+			conditionStrings.add(c.toString());
+		}
+		
+		// Remove chosen Condition from Character
+		int choice = BattleSimulator.getInstance().promptSelect(conditionStrings);
+		if (choice == 0) {
+			return;
+		}
+		this.removeCondition(this.getAllConditions().get(choice-1));
+		
+		conditionStrings.clear();
+	}
+	
+	
+	// Prompts for how to alter this Character when chosen
+	protected void promptAlterCharacter() {
+		String choice;
+		System.out.println("Select how to alter " + this.getName() + ":");
+		System.out.println("0. None (Go back)");
+		System.out.println("1. Alter Current Health");
+		System.out.println("2. Add Condition");
+		System.out.println("3. Remove Condition");
+		while (true) {
+			System.out.print("Choice? ");
+			choice = BattleSimulator.getInstance().getPrompter().nextLine();
+			switch(choice)
+	        {
+	            case "0": // None
+	                return;
+	            case "1": // Alter Current Health
+	            	System.out.println();
+	            	System.out.println(this.getName() + "'s Current Health: " + this.getCurrentHealth());
+	            	System.out.print("Enter the amount to add (negative to subtract): ");
+	            	while (true) {
+	            		if (BattleSimulator.getInstance().getPrompter().hasNextInt()) {
+		    				int amount = BattleSimulator.getInstance().getPrompter().nextInt();
+		    				BattleSimulator.getInstance().getPrompter().nextLine();
+		    				this.restoreHealth(amount);
+		    				System.out.println(this.getName() + "'s new Current Health: " + this.getCurrentHealth());
+		    				return;
+		    			}
+		            	else {
+		    				String responce = BattleSimulator.getInstance().getPrompter().nextLine();
+		    				System.out.println("\""+responce+"\" is not a valid responce. Please enter a valid responce.");
+		    				System.out.print("Choice? ");
+		    			}
+	            	}
+	            case "2": // Add Condition
+	            	System.out.println();
+	            	this.promptConditionAdd();
+	                return;
+	            case "3": // Remove Condition
+	            	System.out.println();
+	            	this.promptConditionRemove();
+	                return;
+	            default:
+	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
+	        }
+		}
+	}
+	
 	// Start of turn
 	protected void beginTurnSetup() {
 		// Increment all non-source-incrementing, non-permanent, non-end-of-turn conditions for this Character and remove respective expired conditions
@@ -631,6 +634,7 @@ public class Character {
 		}
 	}
 	protected void beginTurnDisplay() {
+		System.out.println("\n-----------------------------------------------------------------------------");
 		System.out.println("It is " + this.getName() + "'s turn.");
 		System.out.println("Current Health: " + this.getCurrentHealth());
 		System.out.println("Current Conditions:");
@@ -672,21 +676,14 @@ public class Character {
 	                this.attack(enemy);
 	                flag = false;
 	                break;
-	            case "2": // Add Condition
+	            case "2": // Alter Character
 	            	Character chosen = BattleSimulator.getInstance().targetSingle();
-	                if (chosen.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                chosen.promptConditionAdd();
-	                break;
-	            case "3": // Remove Condition
-	            	Character choice = BattleSimulator.getInstance().targetSingle();
-	                if (choice.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                choice.promptConditionRemove();
-	                break;
-	            case "4": // End Turn
+	            	if (chosen.equals(Character.EMPTY)) {
+	            		break;
+	            	}
+	            	chosen.promptAlterCharacter();
+	            	break;
+	            case "3": // End Turn
 	                flag = false;
 	                break;
 	            default:
@@ -1026,7 +1023,7 @@ public class Character {
 		this.attack(enemy, scaler, aType, true);
 	}
 	public void attack(Character enemy, double scaler, boolean armorApplies) {
-		this.attack(enemy, scaler, AttackType.NONE, armorApplies);
+		this.attack(enemy, scaler, AttackType.TRUE, armorApplies);
 	}
 	public void attack(Character enemy, AttackType aType, boolean armorApplies) {
 		this.attack(enemy, 1, aType, armorApplies);
@@ -1048,7 +1045,7 @@ public class Character {
 		this.attackAOE(enemy, scaler, aType, true);
 	}
 	public void attackAOE(Character enemy, double scaler, boolean armorApplies) {
-		this.attackAOE(enemy, scaler, AttackType.NONE, armorApplies);
+		this.attackAOE(enemy, scaler, AttackType.TRUE, armorApplies);
 	}
 	public void attackAOE(Character enemy, AttackType aType, boolean armorApplies) {
 		this.attackAOE(enemy, 1, aType, armorApplies);
@@ -1070,7 +1067,7 @@ public class Character {
 		this.attackNoMiss(enemy, scaler, aType, true);
 	}
 	public void attackNoMiss(Character enemy, double scaler, boolean armorApplies) {
-		this.attackNoMiss(enemy, scaler, AttackType.NONE, armorApplies);
+		this.attackNoMiss(enemy, scaler, AttackType.TRUE, armorApplies);
 	}
 	public void attackNoMiss(Character enemy, AttackType aType, boolean armorApplies) {
 		this.attackNoMiss(enemy, 1, aType, armorApplies);
@@ -1096,7 +1093,7 @@ public class Character {
 		int damage = (int)Math.round(damageMax * armorEffect);
 		
 		// Deal the damage to the enemy
-		enemy.takeDamage(damage, AttackType.NONE);
+		enemy.takeDamage(damage, AttackType.TRUE);
 		ret += "The " + obj.getName() + " dealt " + damage + " to " + enemy.getName() + "!";
 		if (enemy.isDead()) {
 			ret += "\n" + enemy.getName() + " was defeated from the damage taken from the " + obj.getName() + "!";
@@ -1146,7 +1143,7 @@ public class Character {
 			double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
 			int damage = (int)Math.round(damageMax * armorEffect);
 			System.out.println(collided.getName() + " successfully blocked " + enemy.getName() + "!");
-			collided.dealDamage(enemy, damage, AttackType.NONE);
+			collided.dealDamage(enemy, damage, AttackType.TRUE);
 		}
 		
 		// Otherwise, the Character was not blocked, and both parties take various damage
@@ -1168,7 +1165,7 @@ public class Character {
 		int damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
 		double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
 		int damage = (int)Math.round(damageMax * armorEffect);
-		collided.dealDamage(enemy, damage, AttackType.NONE);
+		collided.dealDamage(enemy, damage, AttackType.TRUE);
 		
 		
 		// Second, damage is dealt to the Character knocked into (collided)
@@ -1188,7 +1185,7 @@ public class Character {
 		damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
 		armorEffect = 1.0 * enemy.getArmor() / collided.getArmor();
 		damage = (int)Math.round(damageMax * armorEffect);
-		enemy.dealDamage(collided, damage, AttackType.NONE);
+		enemy.dealDamage(collided, damage, AttackType.TRUE);
 	}
 	
 	

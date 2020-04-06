@@ -76,7 +76,7 @@ public class SilentDeathShadow extends Character{
 				int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
 				
 				// Damages the enemy and determines whether enemy died
-				this.dealDamage(enemy, damageDealt, AttackType.NONE, didCrit);
+				this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
 			}
 		}
 		else {
@@ -109,7 +109,7 @@ public class SilentDeathShadow extends Character{
 		}
 		
 		if (usedFromStealth) {
-			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals the damage to the enemy
+			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals the damage to the enemy
 		}
 		
 		else {
@@ -122,7 +122,7 @@ public class SilentDeathShadow extends Character{
 			}
 			// If the attack hits, it deals the damage
 			else {
-				this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals the damage to the enemy
+				this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals the damage to the enemy
 			}
 		}
 	}

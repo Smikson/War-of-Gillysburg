@@ -9,7 +9,7 @@ public class BattleSimulator {
 	// Holds the info about combatants and rounds
 	private int round;
 	private LinkedList<Character> allyList;
-	private LinkedList<Character> enemyList;
+	private LinkedList<Enemy> enemyList;
 	private LinkedList<Character> combatantList;
 	
 	// Helpful for prompting controller for commands
@@ -19,7 +19,7 @@ public class BattleSimulator {
 	private BattleSimulator() {
 		this.round = 1;
 		this.allyList = new LinkedList<Character>();
-		this.enemyList = new LinkedList<Character>();
+		this.enemyList = new LinkedList<Enemy>();
 		this.combatantList = new LinkedList<Character>();
 		this.prompter = new Scanner(System.in);
 	}
@@ -80,7 +80,7 @@ public class BattleSimulator {
 		combatantList.add(ally);
 	}
 	
-	public void addEnemy(Character enemy) {
+	public void addEnemy(Enemy enemy) {
 		enemyList.add(enemy);
 		combatantList.add(enemy);
 	}
@@ -107,27 +107,24 @@ public class BattleSimulator {
 		// Return result
 		return ret;
 	}
-	// Return a chosen Character in combatants (or EMPTY if chosen)
-	public Character targetSingle() {
-		boolean flag = true;
-		int choice = 1;
+	
+	// Returns a chosen number of a list of Strings (nth string chosen -- NOT INDEX)
+	public int promptSelect(LinkedList<String> choices) {
+		int choice = 0;
 		// Display options
-		System.out.println("Select Single Target:");
+		System.out.println("Choose one of these options:");
 		System.out.println("0. None (Go back)");
-		for (int i = 0; i < this.getCombatants().size(); i++) {
-			System.out.println("" + (i+1) + ". " + this.getCombatants().get(i).getName());
+		for (int i = 0; i < choices.size(); i++) {
+			System.out.println("" + (i+1) + ". " + choices.get(i));
 		}
 		System.out.print("Choice? ");
-		while (flag) {
-			// Get result
+		while (true) {
+			// Get responce
 			if (this.getPrompter().hasNextInt()) {
 				choice = this.getPrompter().nextInt();
 				this.getPrompter().nextLine();
-				if (choice <= this.getCombatants().size()) {
-					if (choice == 0) {
-						return Character.EMPTY;
-					}
-					flag = false;
+				if (choice <= choices.size() && choice >= 0) {
+					return choice;
 				}
 				else {
 					System.out.println("Invalid responce. Please enter a valid responce.");
@@ -140,7 +137,21 @@ public class BattleSimulator {
 				System.out.print("Choice? ");
 			}
 		}
-		return this.getCombatants().get(choice-1);
+	}
+	
+	// Return a chosen Character in combatants (or EMPTY if 0 chosen)
+	public Character targetSingle() {
+		LinkedList<String> nameList = new LinkedList<>();
+		for (Character combatant : this.getCombatants()) {
+			nameList.add(combatant.getName());
+		}
+		int choice = this.promptSelect(nameList);
+		if (choice == 0) {
+			return Character.EMPTY;
+		}
+		else {
+			return this.getCombatants().get(choice-1);
+		}
 	}
 	// Return a list of chosen Characters in combatants (or an empty list if none is requested)
 	public LinkedList<Character> targetMultiple() {
@@ -159,15 +170,20 @@ public class BattleSimulator {
 			if (this.getPrompter().hasNextInt()) {
 				choice = this.getPrompter().nextInt();
 				this.getPrompter().nextLine();
-				if (choice <= this.getCombatants().size()) {
+				if (choice <= this.getCombatants().size() && choice >= 0) {
 					if (choice == 0) {
 						flag = false;
 					}
 					else {
-						ret.add(this.getCombatants().get(choice-1));
-						System.out.print("Current list: " + ret.get(0).getName());
-						for (int i = 1; i < ret.size(); i++) {
-							System.out.print(", " + ret.get(i).getName());
+						if (ret.contains(this.getCombatants().get(choice-1))) {
+							System.out.println("List already contains " + this.getCombatants().get(choice-1).getName());
+						}
+						else {
+							ret.add(this.getCombatants().get(choice-1));
+							System.out.print("Current list: " + ret.get(0).getName());
+							for (int i = 1; i < ret.size(); i++) {
+								System.out.print(", " + ret.get(i).getName());
+							}
 						}
 						System.out.print("\nChoice? ");
 					}
@@ -233,12 +249,12 @@ public class BattleSimulator {
 	}
 	
 	public void initiate() {
-		/*
+		
 		// Sets Threat and TacticalThreat for each Enemy
 		for (int x = 0; x<enemyList.size(); x++) {
 			enemyList.get(x).setThreatOrder(allyList);
 		}
-		*/
+		
 		
 		// Then sets the turn order
 		setOrder();

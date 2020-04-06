@@ -21,7 +21,7 @@ public class KinitchuOrderThaumraturge extends Character{
 			}
 			
 			// Damages the enemy and determines whether enemy died
-			this.dealDamage(enemy, damageDealt, AttackType.NONE); // Deals Damage
+			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals Damage
 		}
 	}
 	

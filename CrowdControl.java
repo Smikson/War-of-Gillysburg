@@ -1,5 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.*;
+
 // Classes that extend CrowdControl essentially act as Conditions.
 // However this class acts as a way to group these types together and provide static versions to be used by Character's "AddCondition".
 // There are 7 types of Crowd Control: Blind, Invincible, Invulnerable, Slow, Snare, Stasis, and Stun.
@@ -12,6 +14,8 @@ public class CrowdControl extends Condition {
 	public final static Snare SNARE = getSnare();
 	public final static Stasis STASIS = getStasis();
 	public final static Stun STUN = getStun();
+	
+	public final static LinkedList<CrowdControl> CCLIST = getList();
 	
 	// Constructors - Acts essentially the same as a Condition
 	public CrowdControl(String name, int duration, Requirement actReq) {
@@ -41,7 +45,7 @@ public class CrowdControl extends Condition {
 		return staticInvulnerability;
 	}
 	private final static Slow getSlow() {
-		Slow staticSlow = new Slow("Static Slow", -1, 2);
+		Slow staticSlow = new Slow("Static Slow (-2)", -1, 2);
     	staticSlow.makePermanent();
 		return staticSlow;
 	}
@@ -59,6 +63,17 @@ public class CrowdControl extends Condition {
 		Stun staticStun = new Stun("Static Stun", -1);
     	staticStun.makePermanent();
 		return staticStun;
+	}
+	private final static LinkedList<CrowdControl> getList() {
+		LinkedList<CrowdControl> staticList = new LinkedList<>();
+		staticList.add(BLIND);
+		staticList.add(INVINCIBLE);
+		staticList.add(INVULNERABLE);
+		staticList.add(SLOW);
+		staticList.add(SNARE);
+		staticList.add(STASIS);
+		staticList.add(STUN);
+		return staticList;
 	}
 }
 
@@ -105,7 +120,7 @@ class Invincible extends CrowdControl {
 }
 
 // Implementation of Invulnerable
-class Invulnerable extends Condition {
+class Invulnerable extends CrowdControl {
 	// Constructs an "invulnerable" effect
 	public Invulnerable(String name, int duration, Requirement actReq) {
 		super(name, duration, actReq);
@@ -121,7 +136,7 @@ class Invulnerable extends Condition {
 }
 
 // Implementation of Slow
-class Slow extends Condition {
+class Slow extends CrowdControl {
 	// Added Variable
 	private double value;
 	
@@ -154,7 +169,7 @@ class Slow extends Condition {
 }
 
 // Implementation of Snare
-class Snare extends Condition {
+class Snare extends CrowdControl {
 	// Constructs a snare
 	public Snare(String name, int duration, Requirement actReq) {
 		super(name, duration, actReq);
@@ -173,7 +188,7 @@ class Snare extends Condition {
 }
 
 // Implementation of Stasis
-class Stasis extends Condition {
+class Stasis extends CrowdControl {
 	// Constructs a stasis
 	public Stasis(String name, int duration, Requirement actReq) {
 		super(name, duration, actReq);
@@ -189,7 +204,7 @@ class Stasis extends Condition {
 }
 
 // Implementation of Stun
-class Stun extends Condition {
+class Stun extends CrowdControl {
 	// Constructs a stun
 	public Stun(String name, int duration, Requirement actReq) {
 		super(name, duration, actReq);

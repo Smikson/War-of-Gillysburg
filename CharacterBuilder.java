@@ -3,7 +3,7 @@ package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
 enum AttackType {
-	NONE, SLASHING, SMASHING, PIERCING, MAGIC, FIRE, ICE, LIGHTNING, ARCANE, POISON, EXPLOSIVE, LIGHT, NECROMANTIC;
+	TRUE, SLASHING, SMASHING, PIERCING, MAGIC, FIRE, ICE, LIGHTNING, ARCANE, POISON, BLEED, EXPLOSIVE, LIGHT, NECROMANTIC;
 }
 
 
@@ -247,7 +247,7 @@ public class CharacterBuilder {
 	}
 	
 	public CharacterBuilder addResistance(AttackType resistance, double value) {
-		if (resistance.equals(AttackType.NONE)) {
+		if (resistance.equals(AttackType.TRUE)) {
 			return this;
 		}
 		
@@ -264,7 +264,7 @@ public class CharacterBuilder {
 		return this;
 	}
 	public CharacterBuilder addVulnerability(AttackType vulnerability, double value) {
-		if (vulnerability.equals(AttackType.NONE)) {
+		if (vulnerability.equals(AttackType.TRUE)) {
 			return this;
 		}
 		
