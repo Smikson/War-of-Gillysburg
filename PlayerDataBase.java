@@ -47,37 +47,15 @@ public class PlayerDataBase {
 			.TacticalThreat(7)
 			.buildKOT();
 	
-	public static final SteelLegionWarrior JD = new CharacterBuilder()
+	public static final SteelLegionWarrior JD = new SteelLegionWarriorBuilder()
 			.Name("J.D.")
 			.Level(1)
-			.Health(701)
-			.Damage(95+15)
-			.Armor(13+5)
-			.ArmorPiercing(4)
-			.Accuracy(110)
-			.Block(23)
-			.CriticalChance(5)
-			.Speed(5)
-			.AttackSpeed(5)
-			.Threat(15)
-			.TacticalThreat(5)
-			.buildSLW();
+			.build();
 	
-	public static final SteelLegionWarrior IAN = new CharacterBuilder()
+	public static final SteelLegionWarrior IAN = new SteelLegionWarriorBuilder()
 			.Name("Ian")
 			.Level(1)
-			.Health(694)
-			.Damage(108)
-			.Armor(182)
-			.ArmorPiercing(118)
-			.Accuracy(125)
-			.Block(30)
-			.CriticalChance(5)
-			.Speed(6)
-			.AttackSpeed(5)
-			.Threat(15)
-			.TacticalThreat(5)
-			.buildSLW();
+			.build();
 	
 	public static final SentinelArcArcher TYLER = new CharacterBuilder()
 			.Name("Tyler")

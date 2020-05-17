@@ -27,15 +27,15 @@ public class Tester {
 		allies.add(Prince);
 		
 		// Creates Enemies with respective Data and adds them to the enemies list
-		Enemy spi1 = new CharacterBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 1").buildE();
-		Enemy spi2 = new CharacterBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 2").buildE();
-		Enemy spi3 = new CharacterBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 3").buildE();
+		Enemy spi1 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 1").build();
+		Enemy spi2 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 2").build();
+		Enemy spi3 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 3").build();
 		
 		enemies.add(spi1);
 		enemies.add(spi2);
 		enemies.add(spi3);
 		
-		
+		/*
 		// Gets all characters CurrentHealth from the file BattleHealthData.txt and stores in the CurrentHealthStatus List
 		Scanner sc = new Scanner(new File("BattleHealthData.txt"));
 		LinkedList<String> currentHealthStatus = new LinkedList<>();
@@ -66,7 +66,7 @@ public class Tester {
 				enemy.setCurrentHealth(currentHealth.get(enemy.getName()));
 			}
 		}
-		
+		*/
 		List<Character> group = new LinkedList<Character>();
 		group.add(spi3);
 		
@@ -75,9 +75,6 @@ public class Tester {
 		SteelLegionTank ally1 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 1").build();
 		SteelLegionTank ally2 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 2").build();
 		SteelLegionTank ally3 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 3").build();
-		//SteelLegionTank enemy1 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 1").build();
-		//SteelLegionTank enemy2 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 2").build();
-		//SteelLegionTank enemy3 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Enemy 3").build();
 		BattleSimulator.getInstance().addAlly(ally1);
 		BattleSimulator.getInstance().addAlly(ally2);
 		BattleSimulator.getInstance().addAlly(ally3);
@@ -86,6 +83,7 @@ public class Tester {
 		BattleSimulator.getInstance().addEnemy(spi3);
 		BattleSimulator.getInstance().initiate();
 		
+		/*
 		// Writes CurrentHealth of all characters to the BattleHealthData.txt File.
 		BufferedWriter writer = new BufferedWriter(new FileWriter("BattleHealthData.txt"));
 		for (Character ally : allies) {
@@ -94,7 +92,7 @@ public class Tester {
 		for (Enemy enemy : enemies) {
 			writer.write(enemy.getName() + ": " + enemy.getCurrentHealth() + "\n");
 		}
-		writer.close();
+		writer.close();*/
 		
 	}
 }

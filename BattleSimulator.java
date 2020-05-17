@@ -55,8 +55,8 @@ public class BattleSimulator {
 			System.out.println(enemy.getName());
 		}
 	}
-	public LinkedList<Character> getEnemies() {
-		LinkedList<Character> ret = new LinkedList<>();
+	public LinkedList<Enemy> getEnemies() {
+		LinkedList<Enemy> ret = new LinkedList<>();
 		ret.addAll(this.enemyList);
 		return ret;
 	}
@@ -83,6 +83,24 @@ public class BattleSimulator {
 	public void addEnemy(Enemy enemy) {
 		enemyList.add(enemy);
 		combatantList.add(enemy);
+	}
+	
+	// Test methods to see if either "team" is dead
+	public boolean allAlliesDead() {
+		for (Character ally : this.getAllies()) {
+			if (!ally.isDead()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	public boolean allEnemiesDead() {
+		for (Enemy e : this.getEnemies()) {
+			if (!e.isDead()) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	// Prompt methods
@@ -263,12 +281,26 @@ public class BattleSimulator {
 		// Infintely loop, counting up in the number of rounds -- or use stop conditions below, have it only break out of the one loop?
 		// For each Character in combatants, begin turn
 		// If All Allies are dead, all enemies are dead, (or the flag variable has changed) break out of both loops
-		while (this.round < 4) {
+		boolean bothAlive = true;
+		while (bothAlive) {
+			System.out.println("\n-----------------------------------------------------------------------------");
+			System.out.println("-----------------------------------------------------------------------------");
 			System.out.println("Round: " + this.round);
+			System.out.println("-----------------------------------------------------------------------------\n");
 			for (Character c : this.combatantList) {
 				c.beginTurn();
+				if (this.allAlliesDead() || this.allEnemiesDead()) {
+					bothAlive = false;
+					break;
+				}
 			}
 			this.round++;
+		}
+		if (this.allAlliesDead() && !this.allEnemiesDead()) {
+			System.out.println("\nDEFEAT!");
+		}
+		else if (this.allEnemiesDead() && !this.allAlliesDead()) {
+			System.out.println("\nVICTORY!!!");
 		}
 	}
 	

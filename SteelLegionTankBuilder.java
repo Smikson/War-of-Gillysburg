@@ -1,6 +1,6 @@
 package WyattWitemeyer.WarOfGillysburg;
 
-public class SteelLegionTankBuilder extends CharacterBuilder{
+public class SteelLegionTankBuilder extends CharacterBuilder {
 	// Creates all the Ability fields
 	private int HoldItRightThereRank;
 	private int EnchantedArmorRank;
@@ -122,12 +122,44 @@ public class SteelLegionTankBuilder extends CharacterBuilder{
 	
 	@Override
 	public SteelLegionTankBuilder addResistance(AttackType resistance, double value) {
+		if (resistance.equals(AttackType.TRUE)) {
+			return this;
+		}
+		
 		this.resistances.put(resistance, value);
+		if (resistance.equals(AttackType.MAGIC)) {
+			this.addResistance(AttackType.ARCANE, value);
+			this.addResistance(AttackType.FIRE, value);
+			this.addResistance(AttackType.ICE, value);
+			this.addResistance(AttackType.LIGHT, value);
+			this.addResistance(AttackType.LIGHTNING, value);
+			this.addResistance(AttackType.NECROMANTIC, value);
+		}
+		
 		return this;
 	}
 	@Override
 	public SteelLegionTankBuilder addVulnerability(AttackType vulnerability, double value) {
+		if (vulnerability.equals(AttackType.TRUE)) {
+			return this;
+		}
+		
 		this.vulnerabilities.put(vulnerability, value);
+		if (vulnerability.equals(AttackType.MAGIC)) {
+			this.addVulnerability(AttackType.ARCANE, value);
+			this.addVulnerability(AttackType.FIRE, value);
+			this.addVulnerability(AttackType.ICE, value);
+			this.addVulnerability(AttackType.LIGHT, value);
+			this.addVulnerability(AttackType.LIGHTNING, value);
+			this.addVulnerability(AttackType.NECROMANTIC, value);
+		}
+		
+		return this;
+	}
+	
+	@Override
+	public SteelLegionTankBuilder Type(CharacterType type) {
+		this.Type = type;
 		return this;
 	}
 	
@@ -181,16 +213,52 @@ public class SteelLegionTankBuilder extends CharacterBuilder{
 	}
 	
 	
-	
-	// Finishes the build by returning a SteelLegionTank Character (overriding the normal build, implementing buildSLT)
+	// Finishes the build by returning a SteelLegionTank Character
 	public SteelLegionTank build() {
-		int baseHealth = this.Health;
-		int baseDamage = this.Damage;
-		
-		// If they specified a level, calculate the base Health and Damage for that level and overwrite any previous base Health.
-		if (this.Level > 0) {
-			baseHealth = this.calcBaseHealth(Character.STEEL_LEGION_TANK, this.Level);
-			baseDamage = this.calcBaseDamage(Character.STEEL_LEGION_TANK, this.Level);
+		// Each stat is already set to its level 1 base value
+		// Note: below only occurs if the specified a level, since the base level is 0.
+		// "Level Up" each stat: (Multiply by the given multiplier for each level up to the current level)
+		for (int counter = 2; counter <= this.Level; counter++) {
+			// Statically increasing stats (increases by same amount each level)
+			this.Damage = (int)Math.round(this.Damage * 1.03);
+			this.Armor = (int)Math.round(this.Armor * 1.05);
+			this.ArmorPiercing = (int)Math.round(this.ArmorPiercing * 1.05);
+			this.Accuracy = (int)Math.round(this.Accuracy * 1.05);
+			this.Block = (int)Math.round(this.Block * 1.05);
+			
+			// Dynamically increasing stats
+			// Health changes at intervals of 5 and 10
+			if (counter % 10 == 0) {
+				this.Health = (int)Math.round(this.Health * 1.07);
+			}
+			else if (counter % 5 == 0) {
+				this.Health = (int)Math.round(this.Health * 1.05);
+			}
+			else {
+				this.Health = (int)Math.round(this.Health * 1.03);
+			}
+			
+			// Attack Speed increases every 20 levels by 2
+			if (counter % 20 == 0) {
+				this.AttackSpeed += 2;
+			}
+			
+			// Threat increases with various amounts at the given levels
+			if (counter == 10) {
+				this.Threat += 5;
+			}
+			if (counter == 30) {
+				this.Threat += 6;
+			}
+			if (counter == 50) {
+				this.Threat += 7;
+			}
+			if (counter == 70) {
+				this.Threat += 8;
+			}
+			if (counter == 90) {
+				this.Threat += 10;
+			}
 		}
 		
 		// Calculate the bonus stats given by certain Abilities
@@ -206,10 +274,11 @@ public class SteelLegionTankBuilder extends CharacterBuilder{
 			this.bHealth += pf.getBonusHealth();
 		}
 		
+		// Return the Steel Legion Tank
 		return new SteelLegionTank(this.name, 
 								   this.Level,
-								   baseHealth + this.bHealth,
-								   baseDamage + this.bDamage,
+								   this.Health + this.bHealth,
+								   this.Damage + this.bDamage,
 							       this.Armor + this.bArmor,
 								   this.ArmorPiercing + this.bArmorPiercing,
 								   this.Accuracy + this.bAccuracy,
@@ -225,6 +294,7 @@ public class SteelLegionTankBuilder extends CharacterBuilder{
 								   this.STDup,
 								   this.resistances,
 								   this.vulnerabilities,
+								   this.Type,
 								   this.HoldItRightThereRank,
 								   this.EnchantedArmorRank,
 								   this.ShieldSkillsRank,

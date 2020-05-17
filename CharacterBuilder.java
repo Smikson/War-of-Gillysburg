@@ -25,7 +25,6 @@ public class CharacterBuilder {
 	protected int Range;
 	protected int Threat;
 	protected int TacticalThreat;
-	protected boolean UseThreat;
 	protected int STDdown;
 	protected int STDup;
 	
@@ -46,10 +45,10 @@ public class CharacterBuilder {
 	protected int bSTDdown;
 	protected int bSTDup;
 	
-	
-	// Holds the resistances, vulnerabilities, and attack types for the character
 	protected HashMap<AttackType,Double> resistances;
 	protected HashMap<AttackType,Double> vulnerabilities;
+	
+	protected CharacterType Type;
 	
 	public CharacterBuilder(Character c) {
 		// Matches everything (as total) with the current Character, setting all bonuses to 0.
@@ -73,6 +72,8 @@ public class CharacterBuilder {
 		
 		this.resistances = c.getResistances();
 		this.vulnerabilities = c.getVulnerabilities();
+		
+		this.Type = c.getType();
 		
 		this.bHealth = 0;
 		this.bDamage = 0;
@@ -223,11 +224,6 @@ public class CharacterBuilder {
 		return this;
 	}
 	
-	public CharacterBuilder UseThreat(boolean useThreat) {
-		this.UseThreat = useThreat;
-		return this;
-	}
-	
 	public CharacterBuilder STDdown(int stdDown) {
 		this.STDdown = stdDown;
 		return this;
@@ -268,16 +264,21 @@ public class CharacterBuilder {
 			return this;
 		}
 		
-		this.resistances.put(vulnerability, value);
+		this.vulnerabilities.put(vulnerability, value);
 		if (vulnerability.equals(AttackType.MAGIC)) {
-			this.addResistance(AttackType.ARCANE, value);
-			this.addResistance(AttackType.FIRE, value);
-			this.addResistance(AttackType.ICE, value);
-			this.addResistance(AttackType.LIGHT, value);
-			this.addResistance(AttackType.LIGHTNING, value);
-			this.addResistance(AttackType.NECROMANTIC, value);
+			this.addVulnerability(AttackType.ARCANE, value);
+			this.addVulnerability(AttackType.FIRE, value);
+			this.addVulnerability(AttackType.ICE, value);
+			this.addVulnerability(AttackType.LIGHT, value);
+			this.addVulnerability(AttackType.LIGHTNING, value);
+			this.addVulnerability(AttackType.NECROMANTIC, value);
 		}
 		
+		return this;
+	}
+	
+	public CharacterBuilder Type(CharacterType type) {
+		this.Type = type;
 		return this;
 	}
 	
@@ -458,61 +459,8 @@ public class CharacterBuilder {
 							 this.STDdown,
 							 this.STDup,
 							 this.resistances,
-							 this.vulnerabilities);
-	}
-	
-	public Enemy buildE() {
-		return new Enemy(this.name, 
-						 this.Level,
-						 this.Health + this.bHealth,
-						 this.Damage + this.bDamage,
-						 this.Armor + this.bArmor,
-						 this.ArmorPiercing + this.bArmorPiercing,
-						 this.Accuracy + this.bAccuracy,
-						 this.Dodge + this.bDodge,
-						 this.Block + this.bBlock,
-						 this.CriticalChance + this.bCriticalChance,
-						 this.Speed + this.bSpeed,
-						 this.AttackSpeed + this.bAttackSpeed,
-						 this.Range + this.bRange,
-						 this.Threat + this.bThreat,
-						 this.TacticalThreat + this.bTacticalThreat,
-						 this.STDdown,
-						 this.STDup,
-						 this.UseThreat,
-						 this.resistances,
-						 this.vulnerabilities);
-	}
-	
-	public SteelLegionWarrior buildSLW() {
-		int baseHealth = this.Health;
-		int baseDamage = this.Damage;
-		
-		// If they specified a level, calculate the base Health and Damage for that level and overwrite any previous base Health.
-		if (this.Level > 0) {
-			baseHealth = this.calcBaseHealth(Character.STEEL_LEGION_WARRIOR, this.Level);
-			baseDamage = this.calcBaseDamage(Character.STEEL_LEGION_WARRIOR, this.Level);
-		}
-		
-		return new SteelLegionWarrior(this.name, 
-									  this.Level,
-									  baseHealth + this.bHealth,
-									  baseDamage + this.bDamage,
-									  this.Armor + this.bArmor,
-									  this.ArmorPiercing + this.bArmorPiercing,
-									  this.Accuracy + this.bAccuracy,
-									  this.Dodge + this.bDodge,
-									  this.Block + this.bBlock,
-									  this.CriticalChance + this.bCriticalChance,
-									  this.Speed + this.bSpeed,
-									  this.AttackSpeed + this.bAttackSpeed,
-									  this.Range + this.bRange,
-									  this.Threat + this.bThreat,
-									  this.TacticalThreat + this.bTacticalThreat,
-									  this.STDdown,
-									  this.STDup,
-									  this.resistances,
-									  this.vulnerabilities);
+							 this.vulnerabilities,
+							 this.Type);
 	}
 	
 	public SteelLegionBarbarian buildSLB() {
@@ -543,7 +491,8 @@ public class CharacterBuilder {
 									    this.STDdown,
 									    this.STDup,
 									    this.resistances,
-									    this.vulnerabilities);
+									    this.vulnerabilities,
+									    this.Type);
 	}
 	
 	public SentinelSniper buildSS() {
@@ -574,7 +523,8 @@ public class CharacterBuilder {
 								  this.STDdown,
 								  this.STDup,
 								  this.resistances,
-								  this.vulnerabilities);
+								  this.vulnerabilities,
+								  this.Type);
 	}
 	
 	public SentinelSpecialist buildSSPL() {
@@ -605,7 +555,8 @@ public class CharacterBuilder {
 									  this.STDdown,
 									  this.STDup,
 									  this.resistances,
-									  this.vulnerabilities);
+									  this.vulnerabilities,
+									  this.Type);
 	}
 	
 	public SentinelArcArcher buildSAA() {
@@ -636,7 +587,8 @@ public class CharacterBuilder {
 									 this.STDdown,
 									 this.STDup,
 									 this.resistances,
-									 this.vulnerabilities);
+									 this.vulnerabilities,
+									 this.Type);
 	}
 	
 	public SilentDeathShadow buildSDS() {
@@ -667,7 +619,8 @@ public class CharacterBuilder {
 									 this.STDdown,
 									 this.STDup,
 									 this.resistances,
-									 this.vulnerabilities);
+									 this.vulnerabilities,
+									 this.Type);
 	}
 	
 	public SilentDeathPoisonSpecialist buildSDPS(){
@@ -698,7 +651,8 @@ public class CharacterBuilder {
 											   this.STDdown,
 											   this.STDup,
 											   this.resistances,
-											   this.vulnerabilities);
+											   this.vulnerabilities,
+											   this.Type);
 	}
 	
 	public SilentDeathHunter buildSDH() {
@@ -729,7 +683,8 @@ public class CharacterBuilder {
 									 this.STDdown,
 									 this.STDup,
 									 this.resistances,
-									 this.vulnerabilities);
+									 this.vulnerabilities,
+									 this.Type);
 	}
 	
 	public KinitchuOrderDragonFireWizard buildKODFW() {
@@ -760,7 +715,8 @@ public class CharacterBuilder {
 												 this.STDdown,
 												 this.STDup,
 												 this.resistances,
-												 this.vulnerabilities);
+												 this.vulnerabilities,
+												 this.Type);
 	}
 	
 	public KinitchuOrderThaumraturge buildKOT() {
@@ -791,7 +747,8 @@ public class CharacterBuilder {
 											 this.STDdown,
 											 this.STDup,
 											 this.resistances,
-											 this.vulnerabilities);
+											 this.vulnerabilities,
+											 this.Type);
 	}
 	
 	public KinitchuOrderArcana buildKOA() {
@@ -822,7 +779,8 @@ public class CharacterBuilder {
 									   this.STDdown,
 									   this.STDup,
 									   this.resistances,
-									   this.vulnerabilities);
+									   this.vulnerabilities,
+									   this.Type);
 	}
 	
 	public KinitchuOrderLuminescentWizard buildKOL() {
@@ -853,7 +811,8 @@ public class CharacterBuilder {
 												  this.STDdown,
 												  this.STDup,
 												  this.resistances,
-												  this.vulnerabilities);
+												  this.vulnerabilities,
+												  this.Type);
 	}
 	
 	public KinitchuOrderNecromancer buildKON() {
@@ -884,6 +843,7 @@ public class CharacterBuilder {
 										    this.STDdown,
 										    this.STDup,
 										    this.resistances,
-										    this.vulnerabilities);
+										    this.vulnerabilities,
+										    this.Type);
 	}
 }

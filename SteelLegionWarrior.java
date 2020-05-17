@@ -2,14 +2,90 @@ package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
 public class SteelLegionWarrior extends Character {
+	// Passive Abilities
+	private VengeanceStrike VengeanceStrike; // Unique Passive Ability (UPA)
+	private SwordplayProwess SwordplayProwess;
+	private WarriorsMight WarriorsMight;
+	private AgileFighter AgileFighter;  // Add initialization?
+	
+	// Base Abilities
+	private Sweep Sweep;
+	private Charge Charge;
+	private FlipStrike FlipStrike;
+	private IntimidatingShout IntimidatingShout;
+	private Deflection Deflection;
+	
+	// A List of all Abilities so all Cooldowns can be reduced at once
+	private LinkedList<Ability> abilities;
+	
 	
 	// These first two methods help set up the Steel Legion Warrior subclass.
-	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
+	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, CharacterType type, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
+		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
+		this.VengeanceStrike = new VengeanceStrike(this, vsRank);
+		this.SwordplayProwess = new SwordplayProwess(this, spRank);
+		this.WarriorsMight = new WarriorsMight(this, wmRank);
+		this.AgileFighter = new AgileFighter(this, afRank);
+		this.Sweep = new Sweep(this, sweepRank);
+		this.Charge = new Charge(this, chargeRank);
+		this.FlipStrike = new FlipStrike(this, fsRank);
+		this.IntimidatingShout = new IntimidatingShout(this, isRank);
+		this.Deflection = new Deflection(this, deflectRank);
+		
+		// Add Abilities to a list for Cooldown purposes
+		this.abilities = new LinkedList<>();
+		this.abilities.add(this.VengeanceStrike);
+		this.abilities.add(this.SwordplayProwess);
+		this.abilities.add(this.WarriorsMight);
+		this.abilities.add(this.AgileFighter);
+		this.abilities.add(this.Sweep);
+		this.abilities.add(this.Charge);
+		this.abilities.add(this.FlipStrike);
+		this.abilities.add(this.IntimidatingShout);
+		this.abilities.add(this.Deflection);
+		
+		// Add new commands for Abilities
+		this.addCommand(1, "Sweep");
+		this.addCommand(2, "CHARGE!");
+		this.addCommand(3, "Flip Strike");
+		this.addCommand(4, "Intimidating Shout");
+		this.addCommand(5, "Deflection");
 	}
-	public SteelLegionWarrior(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getResistances(), ori.getVulnerabilities());
+	public SteelLegionWarrior(SteelLegionWarrior copy) {
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), copy.getVengeanceStrikeRank(), copy.getSwordplayProwessRank(), copy.getWarriorsMightRank(), copy.getAgileFighterRank(), copy.getSweepRank(), copy.getChargeRank(), copy.getFlipStrikeRank(), copy.getIntimidatingShoutRank(), copy.getDeflectionRank());
 	}
+	
+	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)
+	public int getVengeanceStrikeRank() {
+		return this.VengeanceStrike.rank();
+	}
+	public int getSwordplayProwessRank() {
+		return this.SwordplayProwess.rank();
+	}
+	public int getWarriorsMightRank() {
+		return this.WarriorsMight.rank();
+	}
+	public int getAgileFighterRank() {
+		return this.AgileFighter.rank();
+	}
+	public int getSweepRank() {
+		return this.Sweep.rank();
+	}
+	public int getChargeRank() {
+		return this.Charge.rank();
+	}
+	public int getFlipStrikeRank() {
+		return this.FlipStrike.rank();
+	}
+	public int getIntimidatingShoutRank() {
+		return this.IntimidatingShout.rank();
+	}
+	public int getDeflectionRank() {
+		return this.Deflection.rank();
+	}
+	
+	
 	
 	// Deals the Damage from the "Vengeance Strike" Passive Ability
 	public void useVengeanceStrike(Character enemy) {
@@ -20,6 +96,7 @@ public class SteelLegionWarrior extends Character {
 		this.attackDeflection(enemy, 1.2); // Deflection Attack, Targeted, 1.2x Damage
 	}
 	
+	/*
 	// Returns a new Character with improved stats based on the "Swordplay Prowess" Passive Ability for purposes of Calculation only.
 	public SteelLegionWarrior useSwordplayProwessEnhancement() {
 		return new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * 1.11))
@@ -28,10 +105,12 @@ public class SteelLegionWarrior extends Character {
 				.buildSLW();
 	}
 	
+	
 	// Returns a new Character with improved stats based on the "Agile Fighter" Passive Ability for purposes of Calculation only.
 	public SteelLegionWarrior useAgileFighterEnhancement() {
 		return new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * 1.11)).buildSLW();
 	}
+	*/
 	
 	// Deals with the healing portion of the "Agile Fighter" Passive Ability
 	public void useAgileFighterHealing(int numSpaces, boolean didUseAbility) {
@@ -60,6 +139,7 @@ public class SteelLegionWarrior extends Character {
 		}
 	}
 	
+	/*
 	// Deals the Damage from the "CHARGE!" Ability (Ability 2) to multiple enemies with a primary target
 	public void useCharge(List<Character> enemies, Character primary) {
 		for (Character enemy : enemies) {
@@ -92,6 +172,7 @@ public class SteelLegionWarrior extends Character {
 			this.attackDeflection(enemy, .5, false); // Deflection Attack, AOE, .5x Damage
 		}
 	}
+	*/
 	
 	// Deals the Damage from the "Flip Strike" Ability (Ability 3)
 	public void useFlipStrike(Character enemy) {

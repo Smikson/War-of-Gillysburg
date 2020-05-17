@@ -1,25 +1,34 @@
 package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
-import WyattWitemeyer.WarOfGillysburg.Character;
-public class Enemy extends Character{
+enum Difficulty {
+	NORMAL, ADVANCED, ELITE, BOSS;
+}
+
+public class Enemy extends Character {
 	private LinkedList<Character> ThreatOrder;
 	private boolean UseThreat;
+	private Difficulty difficulty;
 	
-	public Enemy(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, boolean useThrt, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
-		this.UseThreat = useThrt;
+	public Enemy(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, boolean useThrt, Difficulty diff, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, CharacterType type) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
 		this.ThreatOrder = new LinkedList<>();
+		this.UseThreat = useThrt;
+		this.difficulty = diff;
+		
 		
 		// Adds new command for Displaying the Enemy's Threat Order
 		this.addCommand(1, "Display Threat Order");
 	}
 	public Enemy(Enemy copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.usesThreat(), copy.getResistances(), copy.getVulnerabilities());
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.usesThreat(), copy.getDifficulty(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
 	}
 	
 	public boolean usesThreat() {
 		return this.UseThreat;
+	}
+	public Difficulty getDifficulty() {
+		return this.difficulty;
 	}
 	
 	// Sets the threat order of the enemy.
@@ -92,7 +101,7 @@ public class Enemy extends Character{
 		this.beginTurnSetup();
 		
 		// State if Character is dead
-		if (this.getCurrentHealth() < 0) {
+		if (this.getCurrentHealth() <= 0) {
 			System.out.println(this.getName() + " is dead. Have turn anyway? Y or N");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				this.endTurn();

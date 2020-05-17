@@ -1,8 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 public class EnemyDataBase {
-	public static final Enemy GUARD = new CharacterBuilder()
+	public static final Enemy GUARD = new EnemyBuilder()
 			.Name("Guard")
-			.Level(1)
 			.Health(100)
 			.Damage(25)
 			.Armor(5)
@@ -13,9 +12,9 @@ public class EnemyDataBase {
 			.Speed(4)
 			.AttackSpeed(5)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy JAILOR = new CharacterBuilder()
+	public static final Enemy JAILOR = new EnemyBuilder()
 			.Name("Jailor")
 			.Level(4)
 			.Health(150)
@@ -28,9 +27,9 @@ public class EnemyDataBase {
 			.Speed(5)
 			.AttackSpeed(7)
 			.UseThreat(false)
-			.buildE();
+			.build();
 	
-	public static final Enemy MINION = new CharacterBuilder()
+	public static final Enemy MINION = new EnemyBuilder()
 			.Name("Minion")
 			.Level(1)
 			.Health(50)
@@ -43,9 +42,9 @@ public class EnemyDataBase {
 			.Speed(7)
 			.AttackSpeed(7)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy HEXHAM_NOVIS_SWORDSMAN = new CharacterBuilder()
+	public static final Enemy HEXHAM_NOVIS_SWORDSMAN = new EnemyBuilder()
 			.Name("Hexham Novice Swordsman")
 			.Level(1)
 			.Health(300)
@@ -58,9 +57,9 @@ public class EnemyDataBase {
 			.Speed(4)
 			.AttackSpeed(6)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy HEXHAM_ASSASSIN = new CharacterBuilder()
+	public static final Enemy HEXHAM_ASSASSIN = new EnemyBuilder()
 			.Name("Hexham Assassin")
 			.Level(1)
 			.Health(180)
@@ -73,9 +72,9 @@ public class EnemyDataBase {
 			.Speed(4)
 			.AttackSpeed(6)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy HEXHAM_ASSASSIN_LEADER = new CharacterBuilder()
+	public static final Enemy HEXHAM_ASSASSIN_LEADER = new EnemyBuilder()
 			.Name("Hexham Assassin Leader")
 			.Level(3)
 			.Health(475+30)
@@ -88,9 +87,9 @@ public class EnemyDataBase {
 			.Speed(4)
 			.AttackSpeed(8)
 			.UseThreat(false)
-			.buildE();
+			.build();
 	
-	public static final Enemy HEXHAM_SWORDSMAN = new CharacterBuilder()
+	public static final Enemy HEXHAM_SWORDSMAN = new EnemyBuilder()
 			.Name("Hexham Swordsman")
 			.Level(1)
 			.Health(450)
@@ -103,9 +102,9 @@ public class EnemyDataBase {
 			.Speed(4)
 			.AttackSpeed(7)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy HEXHAM_ARCHER = new CharacterBuilder()
+	public static final Enemy HEXHAM_ARCHER = new EnemyBuilder()
 			.Name("Hexham Archer")
 			.Level(1)
 			.Health(350)
@@ -118,9 +117,9 @@ public class EnemyDataBase {
 			.Speed(4)
 			.AttackSpeed(8)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy HEXHAM_ROGUE = new CharacterBuilder()
+	public static final Enemy HEXHAM_ROGUE = new EnemyBuilder()
 			.Name("Hexham Rogue")
 			.Level(1)
 			.Health(300)
@@ -133,9 +132,9 @@ public class EnemyDataBase {
 			.Speed(6)
 			.AttackSpeed(10)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy ELITE_HEXHAM_GUARD = new CharacterBuilder()
+	public static final Enemy ELITE_HEXHAM_GUARD = new EnemyBuilder()
 			.Name("Elite Hexham Guard")
 			.Level(3)
 			.Health(750)
@@ -148,16 +147,16 @@ public class EnemyDataBase {
 			.Speed(3)
 			.AttackSpeed(5)
 			.UseThreat(false)
-			.buildE();
+			.build();
 	
-	public static final Enemy TELEPORTER = new CharacterBuilder()
+	public static final Enemy TELEPORTER = new EnemyBuilder()
 			.Name("Teleporter")
 			.Health(575)
 			.Armor(100)
 			.UseThreat(false)
-			.buildE();
+			.build();
 	
-	public static final Enemy LARGE_SPIDER = new CharacterBuilder()
+	public static final Enemy LARGE_SPIDER = new EnemyBuilder()
 			.Name("Large Spider")
 			.Level(1)
 			.Health(100)
@@ -170,9 +169,9 @@ public class EnemyDataBase {
 			.Speed(5)
 			.AttackSpeed(11)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy GIANT_SPIDER = new CharacterBuilder()
+	public static final Enemy GIANT_SPIDER = new EnemyBuilder()
 			.Name("Giant Spider")
 			.Level(1)
 			.Health(175)
@@ -185,9 +184,9 @@ public class EnemyDataBase {
 			.Speed(4)
 			.AttackSpeed(11)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy GIANT_SCORPION = new CharacterBuilder()
+	public static final Enemy GIANT_SCORPION = new EnemyBuilder()
 			.Name("Giant Scorpion")
 			.Level(1)
 			.Health(230)
@@ -200,9 +199,9 @@ public class EnemyDataBase {
 			.Speed(4)
 			.AttackSpeed(8)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy WASP_SWARM = new CharacterBuilder()
+	public static final Enemy WASP_SWARM = new EnemyBuilder()
 			.Name("Wasp Swarm")
 			.Level(1)
 			.Health(150)
@@ -215,9 +214,9 @@ public class EnemyDataBase {
 			.Speed(5)
 			.AttackSpeed(10)
 			.UseThreat(true)
-			.buildE();
+			.build();
 	
-	public static final Enemy MAGICAL_MONSTER = new CharacterBuilder()
+	public static final Enemy MAGICAL_MONSTER = new EnemyBuilder()
 			.Name("Magical Monster")
 			.Level(1)
 			.Health(250)
@@ -230,5 +229,5 @@ public class EnemyDataBase {
 			.Speed(7)
 			.AttackSpeed(15)
 			.UseThreat(true)
-			.buildE();
+			.build();
 }

@@ -1085,7 +1085,7 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 		// Initialize all Ability variables to defaults
 		super();
 		this.owner = source;
-		this.name = "Ability 5 (ULTIMATE): \"HaHaHa You Can't Kill Me!\"";
+		this.name = "ULTIMATE Ability: \"HaHaHa You Can't Kill Me!\"";
 		
 		// Set the rest based on rank
 		this.rank = rank;
@@ -1199,9 +1199,9 @@ public class SteelLegionTank extends Character {
 	private LinkedList<Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Tank subclass.
-	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
+	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, CharacterType type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls);
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
 		this.HoldItRightThere = new HoldItRightThere(this, upaRank);
 		this.EnchantedArmor = new EnchantedArmor(this, eArmorRank);
 		this.ShieldSkills = new ShieldSkills(this, sSkillsRank);
@@ -1232,7 +1232,7 @@ public class SteelLegionTank extends Character {
 		this.addCommand(5, "HaHaHaYouCantKillMe");
 	}
 	public SteelLegionTank(SteelLegionTank copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getHoldItRightThereRank(), copy.getEnchantedArmorRank(), copy.getShieldSkillsRank(), copy.getProfessionalLaughterRank(), copy.getShieldBashRank(), copy.getShieldReflectionRank(), copy.getTauntingAttackRank(), copy.getTauntingAttackRank(), copy.getHaHaHaYouCantKillMeRank());
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), copy.getHoldItRightThereRank(), copy.getEnchantedArmorRank(), copy.getShieldSkillsRank(), copy.getProfessionalLaughterRank(), copy.getShieldBashRank(), copy.getShieldReflectionRank(), copy.getTauntingAttackRank(), copy.getTauntingAttackRank(), copy.getHaHaHaYouCantKillMeRank());
 	}
 	
 	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)
@@ -1306,7 +1306,7 @@ public class SteelLegionTank extends Character {
 		this.beginTurnSetup();
 		
 		// State if Character is dead
-		if (this.getCurrentHealth() < 0) {
+		if (this.getCurrentHealth() <= 0) {
 			System.out.println(this.getName() + " is dead. Have turn anyway? Y or N");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				this.endTurn();
