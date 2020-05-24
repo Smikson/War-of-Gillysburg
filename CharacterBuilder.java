@@ -2,11 +2,6 @@ package WyattWitemeyer.WarOfGillysburg;
 
 import java.util.*;
 
-enum AttackType {
-	TRUE, SLASHING, SMASHING, PIERCING, MAGIC, FIRE, ICE, LIGHTNING, ARCANE, POISON, BLEED, EXPLOSIVE, LIGHT, NECROMANTIC;
-}
-
-
 public class CharacterBuilder {
 	// Holds the base stats for each stat (along with constants such as "Name" and "UseThreat"
 	protected String name;

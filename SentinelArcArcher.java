@@ -67,7 +67,7 @@ public class SentinelArcArcher extends Character{
 			}
 			
 			// Calculates the final damage dealt over the deviation range
-			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
+			int damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
 			
 			// Damages the enemy and determines whether enemy died
 			this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
@@ -91,7 +91,7 @@ public class SentinelArcArcher extends Character{
 				}
 				
 				// Calculates the final damage dealt over the deviation range
-				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
+				damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
 				
 				// Damages the enemy and determines whether enemy died
 				this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
@@ -110,7 +110,7 @@ public class SentinelArcArcher extends Character{
 				}
 				
 				// Calculates the final damage dealt over the deviation range
-				damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
+				damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
 				
 				// Damages the enemy and determines whether enemy died
 				this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);

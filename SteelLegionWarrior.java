@@ -86,7 +86,7 @@ public class SteelLegionWarrior extends Character {
 	}
 	
 	
-	
+	// DO NOT FORGET THE STUN FROM WARRIOR'S MIGHT
 	// Deals the Damage from the "Vengeance Strike" Passive Ability
 	public void useVengeanceStrike(Character enemy) {
 		this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
@@ -220,10 +220,10 @@ public class SteelLegionWarrior extends Character {
 			}
 			
 			// Calculates the final damage dealt over the deviation range for the normal portion of the attack
-			int normalDamage = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
+			int normalDamage = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
 			
 			// Calculates the bonus electrical damage dealt over the deviation range for the electrical portion of the attack
-			int bonusDamage = this.calcFinalDamage(enemy, this.getDamage(), .2 * scaler, didCrit);
+			int bonusDamage = this.calcDeviatedDamage(enemy, this.getDamage(), .2 * scaler, didCrit);
 			int armorDamage = enemy.getArmor();
 			if (armorDamage > this.getDamage() * .3) {
 				armorDamage = (int)Math.round(this.getDamage() * .3);
@@ -251,7 +251,7 @@ public class SteelLegionWarrior extends Character {
 	
 	public void attackedDeflection(Character enemy) {
 		// Calculates the total/average/normal Damage dealt.
-		int totalDamage = this.calcFinalDamage(enemy, this.getDamage(), .25, false);
+		int totalDamage = this.calcDeviatedDamage(enemy, this.getDamage(), .25, false);
 		// Adds the bonus Damage from Armor due to Deflection mechanic
 		int damageAdded = this.getArmor();
 		if (damageAdded > this.getDamage() * .3) {

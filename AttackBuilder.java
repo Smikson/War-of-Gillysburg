@@ -4,6 +4,7 @@ public class AttackBuilder {
 	// Variables for each element of an attack
 	private Character attacker;
 	private Character defender;
+	private AttackType type;
 	private boolean didHit;
 	private boolean didCrit;
 	private double damageDealt;
@@ -13,6 +14,7 @@ public class AttackBuilder {
 	public AttackBuilder(Attack atk) {
 		this.attacker = atk.getAttacker();
 		this.defender = atk.getDefender();
+		this.type = atk.getType();
 		this.didHit = atk.didHit();
 		this.didCrit = atk.didCrit();
 		this.damageDealt = atk.damageDealt();
@@ -31,6 +33,11 @@ public class AttackBuilder {
 	
 	public AttackBuilder defender(Character defender) {
 		this.defender = defender;
+		return this;
+	}
+	
+	public AttackBuilder type(AttackType atkType) {
+		this.type = atkType;
 		return this;
 	}
 	
@@ -55,6 +62,6 @@ public class AttackBuilder {
 	}
 	
 	public Attack build() {
-		return new Attack(this.attacker, this.defender, this.didHit, this.didCrit, this.damageDealt, this.didKill);
+		return new Attack(this.attacker, this.defender, this.type, this.didHit, this.didCrit, this.damageDealt, this.didKill);
 	}
 }

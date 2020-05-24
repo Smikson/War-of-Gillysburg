@@ -50,9 +50,10 @@ public class Character {
 	
 	private CharacterType Type;
 	
-	// Contains a list of the basic stats (everything but STDup/down and Current Health) and conditions for looping through
+	// Contains a list of the basic stats (everything but STDup/down and Current Health), conditions, and damage over time effects for looping through
 	protected LinkedList<Stat> stats;
 	protected LinkedList<Condition> conditions;
+	protected LinkedList<DamageOverTime> dotEffects;
 	
 	// Holds the possible actions a Character can take on their turn
 	private LinkedList<String> commands;
@@ -112,8 +113,9 @@ public class Character {
 		this.stats.add(this.STDdown);
 		this.stats.add(this.STDup);
 		
-		// Initializes Condition and Attack lists
+		// Initializes Condition, Damage over Time, and Attack lists
 		this.conditions = new LinkedList<>();
+		this.dotEffects = new LinkedList<>();
 		this.AttacksMade = new LinkedList<>();
 		this.AttacksDefended = new LinkedList<>();
 		
@@ -450,6 +452,25 @@ public class Character {
 	}
 	
 	
+	// Methods for Damage over Time effects
+	protected void addDoT(DamageOverTime effect) {
+		this.dotEffects.add(effect);
+	}
+	protected void removeDot(DamageOverTime effect) {
+		this.dotEffects.remove(effect);
+	}
+	protected void displayDoT() {
+		if (this.dotEffects.isEmpty()) {
+			return;
+		}
+		System.out.println("Damage Over Time Effects:");
+		for (DamageOverTime dot : this.dotEffects) {
+			System.out.print("\t" + dot.displayString());
+		}
+	}
+	
+	
+	
 	// Methods for a Character's basic turn (beginning-end)
 	// For list of commands:
 	protected void addCommand(int i, String added) {
@@ -563,6 +584,22 @@ public class Character {
 		conditionStrings.clear();
 	}
 	
+	// Used to remove a chosen Damage over Time effect from a Character
+	protected void promptDoTRemove() {
+		// Make a parallel String list for printing
+		LinkedList<String> dotStrings = new LinkedList<>();
+		for (DamageOverTime dot : this.dotEffects) {
+			dotStrings.add(dot.displayString());
+		}
+		
+		// Remove chosen Damage Over Time Effect from Character
+		int choice = BattleSimulator.getInstance().promptSelect(dotStrings);
+		if (choice ==  0) {
+			return;
+		}
+		this.removeDot(this.dotEffects.get(choice-1));
+	}
+	
 	
 	// Prompts for how to alter this Character when chosen
 	protected void promptAlterCharacter() {
@@ -572,6 +609,7 @@ public class Character {
 		System.out.println("1. Alter Current Health");
 		System.out.println("2. Add Condition");
 		System.out.println("3. Remove Condition");
+		System.out.println("4. Remove Damage over Time Effect");
 		while (true) {
 			System.out.print("Choice? ");
 			choice = BattleSimulator.getInstance().getPrompter().nextLine();
@@ -605,6 +643,10 @@ public class Character {
 	            	System.out.println();
 	            	this.promptConditionRemove();
 	                return;
+	            case "4": // Remove DoT
+	            	System.out.println();
+	            	this.promptDoTRemove();
+	            	return;
 	            default:
 	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
 	        }
@@ -613,7 +655,17 @@ public class Character {
 	
 	// Start of turn
 	protected void beginTurnSetup() {
-		// Increment all non-source-incrementing, non-permanent, non-end-of-turn conditions for this Character and remove respective expired conditions
+		// Apply a "tick" to any damage over time effects
+		for (DamageOverTime dot : this.dotEffects) {
+			if (dot.isExpired()) {
+				this.removeDot(dot);
+			}
+			else {
+				dot.activate();
+			}
+		}
+		
+		// Conditions: Increment all non-source-incrementing, non-permanent, non-end-of-turn conditions for this Character and remove respective expired conditions
 		LinkedList<Condition> toRemove = new LinkedList<>();
 		for (Condition con : this.getActiveConditions()) {
 			// Increment non-source-incrementing and non-permanent Conditions
@@ -867,8 +919,8 @@ public class Character {
 		return percent.roll() <= this.getCriticalChance();
 	}
 	
-	// Calculates the final Damage done using the ranges from STDup and STDdown
-	protected int calcFinalDamage(Character enemy, int finalDamageStat, double finalScaler, boolean didCrit) {
+	// Calculates the deviated Damage done using the ranges from STDup and STDdown
+	protected int calcDeviatedDamage(Character enemy, int finalDamageStat, double finalScaler, boolean didCrit) {
 		// Calculate the totalDamage before STD is applied
 		int totalDamage = (int)Math.round(finalDamageStat*finalScaler);
 		
@@ -946,6 +998,7 @@ public class Character {
 		Attack atk = new AttackBuilder()
 				.attacker(this)
 				.defender(enemy)
+				.type(aType)
 				.didHit(true)
 				.didCrit(didCrit)
 				.damageDealt(damageDealt)
@@ -991,6 +1044,7 @@ public class Character {
 			Attack atk = new AttackBuilder()
 					.attacker(this)
 					.defender(enemy)
+					.type(aType)
 					.didHit(false)
 					.didCrit(false)
 					.damageDealt(0)
@@ -1023,8 +1077,8 @@ public class Character {
 				}
 			}
 			
-			// Calculates the final damage dealt over the deviation range
-			int damageDealt = this.calcFinalDamage(enemy, this.getDamage(), scaler, didCrit);
+			// Calculates the damage dealt over the deviation range
+			int damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
 			
 			// Damages the enemy and determines whether enemy died (Storing of attacks that hit occur in the "dealDamage" function)
 			this.dealDamage(enemy, damageDealt, aType, didCrit);
