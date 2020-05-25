@@ -16,13 +16,25 @@ public class Charge extends Ability{
 		this.name = "Ability 2: \"CHARGE!\"";
 		this.rank = rank;
 		
-		// Calculate and set each scaler (base scaler set to targeted scaler)
+		// Calculate and set the Cooldown and each scaler (base scaler set to targeted scaler)
+		this.setCooldown();
 		this.setTargetedScaler();
 		this.setAOEScaler();
 		
 		// Calculate the additional Condition effects
 		this.setSpeedPercentage();
 		this.setTargetedPreAttackBonus();
+	}
+	
+	// Set the Cooldown
+	private void setCooldown() {
+		// Base Cooldown of 5, reduced to 4 at rank 10
+		this.cooldown = 5;
+		if (this.rank == 10) {
+			this.cooldown = 4;
+		}
+		// The Ability always starts off Cooldown
+		this.turnCount = this.cooldown;
 	}
 	
 	// Calculates each scaler

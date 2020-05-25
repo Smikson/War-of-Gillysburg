@@ -14,11 +14,23 @@ public class FlipStrike extends Ability {
 		this.rank = rank;
 		
 		// Calculate and set the damage scaler
+		this.setCooldown();
 		this.setScaler();
 		
 		// Calculate and set the chance to not miss and the pre-attack Condition
 		this.setNoMissChance();
 		this.setPreAttackBonus();
+	}
+	
+	// Set the Cooldown
+	private void setCooldown() {
+		// Base Cooldown of 4, reduced to 3 at rank 5
+		this.cooldown = 4;
+		if (this.rank >= 5) {
+			this.cooldown = 3;
+		}
+		// The Ability always starts off Cooldown
+		this.turnCount = this.cooldown;
 	}
 	
 	// Calculates and sets the damage scaler

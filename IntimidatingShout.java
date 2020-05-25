@@ -11,6 +11,7 @@ public class IntimidatingShout extends Ability {
 	private Condition tauntBoss;
 	private Condition tauntBossReducedValue;
 	private Condition selfDefenseBonus;
+	private Condition selfDefenseBonusReducedValue;
 	
 	// These are used when "Deflection" is activated
 	private Condition tauntNormalExtraDuration;
@@ -27,9 +28,23 @@ public class IntimidatingShout extends Ability {
 		this.name = "Ability 4: \"Intimidating Shout\"";
 		this.rank = rank;
 		
+		// Set the Cooldown of the Ability (this Ability has no scaler)
+		this.setCooldown();
+		
 		// Calculate the additional Conditions of the ability
 		this.setTauntConditions();
 		this.setSelfDefenseBonuses();
+	}
+	
+	// Set the Cooldown
+	private void setCooldown() {
+		// Base Cooldown of 5, reduced to 4 at rank 5
+		this.cooldown = 5;
+		if (this.rank >= 5) {
+			this.cooldown = 4;
+		}
+		// The Ability always starts off Cooldown
+		this.turnCount = this.cooldown;
 	}
 	
 	// Calculates the amount of damage reduction for Normal enemies (other enemies are multiples of this number)
@@ -241,15 +256,12 @@ public class IntimidatingShout extends Ability {
 	
 	private void setSelfDefenseBonuses() {
 		// Declare starting amounts (both are the same, so can use one variable) at rank 1
-		int amount = 25;
+		double amount = 25;
 		
-		// Default duration of 1, increased to 2 at rank 7, and to 3 at rank 10.
+		// Default duration of 1, increased to 2 at rank 10.
 		int duration = 1;
-		if (this.rank >= 7) {
-			duration = 2;
-		}
 		if (this.rank == 10) {
-			duration = 3;
+			duration = 2;
 		}
 		
 		// Calculate the amounts based on rank
@@ -290,10 +302,16 @@ public class IntimidatingShout extends Ability {
 		StatusEffect blkBonus = new StatusEffect(StatVersion.BLOCK, amount, StatusEffectType.INCOMING);
 		blkBonus.makePercentage();
 		
+		StatusEffect reducedBlkBonus = new StatusEffect(StatVersion.BLOCK, amount/2, StatusEffectType.INCOMING);
+		reducedBlkBonus.makePercentage();
+		
 		StatusEffect armorBonus = new StatusEffect(StatVersion.ARMOR, amount, StatusEffectType.INCOMING);
 		armorBonus.makePercentage();
 		
-		// Create the Conditions (only difference is duration)
+		StatusEffect reducedArmorBonus = new StatusEffect(StatVersion.ARMOR, amount/2, StatusEffectType.INCOMING);
+		reducedArmorBonus.makePercentage();
+		
+		// Create the base Conditions (only difference is duration)
 		this.selfDefenseBonus = new Condition("Intimidating Shout: Defense Bonus", duration);
 		this.selfDefenseBonus.setSource(this.owner);
 		this.selfDefenseBonus.makeEndOfTurn();
@@ -305,6 +323,19 @@ public class IntimidatingShout extends Ability {
 		this.selfDefenseBonusExtraDuration.makeEndOfTurn();
 		this.selfDefenseBonusExtraDuration.addStatusEffect(blkBonus);
 		this.selfDefenseBonusExtraDuration.addStatusEffect(armorBonus);
+		
+		// Create the activation requirement for the reduced Condition (neither base Condition can be present)
+		Requirement actReq = (Character withEffect) -> {
+			return !(withEffect.getAllConditions().contains(this.selfDefenseBonus) ||
+					 withEffect.getAllConditions().contains(this.selfDefenseBonusExtraDuration));
+		};
+		
+		// Create the reduced effect Condition that always has a duration of 1
+		this.selfDefenseBonusReducedValue = new Condition("Intimidating Shout: Defense Bonus", 1, actReq);
+		this.selfDefenseBonusReducedValue.setSource(this.owner);
+		this.selfDefenseBonusReducedValue.makeEndOfTurn();
+		this.selfDefenseBonusReducedValue.addStatusEffect(reducedBlkBonus);
+		this.selfDefenseBonusReducedValue.addStatusEffect(reducedArmorBonus);
 	}
 	
 	// Get methods for each Condition

@@ -12,11 +12,23 @@ public class Sweep extends Ability {
 		this.name = "Ability 1: \"Sweep\"";
 		this.rank = rank;
 		
-		// Set the damage scaler of the ability
+		// Set the damage scaler and Cooldown of the ability
+		this.setCooldown();
 		this.setScaler();
 		
 		// Calculate the slow effect
 		this.setSlow();
+	}
+	
+	// Sets the Cooldown
+	private void setCooldown() {
+		// Base Cooldown of 4, reduced to 3 at rank 7
+		this.cooldown = 4;
+		if (this.rank >= 7) {
+			this.cooldown = 3;
+		}
+		// The ability always starts off Cooldown
+		this.turnCount = this.cooldown;
 	}
 	
 	// Calculates the damage scaler
