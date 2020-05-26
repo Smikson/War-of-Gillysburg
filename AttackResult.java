@@ -1,9 +1,5 @@
 package WyattWitemeyer.WarOfGillysburg;
 
-enum AttackType {
-	TRUE, SLASHING, SMASHING, PIERCING, MAGIC, FIRE, ICE, LIGHTNING, ARCANE, POISON, BLEED, EXPLOSIVE, LIGHT, NECROMANTIC;
-}
-
 public class AttackResult {
 	// Constant for Empty Attacks
 	public static final AttackResult EMPTY = new AttackResult();

@@ -1011,6 +1011,79 @@ public class Character {
 		this.dealDamage(enemy, damageDealt, aType, false);
 	}
 	
+	// NEW: Attack Function based on a builder: Will replace all existing attack functions
+	public void attackFromBuilder(Attack atk) {
+		// Make sure neither target is dead:
+		if (atk.getAttacker().isDead()) {
+			System.out.println(atk.getAttacker().getName() + " is dead. Thus, " + atk.getAttacker().getName() + " is incapable of attacking.");
+			System.out.println("Continue with attack anyway? Y or N");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return;
+			}
+		}
+		if (atk.getDefender().isDead()) {
+			System.out.println(atk.getDefender().getName() + " is already dead. The attack would have no effect.");
+			System.out.println("Continue with attack anyway? Y or N");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return;
+			}
+		}
+		
+		// Apply Pre-Attack Effects
+		atk.getDefender().applyIncomingStatusEffects(atk.getAttacker());
+		atk.getAttacker().applyOutgoingStatusEffects(atk.getDefender());
+		
+		// Determine if the attack hits
+		boolean didHit = true;
+		if (atk.canMiss()) {
+			didHit = atk.getAttacker().landAttack(atk.getDefender());
+		}
+		
+		// If the attack missed:
+		if (!didHit) {
+			// CHANGE
+			// Apply Post-Attack Effects
+			
+			// Unapply Pre-Attack Effects
+			atk.getDefender().unapplyIncomingStatusEffects(atk.getAttacker());
+			atk.getAttacker().unapplyOutgoingStatusEffects(atk.getDefender());
+			
+			// Store the attack attempt, then return
+			AttackResult atkResult = new AttackResultBuilder()
+					.attacker(atk.getAttacker())
+					.defender(atk.getDefender())
+					.type(atk.getAttackType())
+					.didHit(false)
+					.didCrit(false)
+					.damageDealt(0)
+					.didKill(false)
+					.build();
+			atk.getAttacker().missAttack(atkResult);
+			atk.getDefender().avoidAttack(atkResult);
+			
+			// Print the result
+			System.out.println(atk.getAttacker().getName() + " missed " + atk.getDefender().getName() + "!");
+			return;
+		}
+		
+		// At this point, the attack hit.
+		// CHANGE: CalcArmorEffect to take an Attack.
+		// Calculate the Armor Effect
+		double armorEffect = atk.getAttacker().calcArmorEffect(atk.getDefender(), !atk.ignoresArmor());
+		
+		// CHANGE: landCrit to take an Attack
+		// Find if the attack critically struck
+		boolean didCrit = false;
+		if (atk.canCrit()) {
+			didCrit = atk.getAttacker().landCrit(atk.getDefender());
+			if (atk.guaranteedCrit()) {
+				didCrit = true;
+			}
+		}
+		
+		// Calculate Damage. Don't forget bonus from extra crit chance.
+	}
+	
 	public void attack(Character enemy, double scaler, AttackType aType, boolean isTargeted, boolean canMiss, boolean armorApplies) {
 		// Add: Check for being attacked conditions (Steel Legion Tank: Hold It Right There)
 		
@@ -1060,7 +1133,7 @@ public class Character {
 		else {
 			// Calculates the percentage in which the Armor/Armor Piercing affects the overall Damage scaler, then multiplies it in
 			double armorEffect;
-			armorEffect = calcArmorEffect(enemy, armorApplies);
+			armorEffect = this.calcArmorEffect(enemy, armorApplies);
 			scaler*=armorEffect;
 			
 			// Only Targeted attacks can critically hit

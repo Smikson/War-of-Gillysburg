@@ -1,7 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 public class AttackResultBuilder {
-	// Variables for each element of an attack
+	// Variables for each element of an attack result
 	private Character attacker;
 	private Character defender;
 	private AttackType type;
