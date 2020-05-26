@@ -64,8 +64,8 @@ public class Character {
 	}
 	
 	// Store the previous attack made (for use in Character Abilities sometimes)
-	protected LinkedList<Attack> AttacksMade;
-	protected LinkedList<Attack> AttacksDefended;
+	protected LinkedList<AttackResult> AttacksMade;
+	protected LinkedList<AttackResult> AttacksDefended;
 	
 	// Constructor (sets each stat variable)
 	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, CharacterType type) {
@@ -811,25 +811,25 @@ public class Character {
 	
 	
 	// Methods used to store attacks made/defended (used in subclasses for interactions)
-	protected void hitAttack(Attack atk) {
+	protected void hitAttack(AttackResult atk) {
 		this.AttacksMade.add(atk);
 	}
-	protected void missAttack(Attack atk) {
+	protected void missAttack(AttackResult atk) {
 		this.AttacksMade.add(atk);
 	}
-	protected void receivedAttack(Attack atk) {
+	protected void receivedAttack(AttackResult atk) {
 		this.AttacksDefended.add(atk);
 	}
-	protected void avoidAttack(Attack atk) {
+	protected void avoidAttack(AttackResult atk) {
 		this.AttacksDefended.add(atk);
 	}
 	
 	// Get method for previous attack made (for convenience)
-	protected Attack previousAttack() {
+	protected AttackResult previousAttack() {
 		if (!this.AttacksMade.isEmpty()) {
 			return this.AttacksMade.getLast();
 		}
-		return Attack.EMPTY;
+		return AttackResult.EMPTY;
 	}
 	
 	
@@ -995,7 +995,7 @@ public class Character {
 		this.unapplyOutgoingStatusEffects(enemy);
 		
 		// Store the attack made
-		Attack atk = new AttackBuilder()
+		AttackResult atk = new AttackResultBuilder()
 				.attacker(this)
 				.defender(enemy)
 				.type(aType)
@@ -1041,7 +1041,7 @@ public class Character {
 			this.unapplyOutgoingStatusEffects(enemy);
 			
 			// Store the attack attempt, then return
-			Attack atk = new AttackBuilder()
+			AttackResult atk = new AttackResultBuilder()
 					.attacker(this)
 					.defender(enemy)
 					.type(aType)

@@ -43,18 +43,19 @@ class Bleed implements DamageOverTime {
 
 
 public class SwordplayProwess extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Warrior
+	private SteelLegionWarrior owner;
+	
 	// Additional variables
 	private int bonusDamageStat;
 	private int bonusArmorPenetrationStat;
 	private Condition empoweredEffect;
 	
 	// Constructor
-	public SwordplayProwess(Character source, int rank) {
+	public SwordplayProwess(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Base Passive Ability: \\\"Swordplay Prowess\\\"\"", source, rank);
 		this.owner = source;
-		this.name = "Base Passive Ability: \"Swordplay Prowess\"";
-		this.rank = rank;
 		
 		// Set the Bleed Scaler
 		this.setScaler();
@@ -65,13 +66,19 @@ public class SwordplayProwess extends Ability {
 		// Set the empowered condition of the ability
 		this.setEmpoweredCondition();
 	}
+	// An additional constructor used to only calculate the bonus stats before a SteelLegionWarrior is created
+	public SwordplayProwess(int rank) {
+		super("No Owner: Swordplay Prowess", Character.EMPTY, rank);
+		
+		this.setStatBonuses();
+	}
 	
 	// Calculates the scaler for the bleed effect of the Ability
 	private void setScaler() {
 		// At rank 1, this scaler starts at .25x
 		this.scaler = .25;
 		
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			// Ranks 2-5 grant +.05x per rank
 			if (walker <= 5) {
 				this.scaler += .05;
@@ -97,7 +104,7 @@ public class SwordplayProwess extends Ability {
 		this.bonusDamageStat = 0;
 		this.bonusArmorPenetrationStat = 0;
 		
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-5 grant +15 Damage and +3 Armor Piercing per rank
 			if (walker <= 5) {
 				this.bonusDamageStat += 15;
@@ -128,7 +135,7 @@ public class SwordplayProwess extends Ability {
 		int accuracyAmount = 10;
 		int critAmount = 10;
 		
-		for (int walker = 0; walker < this.rank; walker++) {
+		for (int walker = 0; walker < this.rank(); walker++) {
 			// Ranks 1-5 grant +1% damage, accuracy, and crit (crit is flat though)
 			if (walker <= 5) {
 				damageAmount += 1;
@@ -174,6 +181,11 @@ public class SwordplayProwess extends Ability {
 	}
 	
 	// Get methods for additional effects
+	@Override
+	public SteelLegionWarrior getOwner() {
+		return this.owner;
+	}
+	
 	public int getDamageBonus() {
 		return this.bonusDamageStat;
 	}

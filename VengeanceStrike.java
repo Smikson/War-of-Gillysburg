@@ -3,6 +3,9 @@ package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
 public class VengeanceStrike extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Warrior
+	private SteelLegionWarrior owner;
+	
 	// Additional variables needed for effects of the Ability
 	public HashMap<Character,Integer> counter;
 	
@@ -10,12 +13,10 @@ public class VengeanceStrike extends Ability {
 	private Condition selfPreAttackDmgBonus;
 	
 	// Constructor
-	public VengeanceStrike(Character source, int rank) {
+	public VengeanceStrike(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Unique Passive Ability: \\\"Vengeance Strike\\\"\"", source, rank);
 		this.owner = source;
-		this.name = "Unique Passive Ability: \"Vengeance Strike\"";
-		this.rank = rank;
 		
 		// Set scaler and counter
 		this.setScaler();
@@ -29,10 +30,10 @@ public class VengeanceStrike extends Ability {
 	// Calculates the basic values for this Ability
 	private void setScaler() {
 		// Checks based on this Ability's rank
-		if (this.rank >= 3) {
+		if (this.rank() >= 3) {
 			this.scaler = 1.5;
 		}
-		else if (this.rank == 2) {
+		else if (this.rank() == 2) {
 			this.scaler = 1.3;
 		}
 		else {
@@ -45,7 +46,7 @@ public class VengeanceStrike extends Ability {
 		// Set the amount of Damage Reduction
 		int amount = 0;
 		// Checks based on this Ability's rank (0 at rank 1, increases to 10% at rank 2, then by 5% each rank
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			if (walker == 2) {
 				amount += 10;
 			}
@@ -73,7 +74,7 @@ public class VengeanceStrike extends Ability {
 	private void setSelfPreAttackDmgBonus() {
 		// Only occurs at 30% at rank 5
 		int amount = 0;
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			amount = 30;
 		}
 		
@@ -88,6 +89,11 @@ public class VengeanceStrike extends Ability {
 	}
 	
 	// Get methods for additional effects
+	@Override
+	public SteelLegionWarrior getOwner() {
+		return this.owner;
+	}
+	
 	public Condition getEnemyDamageReduction() {
 		return this.enemyDamageReduction;
 	}

@@ -4,17 +4,18 @@ import java.util.*;
 // Passive Abilities:
 // Unique Passive Ability: "Hold It Right There!"
 class HoldItRightThere extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional Effects of Ability
 	private Condition selfBlock;
 	private Condition enemyHalt;
 	
 	// Constructor
-	public HoldItRightThere(Character source, int rank) {
+	public HoldItRightThere(SteelLegionTank source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Unique Passive Ability: \"Hold It Right There!\"", source, rank);
 		this.owner = source;
-		this.name = "Unique Passive Ability: \"Hold It Right There!\"";
-		this.rank = rank;
 		
 		// Calculate the additional Staus Effects
 		this.setSelfBlock();
@@ -28,7 +29,7 @@ class HoldItRightThere extends Ability {
 	private void setSelfBlock() {
 		// Find block amount based on rank
 		int amount = 0;
-		for (int i = 1; i <= this.rank; i++) {
+		for (int i = 1; i <= this.rank(); i++) {
 			// Ranks 2,5 grant +10% increased Block
 			if (i == 2 || i == 5) {
 				amount += 10;
@@ -55,7 +56,7 @@ class HoldItRightThere extends Ability {
 		this.selfBlock.addStatusEffect(blockBonus);
 		
 		// Since it is permanent, this Condition will start attached to the Character if necessary (Rank 2 or above)
-		if (this.rank >= 2) {
+		if (this.rank() >= 2) {
 			this.owner.addCondition(this.selfBlock);
 		}
 	}
@@ -64,10 +65,10 @@ class HoldItRightThere extends Ability {
 	private void setEnemyHalt() {
 		// Find damage bonus amount based on rank
 		int amount = 0;
-		if (this.rank == 4) {
+		if (this.rank() == 4) {
 			amount = 20;
 		}
-		if (this.rank == 5) {
+		if (this.rank() == 5) {
 			amount = 30;
 		}
 		
@@ -80,7 +81,7 @@ class HoldItRightThere extends Ability {
 		
 		
 		// At rank 5, bonus damage from the owner only is increased to an amount of 50
-		if (this.rank == 5) {
+		if (this.rank() == 5) {
 			// Creates additional statusEffect for owner only
 			StatusEffect ownerDamageBonus = new StatusEffect(StatVersion.DAMAGE, 50, StatusEffectType.INCOMING);
 			ownerDamageBonus.makeAffectOther();
@@ -101,6 +102,10 @@ class HoldItRightThere extends Ability {
 	}
 	
 	// Get methods for additional effects and owner/source
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
 	public Condition getSelfBlockCondition() {
 		this.setSelfBlock();
 		return this.selfBlock;
@@ -113,39 +118,37 @@ class HoldItRightThere extends Ability {
 
 // Base Passive Ability 1: "Enchanted Armor"
 class EnchantedArmor extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional variables for the Ability
 	private int bonusArmor;
 	private int bonusBlock;
 	
 	// Constructors
-	public EnchantedArmor(Character source, int rank) {
+	public EnchantedArmor(SteelLegionTank source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Base Passive Ability: \"Enchanted Armor\"", source, rank);
 		this.owner = source;
-		this.name = "Base Passive Ability: \"Enchanted Armor\"";
-		
-		// Set the rest based on rank
-		this.rank = rank;
 		
 		// Set the healing scaler and base stat amounts
 		this.setScaler();
 		this.setArmorBonus();
 		this.setBlockBonus();
 	}
+	// Makes a constructer that is only used for calculating the bonus Armor and Block from this Ability
 	public EnchantedArmor(int rank) {
-		this(Character.EMPTY, rank);
-	}
-	public EnchantedArmor() {
-		super();
-		this.bonusArmor = 0;
-		this.bonusBlock = 0;
+		super("No owner: Enchanted Armor", Character.EMPTY, rank);
+		
+		this.setArmorBonus();
+		this.setBlockBonus();
 	}
 	
 	// Calculates the base scaler (used as a healing scaler) for this Ability
 	private void setScaler() {
 		// At rank 0, this scaler starts at .02
 		this.scaler = .02;
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-5 grant +.5% to scaler
 			if (walker <= 5) {
 				this.scaler += .005;
@@ -170,7 +173,7 @@ class EnchantedArmor extends Ability {
 	private void setArmorBonus() {
 		// Starting at 0:
 		this.bonusArmor = 0;
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-5 grant +8 bonus Armor
 			if (walker <= 5) {
 				this.bonusArmor += 8;
@@ -193,7 +196,7 @@ class EnchantedArmor extends Ability {
 	private void setBlockBonus() {
 		// Starting at 0:
 		this.bonusBlock = 0;
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-5 grant +8 bonus Block
 			if (walker <= 5) {
 				this.bonusBlock += 2;
@@ -214,6 +217,10 @@ class EnchantedArmor extends Ability {
 	}
 	
 	// Get methods for additional stats of this Ability and source
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
 	public int getBonusArmor() {
 		this.setArmorBonus();
 		return this.bonusArmor;
@@ -226,25 +233,24 @@ class EnchantedArmor extends Ability {
 
 // Base Passive Ability 2: "Shield Skills"
 class ShieldSkills extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional variables for ability
 	private double scalerBlind3;
 	private double scalerBlind5;
 	
-	public ShieldSkills(Character source, int rank) {
+	public ShieldSkills(SteelLegionTank source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Base Passive Ability: \"Shield Skills\"", source, rank);
 		this.owner = source;
-		this.name = "Base Passive Ability: \"Shield Skills\"";
-		
-		// Set the rest based on rank
-		this.rank = rank;
 		
 		// At rank 1, the healing scaler for blinding 3 enemies starts at .02, and there is no extra benefit for blinding 5
 		this.scalerBlind3 = .02;
 		this.scalerBlind5 = 0;
 		
 		// Adjust for current rank
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			// Ranks 2-5 grant +2% to scaler for blinding 3
 			if (walker <= 5) {
 				this.scalerBlind3 += .02;
@@ -259,6 +265,10 @@ class ShieldSkills extends Ability {
 	}
 	
 	// Get methods for additional scalers and source
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
 	public double getScalerBlind3() {
 		return this.scalerBlind3;
 	}
@@ -269,34 +279,39 @@ class ShieldSkills extends Ability {
 
 // Base Passive Ability 3: "Professional Laughter"
 class ProfessionalLaughter extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional variables for the Ability
 	private int bonusThreat;
 	private int bonusTacticalThreat;
 	private int bonusHealth;
 	
-	public ProfessionalLaughter(Character source, int rank) {
+	public ProfessionalLaughter(SteelLegionTank source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Base Passive Ability: \\\"Professional Laughter\\\"\"", source, rank);
 		this.owner = source;
-		this.name = "Base Passive Ability: \"Professional Laughter\"";
 		
-		// Set the rest based on rank
-		this.rank = rank;
-		
-		// Set the healing scaler and base stat amounts
+		// Set the base stat amounts
 		this.setThreatBonus();
 		this.setTacticalThreatBonus();
 		this.setHealthBonus();
 	}
+	// An additional constuctor just for use when calculating the bonus stats needed to make a Steel Legion Tank
 	public ProfessionalLaughter(int rank) {
-		this(Character.EMPTY, rank);
+		super("No Owner: Professional Laughter", Character.EMPTY, rank);
+		
+		// Set stats so they can be looked at.
+		this.setThreatBonus();
+		this.setTacticalThreatBonus();
+		this.setHealthBonus();
 	}
 	
 	// Calculates the values for the additional stats of this Ability
 	private void setThreatBonus() {
 		// Starting at 0
 		this.bonusThreat = 0;
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-2 grant +5 bonus Threat
 			if (walker <= 2) {
 				this.bonusThreat += 5;
@@ -325,7 +340,7 @@ class ProfessionalLaughter extends Ability {
 		this.bonusTacticalThreat = 0;
 		
 		// First rank that grants bonus Tactical Threat is Rank 11
-		for (int walker = 11; walker <= this.rank; walker++) {
+		for (int walker = 11; walker <= this.rank() ; walker++) {
 			// Ranks 11-14 grant +3 bonus Tactical Threat
 			if (walker <= 14) {
 				this.bonusTacticalThreat += 3;
@@ -340,7 +355,7 @@ class ProfessionalLaughter extends Ability {
 	private void setHealthBonus() {
 		// Starting at 0
 		this.bonusHealth = 0;
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-2 grant +100 bonus Health
 			if (walker <= 2) {
 				this.bonusHealth += 100;
@@ -365,6 +380,10 @@ class ProfessionalLaughter extends Ability {
 	}
 	
 	// Get methods for additional stats of this Ability
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
 	public int getBonusThreat() {
 		this.setThreatBonus();
 		return this.bonusThreat;
@@ -383,6 +402,9 @@ class ProfessionalLaughter extends Ability {
 // Basic Abilities:
 // Ability 1: "Shield Bash"
 class ShieldBash extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional Conditions for the Ability
 	private Stun stun;
 	private Condition enemyAccReduction;
@@ -397,18 +419,14 @@ class ShieldBash extends Ability {
 	public boolean didCrit;
 	
 	
-	public ShieldBash(Character source, int rank, int ShieldSkillsRank) {
+	public ShieldBash(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Ability 1: \"Shield Bash\"", source, rank);
 		this.owner = source;
-		this.name = "Ability 1: \"Shield Bash\"";
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
 		this.didBlock = false;
 		this.didCrit = false;
-		
-		// Set the rest based on rank
-		this.rank = rank;
 		
 		// Sets the Cooldown and Scaler of the Ability
 		this.setCooldown();
@@ -419,14 +437,11 @@ class ShieldBash extends Ability {
 		this.setEnemyAccReduction();
 		this.setPreAttackBonus();
 	}
-	public ShieldBash(int rank) {
-		this(Character.EMPTY, rank, 0);
-	}
 	
 	// Calculates the basic values for this Ability
 	private void setCooldown() {
 		this.cooldown = 4;
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			this.cooldown = 3;
 		}
 		this.turnCount = this.cooldown;  // The Ability always starts off Cooldown
@@ -436,7 +451,7 @@ class ShieldBash extends Ability {
 		// Checks based on this Ability's rank
 		// At rank 1, this scaler starts at .7
 		this.scaler = .7;
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			// Ranks 2,7 grants +.1 to scaler
 			if (walker == 2 || walker == 7) {
 				this.scaler += .1;
@@ -470,7 +485,7 @@ class ShieldBash extends Ability {
 		
 		// Checks based on this Ability's rank
 		// Rank 10 increases the duration to 2, then is increased by an additional turn if the Ability didCrit
-		if (this.rank >= 10) {
+		if (this.rank() >= 10) {
 			stunDuration = 2;
 			if (this.didCrit) {
 				stunDuration++;
@@ -488,9 +503,9 @@ class ShieldBash extends Ability {
 		this.stun.setSource(this.owner);
 		
 		// Adds Damage Bonus While Stunned after rank 5
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			int amount = 0;
-			for (int walker = 1; walker <= this.rank; walker++) {
+			for (int walker = 1; walker <= this.rank(); walker++) {
 				// Rank 5 grants +20% damage to the stunned target
 				if (walker == 5) {
 					amount += 20;
@@ -501,7 +516,7 @@ class ShieldBash extends Ability {
 				}
 			}
 			// the value "amount" doubles when you critically strike at rank 10
-			if (this.rank >= 10 && this.didCrit) {
+			if (this.rank() >= 10 && this.didCrit) {
 				amount *= 2;
 			}
 			
@@ -515,7 +530,7 @@ class ShieldBash extends Ability {
 	private void setEnemyAccReduction() {
 		int amount = 0;
 		// Checks based on this Ability's rank
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 3,7 grant +10% Accuracy Reduction
 			if (walker == 3 || walker == 7) {
 				amount += 10;
@@ -539,7 +554,7 @@ class ShieldBash extends Ability {
 		}
 		
 		// the value "amount" doubles when you critically strike at rank 10
-		if (this.rank >= 10 && this.didCrit) {
+		if (this.rank() >= 10 && this.didCrit) {
 			amount *= 2;
 		}
 		
@@ -549,7 +564,7 @@ class ShieldBash extends Ability {
 		};
 		
 		// Finds the duration: 2 when >= 8
-		int duration = this.rank < 8? 1 : 2;
+		int duration = this.rank() < 8? 1 : 2;
 		
 		// Create the Enemy Accuracy Reduction Condition with the correct Status Effect based on the numbers calculated
 		this.enemyAccReduction = new Condition("Shield Bash: Accuracy Reduction", duration, actReq);
@@ -610,6 +625,11 @@ class ShieldBash extends Ability {
 	
 	
 	// Get methods for additional effects
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
+	
 	public Stun getStunEffect() {
 		// Returns the stun, but sets it again first in case things changed because of "didCrit" or "didBlock" or "numMisses"
 		this.setStun();
@@ -638,6 +658,9 @@ class ShieldBash extends Ability {
 
 // Ability 2: "Shield Reflection"
 class ShieldReflection extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional Condition for the Ability
 	private Blind blind;
 	
@@ -647,16 +670,12 @@ class ShieldReflection extends Ability {
 	// Keeps track of if a previous attack has been blocked
 	public boolean didBlock;
 	
-	public ShieldReflection(Character source, int rank, int ShieldSkillsRank) {
+	public ShieldReflection(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Ability 2: \"Shield Reflection\"", source, rank);
 		this.owner = source;
-		this.name = "Ability 2: \"Shield Reflection\"";
 		this.ssRank = ShieldSkillsRank;
 		this.didBlock = false;
-		
-		// Set the rest based on rank
-		this.rank = rank;
 		
 		// Sets the Cooldown and Scaler of the Ability
 		this.setCooldown();
@@ -665,14 +684,11 @@ class ShieldReflection extends Ability {
 		// Sets additional effects of the Ability
 		this.setBlind();
 	}
-	public ShieldReflection(int rank) {
-		this(Character.EMPTY, rank, 0);
-	}
 	
 	// Calculates the basic values for this Ability
 	private void setCooldown() {
 		this.cooldown = 5;
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			this.cooldown = 4;
 		}
 		this.turnCount = this.cooldown;  // The Ability always starts off Cooldown
@@ -681,7 +697,7 @@ class ShieldReflection extends Ability {
 	private void setScaler() {
 		// At rank 1, this scaler starts at .1
 		this.scaler = .1;
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			// Ranks 2-6 but not 3 grant +.05 to scaler
 			if (walker <= 6 && walker != 3) {
 				this.scaler += .05;
@@ -709,7 +725,7 @@ class ShieldReflection extends Ability {
 	public void setBlind() {
 		// Calculates blind duration
 		int blindDuration = 1;
-		if (this.rank >= 3) {
+		if (this.rank() >= 3) {
 			blindDuration = 2;
 		}
 		
@@ -719,6 +735,10 @@ class ShieldReflection extends Ability {
 	}
 	
 	// Get methods for additional effects as necessary
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
 	public Blind getBlindEffect() {
 		// For good habit and in case of future changes, should still set it again before returning it
 		this.setBlind();
@@ -734,6 +754,9 @@ class ShieldReflection extends Ability {
 
 // Ability 3: "Taunting Attack"
 class TauntingAttack extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional Conditions for the Ability
 	private Condition selfPreAttackBonus;
 	private Condition taunt;
@@ -744,16 +767,12 @@ class TauntingAttack extends Ability {
 	// Keeps track of the number of previous Taunting Attack misses (for bonus effects)
 	public int numMisses;
 	
-	public TauntingAttack(Character source, int rank, int ShieldSkillsRank) {
+	public TauntingAttack(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Ability 3: \"Taunting Attack\"", source, rank);
 		this.owner = source;
-		this.name = "Ability 3: \"Taunting Attack\"";
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
-		
-		// Set the rest based on rank
-		this.rank = rank;
 		
 		// Sets the Cooldown and Scaler of the Ability
 		this.setCooldown();
@@ -767,7 +786,7 @@ class TauntingAttack extends Ability {
 	// Calculates the basic values for this Ability
 	private void setCooldown() {
 		this.cooldown = 4;
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			this.cooldown = 3;
 		}
 		this.turnCount = this.cooldown;  // The Ability always starts off Cooldown
@@ -776,7 +795,7 @@ class TauntingAttack extends Ability {
 	private void setScaler() {
 		// At rank 1, this scaler starts at 1.0
 		this.scaler = 1.0;
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			// Ranks 3,4,5,10 grants +.1 to scaler
 			if (walker == 3 || walker == 4 || walker == 5 || walker == 10) {
 				this.scaler += .1;
@@ -808,13 +827,18 @@ class TauntingAttack extends Ability {
 	
 	private void setTauntEffect() {
 		int duration = 1;
-		if (this.rank >= 10) {
+		if (this.rank() >= 10) {
 			duration = 2;
 		}
 		this.taunt = new Condition("Taunting Attack: Taunted", duration);
 	}
 	
 	// Get methods for additional effects of this Ability
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
+	
 	public Condition getTauntEffectHit() {
 		this.setTauntEffect();
 		return this.taunt;
@@ -827,12 +851,12 @@ class TauntingAttack extends Ability {
 		int bossChance = 0;   // For Boss Enemies (Level = 4)
 		
 		// At rank 3, there is a chance to still Taunt basic (Normal/Advanced) and Elite enemies
-		if (this.rank >= 3) {
+		if (this.rank() >= 3) {
 			basicChance = 25;
 			eliteChance = 10;
 		}
 		// This then extends at various ranks
-		for (int walker = 4; walker <= this.rank; walker++) {
+		for (int walker = 4; walker <= this.rank(); walker++) {
 			// First, basic chance increases:
 			// Ranks 4-9 except 5 grant +5% chance for basic enemies
 			if (walker <= 9 && walker != 5) {
@@ -892,6 +916,9 @@ class TauntingAttack extends Ability {
 
 // Ability 4: "Leader Strike"
 class LeaderStrike extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional variables for the Ability
 	private Condition selfPreAttackBonus;
 	private Condition allyDamageBonus;
@@ -903,16 +930,12 @@ class LeaderStrike extends Ability {
 	// Keeps track of the number of previous Leader Strike misses (for bonus effects)
 	public int numMisses;
 	
-	public LeaderStrike(Character source, int rank, int ShieldSkillsRank) {
+	public LeaderStrike(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Ability 4: \"Leader Strike\"", source, rank);
 		this.owner = source;
-		this.name = "Ability 4: \"Leader Strike\"";
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
-		
-		// Set the rest based on rank
-		this.rank = rank;
 		
 		// Sets the Cooldown and Scaler of the Ability
 		this.setCooldown();
@@ -927,7 +950,7 @@ class LeaderStrike extends Ability {
 	// Calculates the basic values for this Ability
 	private void setCooldown() {
 		this.cooldown = 5;
-		if (this.rank >= 7) {
+		if (this.rank() >= 7) {
 			this.cooldown = 4;
 		}
 		this.turnCount = this.cooldown;  // The Ability always starts off Cooldown
@@ -936,7 +959,7 @@ class LeaderStrike extends Ability {
 	private void setScaler() {
 		// At rank 1, this scaler starts at .7
 		this.scaler = .7;
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			// Rank 2 grants +.05 to scaler
 			if (walker == 2) {
 				this.scaler += .05;
@@ -974,7 +997,7 @@ class LeaderStrike extends Ability {
 		// At rank 1, this damage bonus starts at 20% and lasts 1 turn
 		int amount = 20;
 		int duration = 2;
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			// Ranks 2,8 grants +2% increased damage
 			if (walker == 2 || walker == 8) {
 				amount += 2;
@@ -1006,7 +1029,7 @@ class LeaderStrike extends Ability {
 	private void setHealingScaler() {
 		// At rank 1, this healing scaler starts at .05
 		this.healingScaler = .05;
-		for (int walker = 2; walker <= this.rank; walker++) {
+		for (int walker = 2; walker <= this.rank(); walker++) {
 			// Ranks 2,8 grants +1% to scaler
 			if (walker == 2 || walker == 8) {
 				this.healingScaler += .01;
@@ -1023,6 +1046,10 @@ class LeaderStrike extends Ability {
 	}
 	
 	// Get methods for additional variables for this Ability
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
 	public Condition getPreAttackBonus() {
 		// Returns the condition, but sets it again first in case things changed because of "numMisses"
 		this.setPreAttackBonus();
@@ -1041,10 +1068,10 @@ class LeaderStrike extends Ability {
 	public boolean willStun() {
 		// 0% chance until rank 5, which gives a 10% chance
 		int chance = 0;
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			chance += 10;
 		}
-		for (int walker = 6; walker < this.rank; walker++) {
+		for (int walker = 6; walker < this.rank(); walker++) {
 			// Rank 6 increases stun chance by 3
 			if (walker == 6) {
 				chance += 3;
@@ -1074,6 +1101,9 @@ class LeaderStrike extends Ability {
 
 // ULTIMATE Ability: "Hahaha! You Can't Kill Me!"
 class HaHaHaYouCantKillMe extends UltimateAbility {
+	// Holds the owner of the Ability as a Steel Legion Tank
+	private SteelLegionTank owner;
+	
 	// Additional variables for the Ability
 	private Condition selfArmorBonus;
 	private Condition enemyTauntEffect;
@@ -1081,14 +1111,10 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 	
 	
 	// NOTE: This Ability does not yet implement the Character Requirement for decreased Damage.
-	public HaHaHaYouCantKillMe(Character source, int rank) {
+	public HaHaHaYouCantKillMe(SteelLegionTank source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("ULTIMATE Ability: \"HaHaHa You Can't Kill Me!\"", source, rank);
 		this.owner = source;
-		this.name = "ULTIMATE Ability: \"HaHaHa You Can't Kill Me!\"";
-		
-		// Set the rest based on rank
-		this.rank = rank;
 		
 		// Set the additional effects of the Ability
 		this.setSelfArmorBonus();
@@ -1102,11 +1128,11 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 		int amount = 25;
 		int duration = 2;
 		// Increased to 30% at rank 2
-		if (this.rank == 2) {
+		if (this.rank() == 2) {
 			amount = 30;
 		}
 		// Increased to 50% at rank 3 for 3 turns
-		else if (this.rank >= 3) {
+		else if (this.rank() >= 3) {
 			amount = 50;
 			duration = 3;
 		}
@@ -1120,14 +1146,14 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 	// Sets the Taunt Condition (with the reduced damage status effect as necessary)
 	public void setEnemyTauntEffect(Character enemy) {
 		int duration = 2;
-		if (this.rank >= 3) {
+		if (this.rank() >= 3) {
 			duration = 3;
 		}
 		this.enemyTauntEffect = new Condition("HaHaHa You Can't Kill Me!: Taunt Effect", duration);
 		this.enemyTauntEffect.setSource(this.owner);
 		
 		// Adds reduced damage at rank 2 based on enemy affected
-		if (this.rank >= 2) {
+		if (this.rank() >= 2) {
 			// Default of 50% reduction for Normal and Advanced enemies (Level = 1, 2)
 			int amount = 50;
 			// 25% reduction for Elite enemies (Level = 3)
@@ -1151,7 +1177,7 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 		// Only occurs at rank 3
 		int amount = 0;
 		int duration = 0;
-		if (this.rank >= 3) {
+		if (this.rank() >= 3) {
 			amount = 50;
 			duration = 1;
 		}
@@ -1164,6 +1190,10 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 	}
 	
 	// Get methods for the additional variables of this Ability
+	@Override
+	public SteelLegionTank getOwner() {
+		return this.owner;
+	}
 	public Condition getSelfArmorBonus() {
 		this.setSelfArmorBonus();
 		return this.selfArmorBonus;
@@ -1186,7 +1216,7 @@ public class SteelLegionTank extends Character {
 	private HoldItRightThere HoldItRightThere; // Unique Passive Ability (UPA)
 	private EnchantedArmor EnchantedArmor;
 	private ShieldSkills ShieldSkills;
-	private ProfessionalLaughter ProfessionalLaughter = new ProfessionalLaughter(5);
+	private ProfessionalLaughter ProfessionalLaughter;
 	
 	// Base Abilities
 	private ShieldBash ShieldBash;
@@ -1421,14 +1451,14 @@ public class SteelLegionTank extends Character {
 	
 	// Overrides "avoidAttack" in order to also store the fact that an attack was blocked in "Shield Bash" and "Shield Reflection"
 	@Override
-	protected void avoidAttack(Attack atk) {
+	protected void avoidAttack(AttackResult atk) {
 		super.avoidAttack(atk);
 		this.ShieldBash.didBlock = true;
 		this.ShieldReflection.didBlock = true;
 	}
 	// Overrides "receivedAttack" for death effect 
 	@Override
-	protected void receivedAttack(Attack atk) {
+	protected void receivedAttack(AttackResult atk) {
 		super.receivedAttack(atk);
 		if (this.isDead() && this.HaHaHaYouCantKillMe.rank() >= 3) {
 			this.useDeathHaHaHaYouCantKillMe(BattleSimulator.getInstance().getAllies());

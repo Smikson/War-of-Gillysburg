@@ -1,16 +1,18 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 public class Deflection extends UltimateAbility {
+	// Holds the owner of the Ability as a Steel Legion Warrior
+	private SteelLegionWarrior owner;
+	
+	// Additional Variables
 	private double healingScaler;
 	private Stun stunEffect;
 	
 	// Constructor
-	public Deflection(Character source, int rank) {
+	public Deflection(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("ULTIMATE Ability: \"Deflection\"", source, rank);
 		this.owner = source;
-		this.name = "ULTIMATE Ability: \"Deflection\"";
-		this.rank = rank;
 		
 		// Calculate the damage and healing scalers of the Ability
 		this.setScalers();
@@ -26,7 +28,7 @@ public class Deflection extends UltimateAbility {
 		this.healingScaler = .25;
 		
 		// Set the scalers based on the rank of the ability
-		switch(this.rank) {
+		switch(this.rank()) {
 			case 1:
 				this.scaler = .3;
 				this.healingScaler = .25;
@@ -51,6 +53,10 @@ public class Deflection extends UltimateAbility {
 	}
 	
 	// Get methods for each variable
+	@Override
+	public SteelLegionWarrior getOwner() {
+		return this.owner;
+	}
 	public double getHealingScaler() {
 		return this.healingScaler;
 	}

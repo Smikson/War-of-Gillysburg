@@ -1,17 +1,18 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 public class FlipStrike extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Warrior
+	private SteelLegionWarrior owner;
+	
 	// Additional Variables
 	private int noMissChance;
 	private Condition preAttackBonus;
 	
 	// Constructor
-	public FlipStrike(Character source, int rank) {
+	public FlipStrike(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Ability 3: \"Flip Strike\"", source, rank);
 		this.owner = source;
-		this.name = "Ability 3: \"Flip Strike\"";
-		this.rank = rank;
 		
 		// Calculate and set the damage scaler
 		this.setCooldown();
@@ -26,7 +27,7 @@ public class FlipStrike extends Ability {
 	private void setCooldown() {
 		// Base Cooldown of 4, reduced to 3 at rank 5
 		this.cooldown = 4;
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			this.cooldown = 3;
 		}
 		// The Ability always starts off Cooldown
@@ -39,7 +40,7 @@ public class FlipStrike extends Ability {
 		this.scaler = 1.5;
 		
 		// Set the scaler based on the rank of the ability
-		switch(this.rank) {
+		switch(this.rank()) {
 			case 1:
 				this.scaler = 1.5;
 				break;
@@ -79,15 +80,15 @@ public class FlipStrike extends Ability {
 		this.noMissChance = 0;
 		
 		// Rank 7 increases the chance to 15%
-		if (this.rank >= 7) {
+		if (this.rank() >= 7) {
 			this.noMissChance = 15;
 		}
 		// Rank 9 increases the chance to 20%
-		if (this.rank >= 9) {
+		if (this.rank() >= 9) {
 			this.noMissChance = 20;
 		}
 		// Rank 10 increases the chance to 25%
-		if (this.rank == 10) {
+		if (this.rank() == 10) {
 			this.noMissChance = 25;
 		}
 	}
@@ -104,6 +105,11 @@ public class FlipStrike extends Ability {
 	}
 	
 	// Get methods for additional effects
+	@Override
+	public SteelLegionWarrior getOwner() {
+		return this.owner;
+	}
+	
 	public int getNoMissChance() {
 		return this.noMissChance;
 	}

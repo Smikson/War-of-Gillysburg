@@ -1,6 +1,9 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 public class WarriorsMight extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Warrior
+	private SteelLegionWarrior owner;
+	
 	// Additional variables
 	private int bonusHealthStat;
 	private int bonusArmorStat;
@@ -9,12 +12,10 @@ public class WarriorsMight extends Ability {
 	private Stun stun;
 	
 	// Constructor
-	public WarriorsMight(Character source, int rank) {
+	public WarriorsMight(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Base Passive Ability: \"Warrior's Might\"", source, rank);
 		this.owner = source;
-		this.name = "Base Passive Ability: \"Warrior's Might\"";
-		this.rank = rank;
 		
 		// Calculate the additional stat amounts
 		this.setStatBonuses();
@@ -22,6 +23,12 @@ public class WarriorsMight extends Ability {
 		// Calculate the stun effect (is always the same: 1 turn, end of turn)
 		this.stun = new Stun("Warrior's Might (Vengeance Strike): Stun", 1);
 		this.stun.makeEndOfTurn();
+	}
+	// An additional constructor to Calculate the bonus stats in order to create a SteelLegionWarrior
+	public WarriorsMight(int rank) {
+		super("No Owner: Warrior's Might", Character.EMPTY, rank);
+		
+		this.setStatBonuses();
 	}
 	
 	// Calculates the flat stat bonuses for Health, Armor, and Threat
@@ -32,7 +39,7 @@ public class WarriorsMight extends Ability {
 		this.bonusThreatStat = 0;
 		this.bonusDamageStat = 0;
 		
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-2 grant +90 Health and +5 Armor per rank
 			if (walker <= 2) {
 				this.bonusHealthStat += 90;
@@ -69,6 +76,11 @@ public class WarriorsMight extends Ability {
 	}
 	
 	// Get methods for additional effects
+	@Override
+	public SteelLegionWarrior getOwner() {
+		return this.owner;
+	}
+	
 	public int getHealthBonus() {
 		return this.bonusHealthStat;
 	}

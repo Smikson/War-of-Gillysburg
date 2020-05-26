@@ -1,6 +1,9 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 public class Charge extends Ability{
+	// Holds the owner of the Ability as a Steel Legion Warrior
+	private SteelLegionWarrior owner;
+	
 	// Additional Variables
 	private double AOEScaler;
 	private double targetedScaler;
@@ -9,12 +12,10 @@ public class Charge extends Ability{
 	private Condition targetedPreAttackBonus;
 	
 	// Constructor
-	public Charge(Character source, int rank) {
+	public Charge(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Ability 2: \"CHARGE!\"", source, rank);
 		this.owner = source;
-		this.name = "Ability 2: \"CHARGE!\"";
-		this.rank = rank;
 		
 		// Calculate and set the Cooldown and each scaler (base scaler set to targeted scaler)
 		this.setCooldown();
@@ -30,7 +31,7 @@ public class Charge extends Ability{
 	private void setCooldown() {
 		// Base Cooldown of 5, reduced to 4 at rank 10
 		this.cooldown = 5;
-		if (this.rank == 10) {
+		if (this.rank() == 10) {
 			this.cooldown = 4;
 		}
 		// The Ability always starts off Cooldown
@@ -43,7 +44,7 @@ public class Charge extends Ability{
 		this.targetedScaler = 1;
 		
 		// Set the targeted scaler based on the rank of the ability
-		switch(this.rank) {
+		switch(this.rank()) {
 			case 1:
 				this.targetedScaler = 1;
 				break;
@@ -85,7 +86,7 @@ public class Charge extends Ability{
 		this.AOEScaler = .5;
 		
 		// Set the AOE scaler based on the rank of the ability
-		switch(this.rank) {
+		switch(this.rank()) {
 			case 1:
 				this.AOEScaler = .5;
 				break;
@@ -125,17 +126,17 @@ public class Charge extends Ability{
 		this.speedPercentage = 50;
 		
 		// Rank 3 increases the amount to 100%
-		if (this.rank >= 3) {
+		if (this.rank() >= 3) {
 			this.speedPercentage = 100;
 		}
 		
 		// Rank 7 increases the amount to 150%
-		if (this.rank >= 7) {
+		if (this.rank() >= 7) {
 			this.speedPercentage = 150;
 		}
 		
 		// Rank 10 increases the amount to 200%
-		if (this.rank == 10) {
+		if (this.rank() == 10) {
 			this.speedPercentage = 200;
 		}
 	}
@@ -148,29 +149,29 @@ public class Charge extends Ability{
 		
 		// Calculate the crit amount based on rank
 		// Rank 3 increases the amount to 15%
-		if (this.rank >= 3) {
+		if (this.rank() >= 3) {
 			critAmount = 15;
 		}
 		// Rank 5 increases the amount to 20%
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			critAmount = 20;
 		}
 		// Rank 7 increases the amount to 25%
-		if (this.rank >= 7) {
+		if (this.rank() >= 7) {
 			critAmount = 25;
 		}
 		// At Rank 10, the amount is "a guaranteed crit", so we take current crit from 100 to make 100% chance
-		if (this.rank == 10) {
+		if (this.rank() == 10) {
 			critAmount = 100 - this.owner.getCriticalChance();
 		}
 		
 		// Calculate the Armor Piercing amount based on rank
 		// Rank 9 the amount is 10%
-		if (this.rank >= 9) {
+		if (this.rank() >= 9) {
 			apAmount = 10;
 		}
 		// Rank 10 the amount is 15%
-		if (this.rank == 10) {
+		if (this.rank() == 10) {
 			apAmount = 15;
 		}
 		
@@ -184,12 +185,16 @@ public class Charge extends Ability{
 		this.targetedPreAttackBonus = new Condition("CHARGE!: Targeted Pre-Attack Bonus", 0);
 		this.targetedPreAttackBonus.setSource(this.owner);
 		this.targetedPreAttackBonus.addStatusEffect(critBonus);
-		if (this.rank >= 9) {
+		if (this.rank() >= 9) {
 			this.targetedPreAttackBonus.addStatusEffect(apBonus);
 		}
 	}
 	
 	// Get methods for each variable
+	@Override
+	public SteelLegionWarrior getOwner() {
+		return this.owner;
+	}
 	public double getTargetedScaler() {
 		return this.targetedScaler;
 	}

@@ -2,32 +2,21 @@ package WyattWitemeyer.WarOfGillysburg;
 
 public class Ability {
 	// Variables, only the turnCount can be accessed outside the Ability itself
-	protected String name;
-	protected Character owner;
-	protected int rank;
+	private String name;
+	private Character owner;
+	private int rank;
 	protected int cooldown;
 	public int turnCount;
 	protected double scaler;
 	
 	// Constructors
-	public Ability() {
-		this.name = "Blank Ability";
-		this.owner = Character.EMPTY;
-		this.rank = 0;
+	public Ability(String name, Character owner, int rank) {
+		this.name = name;
+		this.owner = owner;
+		this.rank = rank;
 		this.cooldown = 0;
 		this.turnCount = 0;
 		this.scaler = 1.0;
-	}
-	public Ability(int rank) {
-		this();
-		this.rank = rank;
-	}
-	public Ability(int rank, int cooldown, double scaler) {
-		this();
-		this.rank = rank;
-		this.cooldown = cooldown;
-		
-		this.scaler = scaler;
 	}
 	
 	// Get methods
@@ -70,16 +59,9 @@ class UltimateAbility extends Ability {
 	private boolean onCdown;
 	
 	// Constructors
-	public UltimateAbility() {
-		super();
+	public UltimateAbility(String name, Character owner, int rank) {
+		super(name, owner, rank);
 		this.onCdown = false;
-	}
-	public UltimateAbility(int rank) {
-		super(rank);
-		this.onCdown = false;
-	}
-	public UltimateAbility(int rank, double scaler) {
-		super(rank, 0, scaler);
 	}
 	
 	// Slightly Different Cooldown Functions since it can only be used once by default

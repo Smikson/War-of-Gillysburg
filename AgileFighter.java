@@ -1,6 +1,9 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 public class AgileFighter extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Warrior
+	private SteelLegionWarrior owner;
+	
 	// Additional variables
 	private Condition basePreAttackBonus;
 	private Condition abilityPreAttackBonus;
@@ -8,12 +11,10 @@ public class AgileFighter extends Ability {
 	private Condition abilityBlockBonus;
 	
 	// Constructor
-	public AgileFighter(Character source, int rank) {
+	public AgileFighter(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Base Passive Ability: \"Agile Fighter\"", source, rank);
 		this.owner = source;
-		this.name = "Base Passive Ability: \"Agile Fighter\"";
-		this.rank = rank;
 		
 		// Set the healing scaler of the ability
 		this.setScaler();
@@ -30,7 +31,7 @@ public class AgileFighter extends Ability {
 		// At rank 0, the healing scaler is at 1%
 		this.scaler = .01;
 		
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-5 grant +.1% to the scaler
 			if (walker <= 5) {
 				this.scaler += .001;
@@ -52,7 +53,7 @@ public class AgileFighter extends Ability {
 		// At rank 0, the amount is technically 10%
 		int amount = 10;
 		
-		for (int walker = 1; walker <= this.rank; walker++) {
+		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-5 grant +1% accuracy
 			if (walker <= 5) {
 				amount += 1;
@@ -72,7 +73,7 @@ public class AgileFighter extends Ability {
 	private int calcAbilityAccAmt() {
 		// Amount starts at the base amount, but increases at different ranks starting at rank 6
 		int amount = this.calcBaseAccAmt();
-		for (int walker = 6; walker <= this.rank; walker++) {
+		for (int walker = 6; walker <= this.rank(); walker++) {
 			// Ranks 6-10 grant +3% bonus accuracy
 			if (walker <= 10) {
 				amount += 3;
@@ -88,7 +89,7 @@ public class AgileFighter extends Ability {
 	private int calcCritAmount() {
 		// Amount for crit is the same for each version, so this calculates it so we don't code it twice. Starts at rank 11
 		int amount = 0;
-		for (int walker = 11; walker <= this.rank; walker++) {
+		for (int walker = 11; walker <= this.rank(); walker++) {
 			// Ranks 11-14 grant +5% crit
 			if (walker <= 14) {
 				amount += 5;
@@ -118,7 +119,7 @@ public class AgileFighter extends Ability {
 		this.basePreAttackBonus = new Condition("Agile Fighter: Pre-Attack Bonus", 0);
 		this.basePreAttackBonus.setSource(this.owner);
 		this.basePreAttackBonus.addStatusEffect(accBonus);
-		if (this.rank >= 11) {
+		if (this.rank() >= 11) {
 			this.basePreAttackBonus.addStatusEffect(critBonus);
 		}
 	}
@@ -138,7 +139,7 @@ public class AgileFighter extends Ability {
 		this.abilityPreAttackBonus = new Condition("Agile Fighter: Pre-Attack Bonus", 0);
 		this.abilityPreAttackBonus.setSource(this.owner);
 		this.abilityPreAttackBonus.addStatusEffect(accBonus);
-		if (this.rank >= 11) {
+		if (this.rank() >= 11) {
 			this.abilityPreAttackBonus.addStatusEffect(critBonus);
 		}
 	}
@@ -172,6 +173,11 @@ public class AgileFighter extends Ability {
 	}
 	
 	// Get methods for the conditions
+	@Override
+	public SteelLegionWarrior getOwner() {
+		return this.owner;
+	}
+	
 	public Condition getBasePreAttackBonus() {
 		return this.basePreAttackBonus;
 	}

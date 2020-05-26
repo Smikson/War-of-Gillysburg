@@ -1,6 +1,9 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 public class IntimidatingShout extends Ability {
+	// Holds the owner of the Ability as a Steel Legion Warrior
+	private SteelLegionWarrior owner;
+	
 	// Additional Variables
 	private Condition tauntNormal;
 	private Condition tauntNormalReducedValue;
@@ -21,12 +24,10 @@ public class IntimidatingShout extends Ability {
 	private Condition selfDefenseBonusExtraDuration;
 	
 	// Constructor
-	public IntimidatingShout(Character source, int rank) {
+	public IntimidatingShout(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super();
+		super("Ability 4: \"Intimidating Shout\"", source, rank);
 		this.owner = source;
-		this.name = "Ability 4: \"Intimidating Shout\"";
-		this.rank = rank;
 		
 		// Set the Cooldown of the Ability (this Ability has no scaler)
 		this.setCooldown();
@@ -40,7 +41,7 @@ public class IntimidatingShout extends Ability {
 	private void setCooldown() {
 		// Base Cooldown of 5, reduced to 4 at rank 5
 		this.cooldown = 5;
-		if (this.rank >= 5) {
+		if (this.rank() >= 5) {
 			this.cooldown = 4;
 		}
 		// The Ability always starts off Cooldown
@@ -53,7 +54,7 @@ public class IntimidatingShout extends Ability {
 		double amount = 30;
 		
 		// Set the amount based on the rank of the Ability
-		switch(this.rank) {
+		switch(this.rank()) {
 			case 1:
 				amount = 30;
 				break;
@@ -105,7 +106,7 @@ public class IntimidatingShout extends Ability {
 		// Boss amount is only set to non-zero if rank 7+
 		double bossBaseAmount = 0;
 		double bossReducedAmount = 0;
-		if (this.rank >= 7) {
+		if (this.rank() >= 7) {
 			bossBaseAmount = normalBaseAmount/4;
 			bossReducedAmount = bossBaseAmount/2;
 		}
@@ -113,7 +114,7 @@ public class IntimidatingShout extends Ability {
 		
 		// Default duration of 1, increased to 2 at rank 10.
 		int duration = 1;
-		if (this.rank == 10) {
+		if (this.rank() == 10) {
 			duration = 2;
 		}
 		
@@ -260,12 +261,12 @@ public class IntimidatingShout extends Ability {
 		
 		// Default duration of 1, increased to 2 at rank 10.
 		int duration = 1;
-		if (this.rank == 10) {
+		if (this.rank() == 10) {
 			duration = 2;
 		}
 		
 		// Calculate the amounts based on rank
-		switch(this.rank) {
+		switch(this.rank()) {
 			case 1:
 				amount = 25;
 				break;
@@ -339,6 +340,11 @@ public class IntimidatingShout extends Ability {
 	}
 	
 	// Get methods for each Condition
+	@Override
+	public SteelLegionWarrior getOwner() {
+		return this.owner;
+	}
+	
 	public Condition getTauntNormal() {
 		return this.tauntNormal;
 	}
