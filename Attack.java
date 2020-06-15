@@ -17,7 +17,7 @@ public class Attack {
 	private int flatDamage;			// If a scaler is not used, holds the specified flat numeric damage amount
 	private boolean isTargeted;		// Determines if Targeted (true) or AOE (false)
 	private boolean canMiss;		// Determines if the attack has the capability of being dodged or blocked
-	private boolean canCrit;			// Determines if the attack has the capability of critically striking
+	private boolean canCrit;		// Determines if the attack has the capability of critically striking
 	private boolean guaranteedCrit;	// Determines if the attack is a guaranteed critical strike
 	private boolean ignoresArmor;	// Determines if the attack "ignores all armor"
 	private boolean hasDeviation;	// Determines if the attack uses STDup and STDdown to deviate the attack
@@ -88,6 +88,160 @@ public class Attack {
 	}
 	public boolean hasDeviation() {
 		return this.hasDeviation;
+	}
+	
+	// Functions to help execute the attack held in the variables of the class
+	// landAttack: Calculates the chance for the attack to land
+	public boolean landAttack() {
+		// Denominator or largest possible value for the random generator to decide
+		Dice toHit = new Dice(this.getAttacker().getAccuracy());
+		
+		// If what is rolled is Greater Than the enemy's Dodge/Block, the attack hits
+		boolean didHit = toHit.roll() > this.getDefender().getDodge() + this.getDefender().getBlock();
+		return didHit;
+	}
+	
+	// criticalEffect: Calculates if the ability critically struck and returns the scaler effect (1 if no effect)
+	public double criticalEffect() {
+		// Initialize return value
+		double ret = 1.0;
+		
+		// Find if the attack critically struck
+		Dice percent = new Dice(100);
+		boolean didCrit = percent.roll() <= this.getAttacker().getCriticalChance();
+		if (this.guaranteedCrit()) {
+			didCrit = true;
+		}
+		
+		// If it did, adjust the effect accordingly
+		if (didCrit && this.canCrit()) {
+			ret *= 2;
+			if (this.getAttacker().getCriticalChance()>100) {
+				ret += (this.getAttacker().getCriticalChance() - 100)/100; // This was changed to divide by 100
+			}
+		}
+		
+		// Return the result
+		return ret;
+	}
+	
+	// Executes the attack
+	public void execute() {
+		// Make sure neither target is dead:
+		if (this.getAttacker().isDead()) {
+			System.out.println(this.getAttacker().getName() + " is dead. Thus, " + this.getAttacker().getName() + " is incapable of attacking.");
+			System.out.println("Continue with attack anyway? Y or N");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return;
+			}
+		}
+		if (this.getDefender().isDead()) {
+			System.out.println(this.getDefender().getName() + " is already dead. The attack would have no effect.");
+			System.out.println("Continue with attack anyway? Y or N");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return;
+			}
+		}
+		
+		// Apply Pre-Attack Effects
+		this.getDefender().applyPreAttackEffects(this);
+		this.getAttacker().applyPreAttackEffects(this);
+		
+		// Determine if the attack hits
+		boolean didHit = true;
+		if (this.canMiss()) {
+			didHit = this.landAttack();
+		}
+		
+		// If the attack missed:
+		if (!didHit) {
+			// Print the result
+			System.out.println(this.getAttacker().getName() + " missed " + this.getDefender().getName() + "!");
+			
+			// Store the attack attempt, and apply post-attack effects
+			AttackResult atkResult = new AttackResultBuilder()
+					.attacker(this.getAttacker())
+					.defender(this.getDefender())
+					.type(this.getAttackType())
+					.didHit(false)
+					.didCrit(false)
+					.damageDealt(0)
+					.didKill(false)
+					.build();
+			
+			// Apply Post-Attack Effects
+			this.getDefender().applyPostAttackEffects(atkResult);
+			this.getAttacker().applyPostAttackEffects(atkResult);
+			
+			// Stop the rest of the attack
+			return;
+		}
+		
+		// Calculate base amount, armor effect, critical effect, and deviated effect.
+		// Base amount
+		double baseDmgAmount;
+		if (this.usesScaler()) {
+			baseDmgAmount = this.getScaler() * this.getAttacker().getDamage();
+		}
+		else {
+			baseDmgAmount = this.getFlatDamageAmount();
+		}
+		
+		// Armor Effect. If the attack is classified as "ignoring Armor" the minimum armorEffect is 1, and the bonus (amount above 1) is increased by 50%.
+		double armorEffect;
+		if (this.ignoresArmor()) {
+			if (this.getDefender().getArmor() > this.getAttacker().getArmorPiercing()) {
+				armorEffect = 1;
+			}
+			else {
+				armorEffect = this.getAttacker().getArmorPiercing()*1d / (this.getDefender().getArmor());
+				armorEffect = (armorEffect - 1) * 1.5 + 1;
+			}
+		}
+		// Otherwise, just normal ArmorPiercing/Armor.
+		else {
+			armorEffect = this.getAttacker().getArmorPiercing()*1d / (this.getDefender().getArmor());
+		}
+		
+		// Critical Effect
+		double critEffect = this.criticalEffect();
+		boolean didCrit = critEffect > 1.0;
+		
+		// Calculate Total Damage and Deviation
+		double totalDamage = baseDmgAmount * armorEffect * critEffect;
+		
+		// Deviation Effect
+		// Calculates the minimum and maximum Damage possible due to Standard Deviation (minimum is removed if you didCrit)
+		int minDamage;
+		int maxDamage = (int)Math.round(totalDamage * this.getAttacker().getSTDup() / 100.0);
+		if (didCrit) {
+			minDamage = (int)Math.round(totalDamage);
+		}
+		else {
+			minDamage = (int)Math.round(totalDamage * this.getAttacker().getSTDdown() / 100.0);
+		}
+		
+		// Determines where on the Damage spectrum created the Ability landed, and calculates the final Damage done
+		Dice vary = new Dice(maxDamage-minDamage+1);
+		int dmgTaken = minDamage + vary.roll() - 1;
+		
+		// The defender takes the damage -- CHANGE? (Includes printing the result)
+		dmgTaken = this.getAttacker().dealDamage(this.getDefender(), dmgTaken, this.getAttackType());
+		
+		// Store the attack, and apply post-attack effects
+		AttackResult atkResult = new AttackResultBuilder()
+				.attacker(this.getAttacker())
+				.defender(this.getDefender())
+				.type(this.getAttackType())
+				.didHit(true)
+				.didCrit(didCrit)
+				.damageDealt(dmgTaken)
+				.didKill(this.getDefender().isDead())
+				.build();
+		
+		// Apply Post-Attack Effects
+		this.getDefender().applyPostAttackEffects(atkResult);
+		this.getAttacker().applyPostAttackEffects(atkResult);
 	}
 }
 

@@ -1390,8 +1390,17 @@ public class SteelLegionTank extends Character {
 	                if (attackTargets.isEmpty()) {
 	                	break;
 	                }
-	                System.out.println("Choose enemies blinded (0 no longer takes back, will remain empty list):");
+	                if (attackTargets.contains(Character.EMPTY)) {
+	                	attackTargets.clear();
+	                }
+	                System.out.println("Choose enemies blinded:");
 	                LinkedList<Character> blindedTargets = BattleSimulator.getInstance().targetMultiple();
+	                if (blindedTargets.isEmpty()) {
+	                	break;
+	                }
+	                if (blindedTargets.contains(Character.EMPTY)) {
+	                	attackTargets.clear();
+	                }
 	                this.useShieldReflection(attackTargets, blindedTargets);
 	                flag = false;
 	                break;

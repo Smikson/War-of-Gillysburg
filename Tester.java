@@ -27,9 +27,9 @@ public class Tester {
 		allies.add(Prince);
 		
 		// Creates Enemies with respective Data and adds them to the enemies list
-		Enemy spi1 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 1").build();
-		Enemy spi2 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 2").build();
-		Enemy spi3 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Gaint Spider 3").build();
+		Enemy spi1 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Giant Spider 1").build();
+		Enemy spi2 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Giant Spider 2").build();
+		Enemy spi3 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Giant Spider 3").build();
 		
 		enemies.add(spi1);
 		enemies.add(spi2);
@@ -67,8 +67,6 @@ public class Tester {
 			}
 		}
 		*/
-		List<Character> group = new LinkedList<Character>();
-		group.add(spi3);
 		
 		// THE ACTION TAKES PLACE HERE
 		//LinkedList<Character> listed = new LinkedList<>();

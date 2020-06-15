@@ -81,6 +81,12 @@ public class Enemy extends Character {
 		this.ThreatOrder = ret;
 	}
 	
+	public LinkedList<Character> getThreatOrder() {
+		LinkedList<Character> copy = new LinkedList<>();
+		copy.addAll(this.ThreatOrder);
+		return copy;
+	}
+	
 	public void displayThreatOrder() {
 		if (this.ThreatOrder.isEmpty()) {
 			System.out.println("The Threat Order for " + this.getName() + " has not been set up. Something went wrong.");

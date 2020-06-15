@@ -7,7 +7,7 @@ enum CharacterType {
 
 public class Character {
 	// Static Characters to aid with Character building and leveling up from a base level.
-	public static final Character EMPTY = new Character("Null",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>(), CharacterType.NONE);
+	public static final Character EMPTY = new Character("Null",0,0,0,0,0,0,0,0,0,0,0,0,0,0,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>(), CharacterType.NONE);
 	public static final Character STEEL_LEGION_TANK = new Character("Tank",0,750,70,185,100,125,0,38,2,3,1,1,20,3,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>(), CharacterType.PLAYER);
 	public static final Character STEEL_LEGION_WARRIOR = new Character("Warrior",0,635,85,162,118,125,0,30,5,6,5,1,15,5,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>(), CharacterType.PLAYER);
 	public static final Character STEEL_LEGION_BARBARIAN = new Character("Barbarian",0,530,125,158,124,100,0,28,7,6,6,1,12,8,90,110, new HashMap<AttackType,Double>(), new HashMap<AttackType,Double>(), CharacterType.PLAYER);
@@ -845,7 +845,7 @@ public class Character {
 		return healingReceived;
 	}
 	// Takes damage by numerical amount
-	protected void takeDamage(int damageDealt, AttackType aType) {
+	protected int takeDamage(int damageDealt, AttackType aType) {
 		// Checks for invincibility or stasis
 		for (Condition c : this.getActiveConditions()) {
 			if (c instanceof Invincible || c instanceof Stasis) {
@@ -860,18 +860,20 @@ public class Character {
 			damageDealt *= 1 + this.getVulnerabilities().get(aType)/100.0;
 		}
 		
+		int shieldDamage = 0;
 		if (this.Shields > 0) {
 			int remainingShields = this.Shields - damageDealt;
 			if (remainingShields > 0) {
 				this.Shields = remainingShields;
-				return;
+				return damageDealt;
 			}
 			else {
+				shieldDamage = this.Shields;
 				this.Shields = 0;
-				damageDealt -= this.Shields;
 			}
 		}
-		this.setCurrentHealth(this.getCurrentHealth() - damageDealt);
+		this.setCurrentHealth(this.getCurrentHealth() - (damageDealt - shieldDamage));
+		return damageDealt;
 	}
 	
 	// Calculates the chance for the attack to land (is public so checks for "Advantage" can be done)
@@ -941,9 +943,9 @@ public class Character {
 	}
 	
 	// Deals a flat amount of damage to another Character and returns the output string based on damage and stating if they died.
-	protected void dealDamage(Character enemy, int damageDealt, AttackType aType, boolean didCrit) {
+	protected int dealDamage(Character enemy, int damageDealt, AttackType aType, boolean didCrit) {
 		
-		enemy.takeDamage(damageDealt, aType);
+		damageDealt = enemy.takeDamage(damageDealt, aType);
 		
 		// Attack output
 		if (didCrit) {
@@ -990,27 +992,39 @@ public class Character {
 			System.out.println(enemy.getName() + " has " + enemy.getCurrentHealth() + " Health remaining.");
 		}
 		
-		// Unapply the Incoming/Outgoing Status Effects
-		enemy.unapplyIncomingStatusEffects(this);
-		this.unapplyOutgoingStatusEffects(enemy);
-		
-		// Store the attack made
-		AttackResult atk = new AttackResultBuilder()
-				.attacker(this)
-				.defender(enemy)
-				.type(aType)
-				.didHit(true)
-				.didCrit(didCrit)
-				.damageDealt(damageDealt)
-				.didKill(enemy.isDead())
-				.build();
-		this.hitAttack(atk);
-		enemy.receivedAttack(atk);
+		return damageDealt;
 	}
-	protected void dealDamage(Character enemy, int damageDealt, AttackType aType) {
-		this.dealDamage(enemy, damageDealt, aType, false);
+	protected int dealDamage(Character enemy, int damageDealt, AttackType aType) {
+		return this.dealDamage(enemy, damageDealt, aType, false);
+	}
+	protected int dealDamage(Character enemy, int damageDealt) {
+		return this.dealDamage(enemy, damageDealt, AttackType.TRUE);
 	}
 	
+	// Applies the pre-attack and post-attack effects for the Characters (can be overridden by each class for additional effects)
+	protected void applyPreAttackEffects(Attack atk) {
+		// If attacking, apply outgoing status effects
+		if (this.equals(atk.getAttacker())) {
+			this.applyOutgoingStatusEffects(atk.getDefender());
+		}
+		// If defending, apply incoming status effects
+		else if (this.equals(atk.getDefender())) {
+			this.applyIncomingStatusEffects(atk.getAttacker());
+		}
+	}
+	protected void applyPostAttackEffects(AttackResult atkRes) {
+		// If attacking, unapply outgoing status effects, then store the attack result
+		if (this.equals(atkRes.getAttacker())) {
+			this.unapplyOutgoingStatusEffects(atkRes.getDefender());
+			this.AttacksMade.add(atkRes);
+		}
+		// If defending, unapply incoming status effects, then store the attack result
+		else if (this.equals(atkRes.getDefender())) {
+			this.unapplyIncomingStatusEffects(atkRes.getAttacker());
+			this.AttacksDefended.add(atkRes);
+		}
+	}
+	/*
 	// NEW: Attack Function based on a builder: Will replace all existing attack functions
 	public void attackFromBuilder(Attack atk) {
 		// Make sure neither target is dead:
@@ -1030,10 +1044,11 @@ public class Character {
 		}
 		
 		// Apply Pre-Attack Effects
-		atk.getDefender().applyIncomingStatusEffects(atk.getAttacker());
-		atk.getAttacker().applyOutgoingStatusEffects(atk.getDefender());
+		atk.getDefender().applyPreAttackEffects(atk);
+		atk.getAttacker().applyPreAttackEffects(atk);
 		
 		// Determine if the attack hits
+		// Redo with "Attack" function
 		boolean didHit = true;
 		if (atk.canMiss()) {
 			didHit = atk.getAttacker().landAttack(atk.getDefender());
@@ -1041,13 +1056,6 @@ public class Character {
 		
 		// If the attack missed:
 		if (!didHit) {
-			// CHANGE
-			// Apply Post-Attack Effects
-			
-			// Unapply Pre-Attack Effects
-			atk.getDefender().unapplyIncomingStatusEffects(atk.getAttacker());
-			atk.getAttacker().unapplyOutgoingStatusEffects(atk.getDefender());
-			
 			// Store the attack attempt, then return
 			AttackResult atkResult = new AttackResultBuilder()
 					.attacker(atk.getAttacker())
@@ -1058,11 +1066,19 @@ public class Character {
 					.damageDealt(0)
 					.didKill(false)
 					.build();
+			
+			// Redo this part.*
 			atk.getAttacker().missAttack(atkResult);
 			atk.getDefender().avoidAttack(atkResult);
 			
 			// Print the result
 			System.out.println(atk.getAttacker().getName() + " missed " + atk.getDefender().getName() + "!");
+			
+			// *Apply Post-Attack Effects
+			atk.getDefender().applyPostAttackEffects(atkResult);
+			atk.getAttacker().applyPostAttackEffects(atkResult);
+			
+			// Stop the rest of the attack
 			return;
 		}
 		
@@ -1083,7 +1099,7 @@ public class Character {
 		
 		// Calculate Damage. Don't forget bonus from extra crit chance.
 	}
-	
+	*/
 	public void attack(Character enemy, double scaler, AttackType aType, boolean isTargeted, boolean canMiss, boolean armorApplies) {
 		// Add: Check for being attacked conditions (Steel Legion Tank: Hold It Right There)
 		
@@ -1154,7 +1170,24 @@ public class Character {
 			int damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
 			
 			// Damages the enemy and determines whether enemy died (Storing of attacks that hit occur in the "dealDamage" function)
-			this.dealDamage(enemy, damageDealt, aType, didCrit);
+			damageDealt = this.dealDamage(enemy, damageDealt, aType, didCrit);
+			
+			// Unapply the Incoming/Outgoing Status Effects
+			enemy.unapplyIncomingStatusEffects(this);
+			this.unapplyOutgoingStatusEffects(enemy);
+			
+			// Store the attack made
+			AttackResult atk = new AttackResultBuilder()
+					.attacker(this)
+					.defender(enemy)
+					.type(aType)
+					.didHit(true)
+					.didCrit(didCrit)
+					.damageDealt(damageDealt)
+					.didKill(enemy.isDead())
+					.build();
+			this.hitAttack(atk);
+			enemy.receivedAttack(atk);
 		}
 	}
 	// Normal Attack Abbreviations
