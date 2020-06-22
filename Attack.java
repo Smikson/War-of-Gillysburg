@@ -158,7 +158,7 @@ public class Attack {
 			// Print the result
 			System.out.println(this.getAttacker().getName() + " missed " + this.getDefender().getName() + "!");
 			
-			// Store the attack attempt, and apply post-attack effects
+			// Store the attack attempt
 			AttackResult atkResult = new AttackResultBuilder()
 					.attacker(this.getAttacker())
 					.defender(this.getDefender())
@@ -168,6 +168,9 @@ public class Attack {
 					.damageDealt(0)
 					.didKill(false)
 					.build();
+			
+			this.getDefender().storeAttack(atkResult);
+			this.getAttacker().storeAttack(atkResult);
 			
 			// Apply Post-Attack Effects
 			this.getDefender().applyPostAttackEffects(atkResult);
@@ -226,9 +229,56 @@ public class Attack {
 		int dmgTaken = minDamage + vary.roll() - 1;
 		
 		// The defender takes the damage -- CHANGE? (Includes printing the result)
-		dmgTaken = this.getAttacker().dealDamage(this.getDefender(), dmgTaken, this.getAttackType());
+		// dmgTaken = this.getAttacker().dealDamage(this.getDefender(), dmgTaken, this.getAttackType());
+		dmgTaken = this.getDefender().takeDamage(dmgTaken, this.getAttackType());
 		
-		// Store the attack, and apply post-attack effects
+		// Attack output
+		if (didCrit) {
+			System.out.println(this.getAttacker().getName() + " scored a CRITCAL HIT against " + this.getDefender().getName() + " for a total of " + dmgTaken + " " + this.getAttackType().toString() + " damage!");
+		}
+		else {
+			System.out.println(this.getAttacker().getName() + " hit " + this.getDefender().getName() + " for a total of " + dmgTaken + " " + this.getAttackType().toString() + " damage!");
+		}
+		
+		if (this.getDefender().isDead()) {
+			Dice funDie = new Dice(6);
+			String funWord = "";
+			
+			switch(funDie.roll()) {
+				case 1: {
+					funWord = " utterly annihilated ";
+					break;
+				}
+				case 2: {
+					funWord = " defeated ";
+					break;
+				}
+				case 3: {
+					funWord = " obliterated ";
+					break;
+				}
+				case 4: {
+					funWord = " purged the universe of ";
+					break;
+				}
+				case 5: {
+					funWord = " destroyed ";
+					break;
+				}
+				case 6: {
+					funWord = " slew ";
+					break;
+				}
+			}
+			
+			System.out.println(this.getAttacker().getName() + funWord + this.getDefender().getName() + "!");
+		}
+		else {
+			System.out.println(this.getDefender().getName() + " has " + this.getDefender().getCurrentHealth() + " Health remaining.");
+		}
+		
+		
+		// Store the attack
 		AttackResult atkResult = new AttackResultBuilder()
 				.attacker(this.getAttacker())
 				.defender(this.getDefender())
@@ -238,6 +288,9 @@ public class Attack {
 				.damageDealt(dmgTaken)
 				.didKill(this.getDefender().isDead())
 				.build();
+		
+		this.getDefender().storeAttack(atkResult);
+		this.getAttacker().storeAttack(atkResult);
 		
 		// Apply Post-Attack Effects
 		this.getDefender().applyPostAttackEffects(atkResult);

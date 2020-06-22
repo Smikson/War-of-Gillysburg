@@ -999,6 +999,18 @@ public class Character {
 		return this.dealDamage(enemy, damageDealt, AttackType.TRUE);
 	}
 	
+	// Stores the information from an AttackResult
+	protected void storeAttack(AttackResult atkRes) {
+		// If this character was the attacker, store in attacks made
+		if (this.equals(atkRes.getAttacker())) {
+			this.AttacksMade.add(atkRes);
+		}
+		// If this character was the defender, store in attacks defended
+		else if (this.equals(atkRes.getDefender())) {
+			this.AttacksDefended.add(atkRes);
+		}
+	}
+	
 	// Applies the pre-attack and post-attack effects for the Characters (can be overridden by each class for additional effects)
 	protected void applyPreAttackEffects(Attack atk) {
 		// If attacking, apply outgoing status effects
@@ -1014,14 +1026,13 @@ public class Character {
 		// If attacking, unapply outgoing status effects, then store the attack result
 		if (this.equals(atkRes.getAttacker())) {
 			this.unapplyOutgoingStatusEffects(atkRes.getDefender());
-			this.AttacksMade.add(atkRes);
 		}
 		// If defending, unapply incoming status effects, then store the attack result
 		else if (this.equals(atkRes.getDefender())) {
 			this.unapplyIncomingStatusEffects(atkRes.getAttacker());
-			this.AttacksDefended.add(atkRes);
 		}
 	}
+	
 	/*
 	// NEW: Attack Function based on a builder: Will replace all existing attack functions
 	public void attackFromBuilder(Attack atk) {
