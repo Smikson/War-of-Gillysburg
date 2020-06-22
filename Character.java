@@ -1,6 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
+// Lists Types that can be added to a Character
 enum CharacterType {
 	NONE, PLAYER, FIRE, ICE, HAIRY, VERMIN, DRAGON
 }
@@ -26,6 +27,7 @@ public class Character {
 	// Variables of each stat of the character
 	private String name;
 	private int Level;
+	
 	private Stat Health;
 	private Stat Damage;
 	private Stat Armor;
@@ -50,18 +52,13 @@ public class Character {
 	
 	private CharacterType Type;
 	
-	// Contains a list of the basic stats (everything but STDup/down and Current Health), conditions, and damage over time effects for looping through
+	// Contains a list of the basic stats (everything but STDup/down, Current Health, and shields), conditions, and damage over time effects for looping through
 	protected LinkedList<Stat> stats;
 	protected LinkedList<Condition> conditions;
 	protected LinkedList<DamageOverTime> dotEffects;
 	
 	// Holds the possible actions a Character can take on their turn
 	private LinkedList<String> commands;
-	
-	// Safety measure to have a way to clear the conditions if necessary (If works consistently, REMOVE THIS)
-	public void clearConditions() {
-		this.conditions.clear();
-	}
 	
 	// Store the previous attack made (for use in Character Abilities sometimes)
 	protected LinkedList<AttackResult> AttacksMade;
@@ -181,10 +178,12 @@ public class Character {
 	}
 	
 	public HashMap<AttackType,Double> getResistances() {
+		// Copies the list so alterations do not occur on the Character itself
 		HashMap<AttackType,Double> copy = this.resistances;
 		return copy;
 	}
 	public HashMap<AttackType,Double> getVulnerabilities() {
+		// Copies the list so alterations do not occur on the Character itself
 		HashMap<AttackType,Double> copy =  this.vulnerabilities;
 		return copy;
 	}
@@ -215,7 +214,7 @@ public class Character {
 		}
 	}
 	public boolean isDead() {
-		return this.CurrentHealth <= 0;
+		return this.getCurrentHealth() <= 0;
 	}
 	
 	
@@ -260,7 +259,6 @@ public class Character {
 			this.removeCondition(c);
 		}
 	}
-	
 	
 	
 	// To see all Conditions in a single list (just active ones or all)
