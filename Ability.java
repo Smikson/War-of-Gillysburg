@@ -47,6 +47,10 @@ public class Ability {
 		return this.turnCount < this.cooldown;
 	}
 	
+	public void use() {
+		System.out.println("Warning: The Ability, " + this.name + ", does not have a use() function defined!");
+	}
+	
 	// Used to print the Ability's name for reference
 	@Override
 	public String toString() {

@@ -23,42 +23,48 @@ public class SentinelSpecialist extends Character{
 	
 	// Deals the Damage from the "Flaming Arrow" Ability (Ability 1)
 	public void useFlamingArrow(Character enemy) {
-		this.attack(enemy, 1); // Attack, Targeted, 1x Damage
+		//this.attack(enemy, 1); // Attack, Targeted, 1x Damage
 	}
 	// Deals the Damage from the burn effect of the "Flaming Arrow" Ability
 	public void useFlamingArrowBurn(Character enemy) {
-		this.attackAOE(enemy, .2); // Attack, AOE, .2x Damage
+		//this.attackAOE(enemy, .2); // Attack, AOE, .2x Damage
 	}
 	
 	// Deals the Damage from the "Frozen Arrow" Ability (Ability 2)
 	public void useFrozenArrow(Character enemy) {
-		this.attack(enemy, .8); // Attack, Targeted, .8x Damage
+		//this.attack(enemy, .8); // Attack, Targeted, .8x Damage
 	}
 	
 	// Deals the Damage from the "Exploding Arrow" Ability (Ability 3) to multiple enemies with a primary target
 	public void useExplodingArrow(Character enemy, List<Character> enemies) {
+		/*
 		this.attack(enemy, .5); // Attack, Targeted, .5x Damage
 		
 		for (Character enemyHitByAOE:enemies) {
 			this.attackAOE(enemyHitByAOE, .75); // Attack, AOE, .75x Damage
 		}
+		*/
 	}
 	
 	// Deals the Damage from the "Penetration Arrow" Ability (Ability 4) to multiple enemies
 	public void usePenetrationArrow(List<Character> enemies) {
+		/*
 		for (Character enemy:enemies) {
 			this.attackAOE(enemy, .75); // Attack AOE, .75x Damage
 		}
+		*/
 	}
 	// Deals the Damage from the "Penetration Arrow" Ability when used with the "Empowered Arrows" Passive Ability
 	public void usePenetrationArrowEmpowered(List<Character> enemies) {
+		/*
 		for (Character enemy:enemies) {
 			this.attackNoMiss(enemy, .75, false); // Attack, Targeted, Cannot Miss, Ignores Armor, .75x Damage
 		}
+		*/
 	}
 	
 	// Deals the Damage from the "Black Arrow" ULTIMATE Ability
 	public void useBlackArrow(Character enemy) {
-		this.attack(enemy, 3, false); // Attack, Targeted, Ignores Armor, 3x Damage
+		//this.attack(enemy, 3, false); // Attack, Targeted, Ignores Armor, 3x Damage
 	}
 }

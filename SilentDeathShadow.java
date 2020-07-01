@@ -12,7 +12,7 @@ public class SilentDeathShadow extends Character{
 	
 	// Deals the Damage from the "Riposte" Passive Ability
 	public void useRiposte(Character enemy) {
-		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+		//this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Law of Stealth" and "A Shadow's Stealth" Passive Abilities for purposes of Calculation only.
@@ -27,6 +27,7 @@ public class SilentDeathShadow extends Character{
 	
 	// Deals the Damage from the "Double Strike" Ability (Ability 2)
 	public void useDoubleStrike(Character enemy, boolean usedFromStealth) {
+		/*
 		// THINGS THAT CHANGE FOR ABILITY RIGHT HERE
 		double scaler = .75;
 		double dodgeDeduction = .1;
@@ -83,25 +84,27 @@ public class SilentDeathShadow extends Character{
 			this.attack(enemy, scaler); // Attack, Targeted
 			this.attack(enemy, scaler); // Attack, Targeted
 		}
+		*/
 	}
 	
 	// Deals the Damage from the "Backstab" Ability (Ability 3)
 	public void useBackStab(Character enemy, boolean usedFromStealth) {
 		if (usedFromStealth) {
-			new CharacterBuilder(this).CriticalChance(this.getCriticalChance() + 50).buildSDS().attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+			//new CharacterBuilder(this).CriticalChance(this.getCriticalChance() + 50).buildSDS().attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 		}
 		else {
-			this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+			//this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Blink" Ability (Ability 4)
 	public void useBlink(Character enemy) {
-		this.attack(enemy, .75); // Attack, Targeted, .75x Damage
+		//this.attack(enemy, .75); // Attack, Targeted, .75x Damage
 	}
 	
 	// Deals the Damage from the "Execute" ULTIMATE Ability
 	public void useExecute(Character enemy, boolean usedFromStealth) {
+		/*
 		// Calculates the total Damage dealt by missing Health, then casting it.
 		int damageDealt = (int)Math.round((enemy.getHealth() - enemy.getCurrentHealth()) * .4);
 		if (damageDealt > this.getDamage() * 10) {
@@ -125,5 +128,6 @@ public class SilentDeathShadow extends Character{
 				this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals the damage to the enemy
 			}
 		}
+		*/
 	}
 }

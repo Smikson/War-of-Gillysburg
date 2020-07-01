@@ -13,7 +13,7 @@ public class SentinelSniper extends Character {
 	
 	// Deals the Damage from the "Keen Eyes" Passive Ability
 	public void useKeenEyes(Character enemy) {
-		this.attack(enemy, .5); // Attack, Targeted, .5x Damage
+		//this.attack(enemy, .5); // Attack, Targeted, .5x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Sniper's Nest" Passive Ability for purposes of Calculation only.
@@ -40,30 +40,30 @@ public class SentinelSniper extends Character {
 	
 	// Deals the Damage from the "Snipe" Ability (Ability 1)
 	public void useSnipe(Character enemy) {
-		this.attack(enemy, 2); // Attack, Targeted, 2x Damage
+		//this.attack(enemy, 2); // Attack, Targeted, 2x Damage
 	}
 	
 	public void useTrueAim(Character enemy) {
-		this.attackNoMiss(enemy, .75); // Attack, Targeted, Cannot Miss, .75x Damage
+		//this.attackNoMiss(enemy, .75); // Attack, Targeted, Cannot Miss, .75x Damage
 	}
 	
 	// Deals the Damage from the "Long Shot" Ability (Ability 3)
 	public void useLongShot(Character enemy, boolean useAccuracyDeduction) {
 		if (useAccuracyDeduction) {
-			new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * .75)).buildSS().attack(enemy, 1); // Attack, Targeted, 1x Damage
+			//new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * .75)).buildSS().attack(enemy, 1); // Attack, Targeted, 1x Damage
 		}
 		else {
-			this.attack(enemy, 1); // Attack, Targeted, 1x Damage
+			//this.attack(enemy, 1); // Attack, Targeted, 1x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Crippling Shot" Ability (Ability 4)
 	public void useCripplingShot(Character enemy) {
-		this.attack(enemy, .5); // Attack, Targeted, .5x Damage
+		//this.attack(enemy, .5); // Attack, Targeted, .5x Damage
 	}
 	
 	// Deals the Damage from the "Headshot" ULTIMATE Ability
 	public void useHeadshot(Character enemy) {
-		new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * 1.5)).buildSS().attack(enemy, 4); // Attack, Targeted, 4x Damage
+		//new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * 1.5)).buildSS().attack(enemy, 4); // Attack, Targeted, 4x Damage
 	}
 }

@@ -12,7 +12,7 @@ public class SentinelArcArcher extends Character{
 	
 	// Deals the Damage from the "Quick Shot" Passive Ability
 	public void useQuickShot(Character enemy) {
-		this.attack(enemy, .75); // Attack, Targeted, .75x Damage
+		//this.attack(enemy, .75); // Attack, Targeted, .75x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Combat Roll" Passive Ability for purposes of Calculation only.
@@ -27,13 +27,16 @@ public class SentinelArcArcher extends Character{
 	
 	// Deals the Damage from the "Multi-Shot" Ability (Ability 1) to multiple enemies
 	public void useMultiShot(List<Character> enemies) {
+		/*
 		for (Character enemy:enemies) {
 			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
+		*/
 	}
 	
 	// Deals the Damage from the first arrow of the "Double Shredder" Ability (Ability 2)
 	public void useDoubleShredder1(Character enemy) {
+		/*
 		// THINGS THAT CHANGE FOR ABILITY RIGHT HERE
 		double scaler = .5;
 		
@@ -116,6 +119,7 @@ public class SentinelArcArcher extends Character{
 				this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
 			}
 		}
+		*/
 	}
 	
 	// Returns a new Character with improved stats based on the "Concentration" Ability (Ability 3) for purposes of Calculation only.
@@ -130,15 +134,17 @@ public class SentinelArcArcher extends Character{
 	
 	// Deals the Damage from the "Flip Trick Shot" Ability (Ability 4)
 	public void useFlipTrickShot(Character enemy) {
-		this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+		//this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 	}
 	
 	// Deals the Damage from the "Rain of Arrows" ULTIMATE Ability to multiple enemies
 	public void useRainOfArrows(List<Character> enemies) {
+		/*
 		for (int x = 0; x < enemies.size() - 1; x++) {
 			Character enemy = enemies.get(x);
 			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
 		this.attackAOE(enemies.get(enemies.size()-1), .75); // Attack, AOE, .75x Damage
+		*/
 	}
 }

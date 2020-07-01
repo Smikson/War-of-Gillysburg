@@ -131,7 +131,12 @@ public class Enemy extends Character {
 	                if (target.equals(Character.EMPTY)) {
 	                	break;
 	                }
-	                this.attack(target, AttackType.SLASHING);
+	                Attack basicAtk = new AttackBuilder()
+	                		.attacker(this)
+	                		.defender(target)
+	                		.type(AttackType.SLASHING)
+	                		.build();
+	                basicAtk.execute();
 	                flag = false;
 	                break;
 	            case "2": // Display Threat Order

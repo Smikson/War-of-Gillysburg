@@ -12,6 +12,7 @@ public class SilentDeathHunter extends Character{
 	
 	// Deals the Damage from the "Keen Hearing" Passive Ability
 	public void useKeenHearing(Character enemy, int numOutside) {
+		/*
 		double accuracyReduction = 0;
 		if (numOutside > 3 ) {
 			accuracyReduction = .20;
@@ -21,6 +22,7 @@ public class SilentDeathHunter extends Character{
 		}
 		
 		new CharacterBuilder(this).Accuracy((int) Math.round(this.getAccuracy() * (1 - accuracyReduction))).buildSDH().attack(enemy, 1); // Attack, Targeted, 1x Damage
+		*/
 	}
 	
 	// Returns a new Character with improved stats based on the "Law of Stealth" and "Camouflage" Passive Abilities for purposes of Calculation only.
@@ -46,22 +48,25 @@ public class SilentDeathHunter extends Character{
 	// Deals the Damage from the "Snare Trap" Ability (Ability 1)
 	public void useSnareTrap(Character enemy, boolean usedAsUlt) {
 		if (usedAsUlt) {
-			this.attackNoMiss(enemy, 2.5); // Attack, Targeted, Cannot miss, 2.5x Damage
+			//this.attackNoMiss(enemy, 2.5); // Attack, Targeted, Cannot miss, 2.5x Damage
 		}
 		else {
-			this.attackNoMiss(enemy, 2); // Attack, Targeted, Cannot Miss, 2x Damage
+			//this.attackNoMiss(enemy, 2); // Attack, Targeted, Cannot Miss, 2x Damage
 		}
 	}
 	
 	// Deals the Damage from the "Blade Trap" Ability (Ability 2)
 	public void useBladeTrap(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			this.attackAOE(enemy, 1.2); // Attack, AOE, 1.2x Damage
 		}
+		*/
 	}
 	
 	// Deals the Damage from the "Floor Trap" Ability (Ability 3)
 	public void useFloorTrap(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			
 			// Calculates the total/average/normal Damage dealt by maximum Health, then casting it.
@@ -72,10 +77,11 @@ public class SilentDeathHunter extends Character{
 			
 			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals Damage
 		}
+		*/
 	}
 
 	// Deals the Damage from the "Iron Gauntlets" Ability (Ability 4)
 	public void useIronGauntlets(Character enemy) {
-		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+		//this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 }

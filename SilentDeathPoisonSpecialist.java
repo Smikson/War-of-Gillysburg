@@ -22,7 +22,7 @@ public class SilentDeathPoisonSpecialist extends Character {
 	
 	// Deals the Damage from the "Venomous Strike" Ability (Ability 1)
 	public void useVenomousStrike(Character enemy) {
-		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+		//this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Returns a new Character with improved stats based on the "Douse Blade" Ability (Ability 2) for Calculation only.
@@ -32,11 +32,12 @@ public class SilentDeathPoisonSpecialist extends Character {
 	
 	// Deals the Damage from the "Poison Dart" Ability (Ability 2)
 	public void usePoisonDart(Character enemy) {
-		this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+		//this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 	}
 	
 	// Deals the Damage from the "Poisonous Cloud" Ability (Ability 3)
 	public void usePoisonousCloudHit(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			
 			// Calculates the total/average/normal Damage dealt by multiplying the Damage statistic by the scaler, then casting it.
@@ -47,8 +48,10 @@ public class SilentDeathPoisonSpecialist extends Character {
 			
 			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals Damage
 		}
+		*/
 	}
 	public void usePoisonousCloudStay(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			
 			// Calculates the total/average/normal Damage dealt by multiplying the Damage statistic by the scaler, then casting it.
@@ -59,14 +62,15 @@ public class SilentDeathPoisonSpecialist extends Character {
 			
 			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals Damage
 		}
+		*/
 	}
 	
 	// Deals the Damage from the "Explosive Poison!" ULTIMATE Ability
 	public void useExplosivePoison(List<Character> enemies, List<Integer> stacks, List<Integer> rounds) {
 		for (int x = 0; x < enemies.size(); x++) {
-			double scaler = stacks.get(x) * 1 + rounds.get(x) * .5;
+			//double scaler = stacks.get(x) * 1 + rounds.get(x) * .5;
 			
-			this.attackAOE(enemies.get(x), scaler); // Attack, AOE, Damage depends on stacks and rounds on enemies.
+			//this.attackAOE(enemies.get(x), scaler); // Attack, AOE, Damage depends on stacks and rounds on enemies.
 		}
 	}
 }

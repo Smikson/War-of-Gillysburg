@@ -17,9 +17,9 @@ public class KinitchuOrderDragonFireWizard extends Character{
 	
 	// Deals the Damage from the "Scorched Earth" Fire-Terrain Passive Ability
 	public void useScorchedEarth(List<Character> enemies) {
-		for (Character enemy : enemies) {
-			this.attackAOE(enemy, .1); // Attack, AOE, .1x Damage
-		}
+		//for (Character enemy : enemies) {
+			//this.attackAOE(enemy, .1); // Attack, AOE, .1x Damage
+		//}
 	}
 	// Returns a new Character with improved stats based on the "Scorched Earth" Passive Ability for purposes of Calculation only.
 	public KinitchuOrderDragonFireWizard useScorchedEarthEnhancement() {
@@ -28,22 +28,22 @@ public class KinitchuOrderDragonFireWizard extends Character{
 	
 	// Deals the Damage from the "Fireball" Ability (Ability 1)
 	public void useFireball(Character enemy) {
-		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+		//this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Deals the Damage from the "Ring of Fire" Ability (Ability 2) to multiple enemies
 	public void useRingOfFire(List<Character> innerEnemies, List<Character> outerEnemies) {
-		for (Character enemy : innerEnemies) {
-			this.attackAOE(enemy, 1); // Attack, AOE, 1x Damage
-		}
-		for (Character enemy : outerEnemies) {
-			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
-		}
+		//for (Character enemy : innerEnemies) {
+			//this.attackAOE(enemy, 1); // Attack, AOE, 1x Damage
+		//}
+		//for (Character enemy : outerEnemies) {
+			//this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
+		//}
 	}
 	
 	// Deals the Basic Attack Damage from the "Summon: Phoenix" Ability (Ability 3)
 	public void usePhoenixBasicAttack(Character enemy) {
-		this.attack(enemy, 1); // Attack, Targeted, 1x Damage
+		//this.attack(enemy, 1); // Attack, Targeted, 1x Damage
 	}
 	
 	// Details for the ULTIMATE, "Summon: Dragon", are in the separate class: Dragon

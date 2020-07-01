@@ -1373,7 +1373,12 @@ public class SteelLegionTank extends Character {
 	                if (target.equals(Character.EMPTY)) {
 	                	break;
 	                }
-	                this.attack(target, AttackType.SLASHING);
+	                Attack basicAtk = new AttackBuilder()
+	                		.attacker(this)
+	                		.defender(target)
+	                		.type(AttackType.SLASHING)
+	                		.build();
+	                basicAtk.execute();
 	                flag = false;
 	                break;
 	            case "2": // Shield Bash
@@ -1458,17 +1463,12 @@ public class SteelLegionTank extends Character {
 		BattleSimulator.getInstance().getPrompter().nextLine();
 	}
 	
-	// Overrides "avoidAttack" in order to also store the fact that an attack was blocked in "Shield Bash" and "Shield Reflection"
+	// Overrides "applyPostAttackEffects" in order to also store the fact that an attack was blocked in "Shield Bash" and "Shield Reflection"
 	@Override
-	protected void avoidAttack(AttackResult atk) {
-		super.avoidAttack(atk);
-		this.ShieldBash.didBlock = true;
-		this.ShieldReflection.didBlock = true;
-	}
-	// Overrides "receivedAttack" for death effect 
-	@Override
-	protected void receivedAttack(AttackResult atk) {
-		super.receivedAttack(atk);
+	protected void applyPostAttackEffects(AttackResult atkRes) {
+		super.applyPostAttackEffects(atkRes);
+		this.ShieldBash.didBlock = !atkRes.didHit();
+		this.ShieldReflection.didBlock = !atkRes.didHit();
 		if (this.isDead() && this.HaHaHaYouCantKillMe.rank() >= 3) {
 			this.useDeathHaHaHaYouCantKillMe(BattleSimulator.getInstance().getAllies());
 		}
@@ -1538,7 +1538,14 @@ public class SteelLegionTank extends Character {
 		this.apply(preCondition);
 		
 		// Make the attack
-		this.attack(enemy, this.ShieldBash.getScaler(), AttackType.SMASHING);
+		Attack bashAtk = new AttackBuilder()
+				.attacker(this)
+				.defender(enemy)
+				.isTargeted()
+				.scaler(this.ShieldBash.getScaler())
+				.type(AttackType.SMASHING)
+				.build();
+		bashAtk.execute();
 		
 		// Unapply the bonus pre-conditions
 		this.unapply(preCondition);
@@ -1583,7 +1590,14 @@ public class SteelLegionTank extends Character {
 		
 		// Make the attack against all enemies affected
 		for (Character enemy : enemies) {
-			this.attackAOE(enemy, this.ShieldReflection.getScaler(), AttackType.LIGHT); // AOE attack
+			Attack reflectAtk = new AttackBuilder()
+					.attacker(this)
+					.defender(enemy)
+					.isAOE()
+					.scaler(this.ShieldReflection.getScaler())
+					.type(AttackType.LIGHT)
+					.build();
+			reflectAtk.execute();
 		}
 		
 		// Blind all enemies affected
@@ -1612,7 +1626,14 @@ public class SteelLegionTank extends Character {
 		this.apply(preCondition);
 		
 		// Make the attack
-		this.attack(enemy, this.TauntingAttack.getScaler(), AttackType.SLASHING);
+		Attack tauntAtk = new AttackBuilder()
+				.attacker(this)
+				.defender(enemy)
+				.isTargeted()
+				.scaler(this.TauntingAttack.getScaler())
+				.type(AttackType.SLASHING)
+				.build();
+		tauntAtk.execute();
 		
 		// Unapply the bonus accuracy pre-condition
 		this.unapply(preCondition);
@@ -1655,7 +1676,14 @@ public class SteelLegionTank extends Character {
 		this.apply(preCondition);
 		
 		// Make the attack
-		this.attack(enemy, this.LeaderStrike.getScaler(), AttackType.SLASHING);
+		Attack leadAtk = new AttackBuilder()
+				.attacker(this)
+				.defender(enemy)
+				.isTargeted()
+				.scaler(this.LeaderStrike.getScaler())
+				.type(AttackType.SLASHING)
+				.build();
+		leadAtk.execute();
 		
 		// Unapply the bonus accuracy pre-condition
 		this.unapply(preCondition);

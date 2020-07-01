@@ -737,7 +737,12 @@ public class Character {
 	                if (enemy.equals(Character.EMPTY)) {
 	                	break;
 	                }
-	                this.attack(enemy);
+	                Attack basicAtk = new AttackBuilder()
+	                		.attacker(this)
+	                		.defender(enemy)
+	                		.type(AttackType.SLASHING)
+	                		.build();
+	                basicAtk.execute();
 	                flag = false;
 	                break;
 	            case "2": // Alter Character
@@ -807,7 +812,7 @@ public class Character {
 		System.out.println("\n-----------------------------------------------------------------------------");
 	}
 	
-	
+	/*
 	// Methods used to store attacks made/defended (used in subclasses for interactions)
 	protected void hitAttack(AttackResult atk) {
 		this.AttacksMade.add(atk);
@@ -821,6 +826,7 @@ public class Character {
 	protected void avoidAttack(AttackResult atk) {
 		this.AttacksDefended.add(atk);
 	}
+	*/
 	
 	// Get method for previous attack made (for convenience)
 	protected AttackResult previousAttack() {
@@ -873,6 +879,8 @@ public class Character {
 		this.setCurrentHealth(this.getCurrentHealth() - (damageDealt - shieldDamage));
 		return damageDealt;
 	}
+	
+	/*
 	
 	// Calculates the chance for the attack to land (is public so checks for "Advantage" can be done)
 	public boolean landAttack(Character enemy, int bonusAvoidance) {
@@ -999,6 +1007,8 @@ public class Character {
 		return this.dealDamage(enemy, damageDealt, AttackType.TRUE);
 	}
 	
+	*/
+	
 	// Stores the information from an AttackResult
 	protected void storeAttack(AttackResult atkRes) {
 		// If this character was the attacker, store in attacks made
@@ -1034,81 +1044,7 @@ public class Character {
 	}
 	
 	/*
-	// NEW: Attack Function based on a builder: Will replace all existing attack functions
-	public void attackFromBuilder(Attack atk) {
-		// Make sure neither target is dead:
-		if (atk.getAttacker().isDead()) {
-			System.out.println(atk.getAttacker().getName() + " is dead. Thus, " + atk.getAttacker().getName() + " is incapable of attacking.");
-			System.out.println("Continue with attack anyway? Y or N");
-			if (!BattleSimulator.getInstance().askYorN()) {
-				return;
-			}
-		}
-		if (atk.getDefender().isDead()) {
-			System.out.println(atk.getDefender().getName() + " is already dead. The attack would have no effect.");
-			System.out.println("Continue with attack anyway? Y or N");
-			if (!BattleSimulator.getInstance().askYorN()) {
-				return;
-			}
-		}
-		
-		// Apply Pre-Attack Effects
-		atk.getDefender().applyPreAttackEffects(atk);
-		atk.getAttacker().applyPreAttackEffects(atk);
-		
-		// Determine if the attack hits
-		// Redo with "Attack" function
-		boolean didHit = true;
-		if (atk.canMiss()) {
-			didHit = atk.getAttacker().landAttack(atk.getDefender());
-		}
-		
-		// If the attack missed:
-		if (!didHit) {
-			// Store the attack attempt, then return
-			AttackResult atkResult = new AttackResultBuilder()
-					.attacker(atk.getAttacker())
-					.defender(atk.getDefender())
-					.type(atk.getAttackType())
-					.didHit(false)
-					.didCrit(false)
-					.damageDealt(0)
-					.didKill(false)
-					.build();
-			
-			// Redo this part.*
-			atk.getAttacker().missAttack(atkResult);
-			atk.getDefender().avoidAttack(atkResult);
-			
-			// Print the result
-			System.out.println(atk.getAttacker().getName() + " missed " + atk.getDefender().getName() + "!");
-			
-			// *Apply Post-Attack Effects
-			atk.getDefender().applyPostAttackEffects(atkResult);
-			atk.getAttacker().applyPostAttackEffects(atkResult);
-			
-			// Stop the rest of the attack
-			return;
-		}
-		
-		// At this point, the attack hit.
-		// CHANGE: CalcArmorEffect to take an Attack.
-		// Calculate the Armor Effect
-		double armorEffect = atk.getAttacker().calcArmorEffect(atk.getDefender(), !atk.ignoresArmor());
-		
-		// CHANGE: landCrit to take an Attack
-		// Find if the attack critically struck
-		boolean didCrit = false;
-		if (atk.canCrit()) {
-			didCrit = atk.getAttacker().landCrit(atk.getDefender());
-			if (atk.guaranteedCrit()) {
-				didCrit = true;
-			}
-		}
-		
-		// Calculate Damage. Don't forget bonus from extra crit chance.
-	}
-	*/
+	
 	public void attack(Character enemy, double scaler, AttackType aType, boolean isTargeted, boolean canMiss, boolean armorApplies) {
 		// Add: Check for being attacked conditions (Steel Legion Tank: Hold It Right There)
 		
@@ -1266,6 +1202,8 @@ public class Character {
 		this.attackNoMiss(enemy, 1);
 	}
 	
+	*/
+	
 	// Damages a player knocked into an object or another Character
 	public String knockBackDamage(Character enemy, Obstacle obj, int extraSpaces) {
 		String ret = "";
@@ -1327,7 +1265,15 @@ public class Character {
 			double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
 			int damage = (int)Math.round(damageMax * armorEffect);
 			System.out.println(collided.getName() + " successfully blocked " + enemy.getName() + "!");
-			collided.dealDamage(enemy, damage, AttackType.TRUE);
+			Attack collidedAttack = new AttackBuilder()
+					.attacker(collided)
+					.defender(enemy)
+					.type(AttackType.TRUE)
+					.usesFlatDamage()
+					.flatDamage(damage)
+					.hasDeviation(false)
+					.build();
+			collidedAttack.execute();
 		}
 		
 		// Otherwise, the Character was not blocked, and both parties take various damage
@@ -1349,7 +1295,15 @@ public class Character {
 		int damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
 		double armorEffect = 1.0 * collided.getArmor() / enemy.getArmor();
 		int damage = (int)Math.round(damageMax * armorEffect);
-		collided.dealDamage(enemy, damage, AttackType.TRUE);
+		Attack collidedAttack = new AttackBuilder()
+				.attacker(collided)
+				.defender(enemy)
+				.type(AttackType.TRUE)
+				.usesFlatDamage()
+				.flatDamage(damage)
+				.hasDeviation(false)
+				.build();
+		collidedAttack.execute();
 		
 		
 		// Second, damage is dealt to the Character knocked into (collided)
@@ -1369,7 +1323,15 @@ public class Character {
 		damageMax = (int)Math.round(1.0 * enemy.getHealth() * percentage / 100);
 		armorEffect = 1.0 * enemy.getArmor() / collided.getArmor();
 		damage = (int)Math.round(damageMax * armorEffect);
-		enemy.dealDamage(collided, damage, AttackType.TRUE);
+		Attack enemyAttack = new AttackBuilder()
+				.attacker(enemy)
+				.defender(collided)
+				.type(AttackType.TRUE)
+				.usesFlatDamage()
+				.flatDamage(damage)
+				.hasDeviation(false)
+				.build();
+		enemyAttack.execute();
 	}
 	
 	

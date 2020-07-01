@@ -12,6 +12,7 @@ public class KinitchuOrderThaumraturge extends Character{
 	
 	// Deals the Damage from the "Ice Barrier" Passive Ability
 	public void useIceBarrier(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			
 			// Calculates the total/average/normal Damage dealt by maximum Health, then casting it.
@@ -23,6 +24,7 @@ public class KinitchuOrderThaumraturge extends Character{
 			// Damages the enemy and determines whether enemy died
 			this.dealDamage(enemy, damageDealt, AttackType.TRUE); // Deals Damage
 		}
+		*/
 	}
 	
 	// Returns a new Character with improved stats based on the "Cold Execution" Passive Ability for purposes of Calculation only.
@@ -37,6 +39,7 @@ public class KinitchuOrderThaumraturge extends Character{
 	
 	// Deals the Damage from the "Slick, Hard Ice Armor Spikes"
 	public void useIceSpikes(Character enemy, boolean didDodge, boolean isIceArmored) {
+		/*
 		if (isIceArmored) {
 			this.attackNoMiss(enemy, .1 * 3); // Attack, Targeted, Cannot Miss, .1*3x Damage
 		}
@@ -46,28 +49,31 @@ public class KinitchuOrderThaumraturge extends Character{
 		else {
 			this.attackNoMiss(enemy, .1); // Attack, Targeted, Cannot Miss, .1x Damage
 		}
+		*/
 	}
 	
 	// Deals the Damage from the "Ice Shard" Ability (Ability 1)
 	public void useIceShard(Character enemy) {
-		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+		//this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Deals the Damage from the empowered basic attack in the "Ice Armor" Ability (Ability 2)
 	public void useIceArmorAttack(Character enemy) {
-		this.attackNoMiss(enemy, 1.1); // Attack, Targeted, Cannot Miss, 1.1x Damage
+		//this.attackNoMiss(enemy, 1.1); // Attack, Targeted, Cannot Miss, 1.1x Damage
 	}
 	
 	// Deals the Damage from the "Ice Cone" Ability (Ability 3) to multiple enemies
 	public void useIceCone(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			this.attackAOE(enemy, .75); // Attack, AOE, .75x Damage
 		}
+		*/
 	}
 	
 	// Deals the Damage from the "Blizzard" Ability (Ability 4) to 1 enemy
 	public void useBlizzardDamage(Character enemy) {
-		this.attackAOE(enemy, .1); // Attack, AOE, .1x Damage
+		//this.attackAOE(enemy, .1); // Attack, AOE, .1x Damage
 	}
 	// Deals with the Healing from the "Blizzard" Ability (Ability 4) to 1 ally
 	public void useBlizzardHealing(Character ally, boolean isYou) {
@@ -95,8 +101,10 @@ public class KinitchuOrderThaumraturge extends Character{
 	
 	// Deals the Damage from the "Freeze Frame!" ULTIMATE Ability
 	public void useFreezeFrame(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			this.attackAOE(enemy, 2); // Attack, AOE, 2x Damage
 		}
+		*/
 	}
 }

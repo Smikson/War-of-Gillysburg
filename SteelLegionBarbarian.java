@@ -22,21 +22,23 @@ public class SteelLegionBarbarian extends Character {
 	
 	// Deals the Damage from the "Smash" Ability (Ability 1)
 	public void useSmash(Character enemy) {
-		this.attack(enemy, 1.8); // Attack, Targeted, 1.8x Damage
+		//this.attack(enemy, 1.8); // Attack, Targeted, 1.8x Damage
 	}
 	
 	// Deals the Damage from the "Sundering Strike" Ability (Ability 2)
 	public void useSunderingStrike(Character enemy) {
-		this.attack(enemy, 1); // Attack, Targeted, 1x Damage
+		//this.attack(enemy, 1); // Attack, Targeted, 1x Damage
 	}
 	
 	// Deals the Damage from the "Axe Throw" Ability (Ability 3) to multiple enemies
 	public void useAxeThrow(Character enemy1, List<Character> enemies2) {
+		/*
 		this.attack(enemy1, 1.2); // Attack, Targeted, 1.2x Damage
 		
 		for (Character enemy : enemies2) {
 			this.attackAOE(enemy, .75); // Attack, AOE, .75x Damage
 		}
+		*/
 	}
 	
 	// Deals with the healing portion of the "War Cry" Ability (Ability 4)

@@ -117,9 +117,9 @@ public class KinitchuOrderArcana extends Character{
 	}
 	// Deals the Damage from the "Raw, Magical Power" Passive Ability upon death. Big explosion.
 	public void useRawMagicalPowerExplosion(List<Character> enemies) {
-		for (Character enemy : enemies) {
-			this.attackAOE(enemy, 5); // Attack, AOE, 5x Damage
-		}
+		//for (Character enemy : enemies) {
+			//this.attackAOE(enemy, 5); // Attack, AOE, 5x Damage
+		//}
 	}
 	
 	// Deals with the chance to succeed in the extra turn attempt in the "Quick Caster" Passive Ability
@@ -140,32 +140,34 @@ public class KinitchuOrderArcana extends Character{
 	// Deals the Damage from the "Magic Missiles" Ability (Ability 1).
 	public void useMagicMissiles(Character enemy) {
 		// Two Attacks, Targeted, Cannot Miss, .75x Damage
-		this.attackNoMiss(enemy, .75);
-		this.attackNoMiss(enemy, .75);
+		//this.attackNoMiss(enemy, .75);
+		//this.attackNoMiss(enemy, .75);
 	}
 	
 	// Deals the Damage from the "Arcane Repulse" Ability (Ability 2).
 	public void useArcaneRepulse(List<Character> innerEnemies, List<Character> outerEnemies) {
+		/*
 		for (Character enemy : innerEnemies) {
-			this.attackAOE(enemy, 1); // Attack, AOE, 1x Damage
+			//this.attackAOE(enemy, 1); // Attack, AOE, 1x Damage
 		}
 		for (Character enemy : outerEnemies) {
-			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
+			//this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
 		}
+		*/
 	}
 	
 	// Deals the Damage from the "Teleport" Ability (Ability 3) bonus attack.
 	public void useTeleportBonusAttack(Character enemy) {
-		this.attack(enemy, .5); // Attack, Targeted, .5x Damage
+		//this.attack(enemy, .5); // Attack, Targeted, .5x Damage
 	}
 	
 	// Deals the Damage from the "Arcane Beam" Ability (Ability 4) Targeted Option
 	public void useArcaneBeam(List<Character> enemiesHit, Character primaryEnemy) {
-		for (Character enemy : enemiesHit) {
-			this.attackAOE(enemy, .25); // Attack, AOE, .25x Damage
-		}
+		//for (Character enemy : enemiesHit) {
+			//this.attackAOE(enemy, .25); // Attack, AOE, .25x Damage
+		//}
 		
-		this.attack(primaryEnemy, 1.5); // Attack, Targeted, 1.5x Damage
+		//this.attack(primaryEnemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	
 	// Returns a new character with improved stats based on the "Supercharged" ULTIMATE Ability for purposes of calculation only.

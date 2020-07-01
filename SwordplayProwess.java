@@ -26,8 +26,16 @@ class Bleed implements DamageOverTime {
 	public void activate() {
 		// Since attacks use a scaler (and the normal attack affects and conditions must still be applied), 
 		// A scaler is calculated based on the source's Damage stat. Then, the attack is made (Bleed effects always ignore armor).
-		double scaler = 1.0 * this.dmgAmount / this.source.getDamage();
-		this.source.attackAOE(this.affected, scaler, AttackType.BLEED, false);
+		Attack bleedAtk = new AttackBuilder()
+				.attacker(this.source)
+				.defender(this.affected)
+				.isAOE()
+				.usesFlatDamage()
+				.flatDamage(dmgAmount)
+				.type(AttackType.BLEED)
+				.ignoresArmor()
+				.build();
+		bleedAtk.execute();
 		
 		// Decrement counter to signify a "tick" of Bleed damage being applied
 		this.counter--;

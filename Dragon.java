@@ -10,14 +10,26 @@ public class Dragon extends Character{
 	// Deals the Damage from a "cleave" basic attack.
 	public void useCleave(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, 1); // Attack, Targeted, 1x Damage
+			Attack cleaveAttack = new AttackBuilder()
+					.attacker(this)
+					.defender(enemy)
+					.isTargeted()
+					.scaler(1.0)
+					.build();
+			cleaveAttack.execute(); // Attack, Targeted, 1x Damage
 		}
 	}
 	
 	// Deals the Damage from "Dragon Breath"
 	public void useDragonBreath(List<Character> enemies) {
 		for (Character enemy : enemies) {
-			this.attack(enemy, 1, false); // Attack, AOE, 1x Damage
+			Attack breathAtk = new AttackBuilder()
+					.attacker(this)
+					.defender(enemy)
+					.isAOE()
+					.scaler(1.0)
+					.build();
+			breathAtk.execute(); // Attack, AOE, 1x Damage
 		}
 	}
 }

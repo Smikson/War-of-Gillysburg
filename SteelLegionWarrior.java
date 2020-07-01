@@ -89,7 +89,7 @@ public class SteelLegionWarrior extends Character {
 	// DO NOT FORGET THE STUN FROM WARRIOR'S MIGHT
 	// Deals the Damage from the "Vengeance Strike" Passive Ability
 	public void useVengeanceStrike(Character enemy) {
-		this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+		//this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 	}
 	// Used for when "Deflection" is active
 	public void useDeflectionVengeanceStrike(Character enemy) {
@@ -128,15 +128,19 @@ public class SteelLegionWarrior extends Character {
 	
 	// Deals the Damage from the "Sweep" Ability (Ability 1) to multiple enemies
 	public void useSweep(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			this.attackAOE(enemy, .8); // Attack, AOE, .8x Damage
 		}
+		*/
 	}
 	// Used for when "Deflection" is active
 	public void useDeflectionSweep(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			this.attackDeflection(enemy, .8, false); // Deflection Attack, AOE, .8x Damage
 		}
+		*/
 	}
 	
 	/*
@@ -176,16 +180,17 @@ public class SteelLegionWarrior extends Character {
 	
 	// Deals the Damage from the "Flip Strike" Ability (Ability 3)
 	public void useFlipStrike(Character enemy) {
-		this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
+		//this.attack(enemy, 1.5); // Attack, Targeted, 1.5x Damage
 	}
 	// Used for when "Deflection" is active
 	public void useDeflectionFlipStrike(Character enemy) {
-		this.attackDeflection(enemy, 1.5); // Deflection Attack, Targeted, 1.5x Damage
+		//this.attackDeflection(enemy, 1.5); // Deflection Attack, Targeted, 1.5x Damage
 	}
 	
 	
 	// Creates a copy of "attack" Character function specifically to be used specifically when "Deflection" is activated
 	public void attackDeflection(Character enemy, double scaler, boolean isTargeted, boolean canMiss) {
+		/*
 		// Attack always hits unless it is a Targeted attack and can miss (some targeted attacks cannot miss)
 		boolean didHit = true;
 		
@@ -235,6 +240,7 @@ public class SteelLegionWarrior extends Character {
 			// Damages the enemy and determines whether enemy died
 			this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
 		}
+		*/
 	}
 	public void attackDeflection(Character enemy, double scaler) {
 		this.attackDeflection(enemy, scaler, true, true);
@@ -250,6 +256,7 @@ public class SteelLegionWarrior extends Character {
 	}
 	
 	public void attackedDeflection(Character enemy) {
+		/*
 		// Calculates the total/average/normal Damage dealt.
 		int totalDamage = this.calcDeviatedDamage(enemy, this.getDamage(), .25, false);
 		// Adds the bonus Damage from Armor due to Deflection mechanic
@@ -261,5 +268,6 @@ public class SteelLegionWarrior extends Character {
 		
 		// Damages the enemy and determines whether enemy died
 		this.dealDamage(enemy, totalDamage, AttackType.TRUE);
+		*/
 	}
 }

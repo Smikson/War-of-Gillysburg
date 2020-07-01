@@ -173,7 +173,11 @@ public class BattleSimulator {
 		// Create a list of strings for each combatant's name.
 		LinkedList<String> nameList = new LinkedList<>();
 		for (Character combatant : this.getCombatants()) {
-			nameList.add(combatant.getName());
+			String deadInd = "";
+			if (combatant.isDead()) {
+				deadInd = " - Dead";
+			}
+			nameList.add(combatant.getName() + deadInd);
 		}
 		
 		// Prompt the user for a choice from those names

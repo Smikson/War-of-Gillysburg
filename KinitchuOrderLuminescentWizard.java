@@ -30,44 +30,45 @@ public class KinitchuOrderLuminescentWizard extends Character{
 	public void useSearingLight(Character enemy, boolean isBlinded) {
 		// If they're blinded, attack with 50% extra damage
 		if (isBlinded) {
-			this.attackNoMiss(enemy, 1.25 * 1.5); // Attack, Targeted, 1.25x Damage (increased by 50%), Cannot Miss
+			//this.attackNoMiss(enemy, 1.25 * 1.5); // Attack, Targeted, 1.25x Damage (increased by 50%), Cannot Miss
 		}
 		
 		// Otherwise, just normal
-		this.attackNoMiss(enemy, 1.25); // Attack, Targeted, 1.25x Damage, Cannot Miss
+		//this.attackNoMiss(enemy, 1.25); // Attack, Targeted, 1.25x Damage, Cannot Miss
 	}
 	// "Luminescent Amplification" AOE version of Ability
 	public void useSearingLight(List<Character> enemies, List<Boolean> isBlinded) {
 		for (int i = 0; i < enemies.size(); i++) {
 			if (isBlinded.get(i)) {
-				this.attackAOE(enemies.get(i), .8 * 1.25 * 1.5); // Attack, AOE, 1.25x Damage (decreased to 80% effectiveness, increased by 50%)
+				//this.attackAOE(enemies.get(i), .8 * 1.25 * 1.5); // Attack, AOE, 1.25x Damage (decreased to 80% effectiveness, increased by 50%)
 			}
 			else {
-				this.attackAOE(enemies.get(i), .8 * 1.25); // Attack, AOE, 1.25x Damage (decreased to 80% effectiveness)
+				//this.attackAOE(enemies.get(i), .8 * 1.25); // Attack, AOE, 1.25x Damage (decreased to 80% effectiveness)
 			}
 		}
 	}
 	
 	// Deals with the healing for the "Luminescent Restoration" (Ability 3)
 	public void useLuminescentRestoration(Character ally) {
-		boolean didCrit = landCrit(ally);
+		//boolean didCrit = landCrit(ally);
 		
 		// Calculates the amount of healing based on Damage
 		int healing = (int) Math.round(1.3 * this.getDamage());
-		
+		/*
 		// If a critical, double the healing
 		if (didCrit) {
 			healing *= 2;
 		}
-		
+		*/
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
 		healing = this.restoreHealth(healing);
 		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
 	}
 	// "Luminescent Amplification" AOE version of Ability
 	public void useLuminescentRestoration(List<Character> allies) {
+		/*
 		for (Character ally : allies) {
-			boolean didCrit = landCrit(ally);
+			//boolean didCrit = landCrit(ally);
 			
 			// Calculates the amount of healing based on Damage (reduced to 80% effectiveness)
 			int healing = (int) Math.round(.8 * 1.3 * this.getDamage());
@@ -81,16 +82,19 @@ public class KinitchuOrderLuminescentWizard extends Character{
 			healing = this.restoreHealth(healing);
 			System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
 		}
+		*/
 	}
 	
 	// Deals the Damage from "Blinding Light" (Ability 4)
 	public void useBlindingLight(Character enemy) {
-		this.attack(enemy, .75); // Attack, Targeted, .75x Damage
+		//this.attack(enemy, .75); // Attack, Targeted, .75x Damage
 	}
 	// "Luminescent Amplification" AOE version of Ability
 	public void useBlindingLight(List<Character> enemies) {
+		/*
 		for (Character enemy : enemies) {
 			this.attackAOE(enemy, .8 * .75); // Attack, AOE, .75x Damage (reduced to 80% effectiveness)
 		}
+		*/
 	}
 }
