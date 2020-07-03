@@ -5,7 +5,7 @@ import java.util.*;
 // Unique Passive Ability: "Hold It Right There!"
 class HoldItRightThere extends Ability {
 	// Holds the owner of the Ability as a Steel Legion Tank
-	private SteelLegionTank owner;
+	private final SteelLegionTank owner;
 	
 	// Additional Effects of Ability
 	private Condition selfBlock;
@@ -45,7 +45,7 @@ class HoldItRightThere extends Ability {
 		this.selfBlock.makePermanent();
 		this.selfBlock.setSource(this.owner);
 		
-		StatusEffect blockBonus = new StatusEffect(StatVersion.BLOCK, amount, StatusEffectType.INCOMING);
+		StatusEffect blockBonus = new StatusEffect(Stat.Version.BLOCK, amount, StatusEffect.Type.INCOMING);
 		DualRequirement req = (Character withEffect, Character other) -> {
 			// Prompt controller if blocking for an ally
 			System.out.println("Is " + this.owner.getName() + " blocking for an ally? Y or N");
@@ -76,14 +76,14 @@ class HoldItRightThere extends Ability {
 		this.enemyHalt = new Condition("Hold It Right There!: Halted - Enemy Damage Bonus", 2);
 		this.enemyHalt.setSource(this.owner);
 		
-		StatusEffect damageBonus = new StatusEffect(StatVersion.DAMAGE, amount, StatusEffectType.INCOMING);
+		StatusEffect damageBonus = new StatusEffect(Stat.Version.DAMAGE, amount, StatusEffect.Type.INCOMING);
 		damageBonus.makeAffectOther();
 		
 		
 		// At rank 5, bonus damage from the owner only is increased to an amount of 50
 		if (this.rank() == 5) {
 			// Creates additional statusEffect for owner only
-			StatusEffect ownerDamageBonus = new StatusEffect(StatVersion.DAMAGE, 50, StatusEffectType.INCOMING);
+			StatusEffect ownerDamageBonus = new StatusEffect(Stat.Version.DAMAGE, 50, StatusEffect.Type.INCOMING);
 			ownerDamageBonus.makeAffectOther();
 			DualRequirement ownerReq = (Character withEffect, Character other) -> {
 				return other.equals(this.owner);
@@ -228,6 +228,16 @@ class EnchantedArmor extends Ability {
 	public int getBonusBlock() {
 		this.setBlockBonus();
 		return this.bonusBlock;
+	}
+	
+	// Creates a use function to be used at the end of the owner's turn. Heals the owner for the specified amount
+	public void useHealing() {
+		// Calculates the amount of healing based on Maximum Health
+		int healing = (int) Math.round(this.getScaler() * this.owner.getHealth());
+		
+		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
+		healing = this.owner.restoreHealth(healing);
+		System.out.println(this.owner.getName() + " healed for " + healing + " Health for a new total of " + this.owner.getCurrentHealth());
 	}
 }
 
@@ -521,7 +531,7 @@ class ShieldBash extends Ability {
 			}
 			
 			// Sets the Calculated Status Effect and adds it to the stun
-			StatusEffect damageBonus = new StatusEffect(StatVersion.DAMAGE, amount, StatusEffectType.INCOMING);
+			StatusEffect damageBonus = new StatusEffect(Stat.Version.DAMAGE, amount, StatusEffect.Type.INCOMING);
 			damageBonus.makeAffectOther();
 			this.stun.addStatusEffect(damageBonus);
 		}
@@ -570,7 +580,7 @@ class ShieldBash extends Ability {
 		this.enemyAccReduction = new Condition("Shield Bash: Accuracy Reduction", duration, actReq);
 		this.enemyAccReduction.setSource(this.owner);
 		// Sets the Calculated Status Effect
-		StatusEffect accReduction = new StatusEffect(StatVersion.ACCURACY, -amount, StatusEffectType.OUTGOING);
+		StatusEffect accReduction = new StatusEffect(Stat.Version.ACCURACY, -amount, StatusEffect.Type.OUTGOING);
 		this.enemyAccReduction.addStatusEffect(accReduction);
 	}
 	
@@ -598,7 +608,7 @@ class ShieldBash extends Ability {
 			}
 		}
 		// Creates the Calculated Status Effect based on the number of misses
-		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, accAmount*this.numMisses, StatusEffectType.OUTGOING);
+		StatusEffect accuracyBonus = new StatusEffect(Stat.Version.ACCURACY, accAmount*this.numMisses, StatusEffect.Type.OUTGOING);
 		
 		// Crit Bonus:
 		// Bonuses for "Shield Skills" rank
@@ -614,7 +624,7 @@ class ShieldBash extends Ability {
 			}
 		}
 		// Creates the calculated Status Effect
-		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, critAmount, StatusEffectType.OUTGOING);
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, critAmount, StatusEffect.Type.OUTGOING);
 		
 		// Creates the pre-attack condition with accuracy and crit bonuses as needed
 		this.selfPreAttackBonus = new Condition("Shield Bash: Pre Attack Bonus", 0);
@@ -817,7 +827,7 @@ class TauntingAttack extends Ability {
 		if (this.ssRank >= 15) {
 			amount = 40;
 		}
-		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, amount*this.numMisses, StatusEffectType.OUTGOING);
+		StatusEffect accuracyBonus = new StatusEffect(Stat.Version.ACCURACY, amount*this.numMisses, StatusEffect.Type.OUTGOING);
 		
 		// Creates the pre-attack condition with accuracy bonus as needed
 		this.selfPreAttackBonus = new Condition("Taunting Attack: Pre Attack Bonus", 0);
@@ -985,7 +995,7 @@ class LeaderStrike extends Ability {
 		if (this.ssRank >= 15) {
 			amount = 40;
 		}
-		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, amount*this.numMisses, StatusEffectType.OUTGOING);
+		StatusEffect accuracyBonus = new StatusEffect(Stat.Version.ACCURACY, amount*this.numMisses, StatusEffect.Type.OUTGOING);
 		
 		// Creates the pre-attack condition with accuracy bonus as needed
 		this.selfPreAttackBonus = new Condition("Taunting Attack: Pre Attack Bonus", 0);
@@ -1016,7 +1026,7 @@ class LeaderStrike extends Ability {
 				duration++;
 			}
 		}
-		StatusEffect damageBonus = new StatusEffect(StatVersion.DAMAGE, amount, StatusEffectType.OUTGOING);
+		StatusEffect damageBonus = new StatusEffect(Stat.Version.DAMAGE, amount, StatusEffect.Type.OUTGOING);
 		
 		// Creates the damage bonus condition with the damage bonus status effect
 		this.allyDamageBonus = new Condition("Leader Strike: Damage Bonus", duration);
@@ -1136,7 +1146,7 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 			amount = 50;
 			duration = 3;
 		}
-		StatusEffect armorBonus = new StatusEffect(StatVersion.ARMOR, amount, StatusEffectType.INCOMING);
+		StatusEffect armorBonus = new StatusEffect(Stat.Version.ARMOR, amount, StatusEffect.Type.INCOMING);
 		
 		// Creates the condition with armor bonus as needed
 		this.selfArmorBonus = new Condition("HaHaHa You Can't Kill Me!: Self Armor Bonus", duration);
@@ -1164,7 +1174,7 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 			else if (enemy.getLevel() == 4) {
 				amount = 0;
 			}
-			StatusEffect damageReduction = new StatusEffect(StatVersion.DAMAGE, -amount, StatusEffectType.OUTGOING);
+			StatusEffect damageReduction = new StatusEffect(Stat.Version.DAMAGE, -amount, StatusEffect.Type.OUTGOING);
 			
 			this.enemyTauntEffect.addStatusEffect(damageReduction);
 		}
@@ -1181,7 +1191,7 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 			amount = 50;
 			duration = 1;
 		}
-		StatusEffect damageBonus = new StatusEffect(StatVersion.DAMAGE, amount, StatusEffectType.OUTGOING);
+		StatusEffect damageBonus = new StatusEffect(Stat.Version.DAMAGE, amount, StatusEffect.Type.OUTGOING);
 		
 		// Creates the condition with the damage bonus as needed
 		this.allyDamageBonus = new Condition("HaHaHa You Can't Kill Me: Damage Bonus", duration);
@@ -1229,7 +1239,7 @@ public class SteelLegionTank extends Character {
 	private LinkedList<Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Tank subclass.
-	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, CharacterType type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
+	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, Type type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
 		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
 		this.HoldItRightThere = new HoldItRightThere(this, upaRank);
@@ -1453,7 +1463,7 @@ public class SteelLegionTank extends Character {
 		this.endTurnSetup();
 		
 		// Use Enchanted Armor Healing (end of turn effect)
-		this.useEnchantedArmorHealing();
+		this.EnchantedArmor.useHealing();
 		
 		// State facts
 		System.out.println(this.getName() + "'s turn is over.");

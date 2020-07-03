@@ -3,13 +3,13 @@ package WyattWitemeyer.WarOfGillysburg;
 public class EnemyBuilder extends CharacterBuilder {
 	// Additional fields for enemies
 	protected boolean UseThreat;
-	protected Difficulty difficulty;
+	protected Enemy.Difficulty difficulty;
 	
 	// Constructs a EnemyBuilder (populating the CharacterBuilder variables) based on the constant stats from Character
 	public EnemyBuilder(Character base) {
 		super(base);
 		this.UseThreat = false;
-		this.difficulty = Difficulty.NORMAL;
+		this.difficulty = Enemy.Difficulty.NORMAL;
 	}
 	public EnemyBuilder(Enemy base) {
 		super(base);
@@ -143,7 +143,7 @@ public class EnemyBuilder extends CharacterBuilder {
 		return this;
 	}
 	@Override
-	public EnemyBuilder Type(CharacterType type) {
+	public EnemyBuilder Type(Character.Type type) {
 		this.Type = type;
 		return this;
 	}
@@ -154,7 +154,7 @@ public class EnemyBuilder extends CharacterBuilder {
 		this.UseThreat = useThrt;
 		return this;
 	}
-	public EnemyBuilder Difficulty(Difficulty diff) {
+	public EnemyBuilder Difficulty(Enemy.Difficulty diff) {
 		this.difficulty = diff;
 		return this;
 	}

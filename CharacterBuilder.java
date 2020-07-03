@@ -43,7 +43,7 @@ public class CharacterBuilder {
 	protected HashMap<AttackType,Double> resistances;
 	protected HashMap<AttackType,Double> vulnerabilities;
 	
-	protected CharacterType Type;
+	protected Character.Type Type;
 	
 	public CharacterBuilder(Character c) {
 		// Matches everything (as total) with the current Character, setting all bonuses to 0.
@@ -272,7 +272,7 @@ public class CharacterBuilder {
 		return this;
 	}
 	
-	public CharacterBuilder Type(CharacterType type) {
+	public CharacterBuilder Type(Character.Type type) {
 		this.Type = type;
 		return this;
 	}

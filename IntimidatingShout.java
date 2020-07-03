@@ -125,38 +125,38 @@ public class IntimidatingShout extends Ability {
 		
 		// Create the Status Effects for each version
 		// Normal
-		StatusEffect normalBaseDmgReduction = new StatusEffect(StatVersion.DAMAGE, -normalBaseAmount, StatusEffectType.OUTGOING);
+		StatusEffect normalBaseDmgReduction = new StatusEffect(Stat.Version.DAMAGE, -normalBaseAmount, StatusEffect.Type.OUTGOING);
 		normalBaseDmgReduction.makePercentage();
 		normalBaseDmgReduction.setDualRequirement(isOwner);
 		
-		StatusEffect normalReducedDmgReduction = new StatusEffect(StatVersion.DAMAGE, -normalReducedAmount, StatusEffectType.OUTGOING);
+		StatusEffect normalReducedDmgReduction = new StatusEffect(Stat.Version.DAMAGE, -normalReducedAmount, StatusEffect.Type.OUTGOING);
 		normalReducedDmgReduction.makePercentage();
 		normalReducedDmgReduction.setDualRequirement(isOwner);
 		
 		// Advanced
-		StatusEffect advancedBaseDmgReduction = new StatusEffect(StatVersion.DAMAGE, -advancedBaseAmount, StatusEffectType.OUTGOING);
+		StatusEffect advancedBaseDmgReduction = new StatusEffect(Stat.Version.DAMAGE, -advancedBaseAmount, StatusEffect.Type.OUTGOING);
 		advancedBaseDmgReduction.makePercentage();
 		advancedBaseDmgReduction.setDualRequirement(isOwner);
 		
-		StatusEffect advancedReducedDmgReduction = new StatusEffect(StatVersion.DAMAGE, -advancedReducedAmount, StatusEffectType.OUTGOING);
+		StatusEffect advancedReducedDmgReduction = new StatusEffect(Stat.Version.DAMAGE, -advancedReducedAmount, StatusEffect.Type.OUTGOING);
 		advancedReducedDmgReduction.makePercentage();
 		advancedReducedDmgReduction.setDualRequirement(isOwner);
 		
 		// Elite
-		StatusEffect eliteBaseDmgReduction = new StatusEffect(StatVersion.DAMAGE, -eliteBaseAmount, StatusEffectType.OUTGOING);
+		StatusEffect eliteBaseDmgReduction = new StatusEffect(Stat.Version.DAMAGE, -eliteBaseAmount, StatusEffect.Type.OUTGOING);
 		eliteBaseDmgReduction.makePercentage();
 		eliteBaseDmgReduction.setDualRequirement(isOwner);
 		
-		StatusEffect eliteReducedDmgReduction = new StatusEffect(StatVersion.DAMAGE, -eliteReducedAmount, StatusEffectType.OUTGOING);
+		StatusEffect eliteReducedDmgReduction = new StatusEffect(Stat.Version.DAMAGE, -eliteReducedAmount, StatusEffect.Type.OUTGOING);
 		eliteReducedDmgReduction.makePercentage();
 		eliteReducedDmgReduction.setDualRequirement(isOwner);
 		
 		// Boss
-		StatusEffect bossBaseDmgReduction = new StatusEffect(StatVersion.DAMAGE, -bossBaseAmount, StatusEffectType.OUTGOING);
+		StatusEffect bossBaseDmgReduction = new StatusEffect(Stat.Version.DAMAGE, -bossBaseAmount, StatusEffect.Type.OUTGOING);
 		bossBaseDmgReduction.makePercentage();
 		bossBaseDmgReduction.setDualRequirement(isOwner);
 		
-		StatusEffect bossReducedDmgReduction = new StatusEffect(StatVersion.DAMAGE, -bossReducedAmount, StatusEffectType.OUTGOING);
+		StatusEffect bossReducedDmgReduction = new StatusEffect(Stat.Version.DAMAGE, -bossReducedAmount, StatusEffect.Type.OUTGOING);
 		bossReducedDmgReduction.makePercentage();
 		bossReducedDmgReduction.setDualRequirement(isOwner);
 		
@@ -300,16 +300,16 @@ public class IntimidatingShout extends Ability {
 		}
 		
 		// Create the Status Effects
-		StatusEffect blkBonus = new StatusEffect(StatVersion.BLOCK, amount, StatusEffectType.INCOMING);
+		StatusEffect blkBonus = new StatusEffect(Stat.Version.BLOCK, amount, StatusEffect.Type.INCOMING);
 		blkBonus.makePercentage();
 		
-		StatusEffect reducedBlkBonus = new StatusEffect(StatVersion.BLOCK, amount/2, StatusEffectType.INCOMING);
+		StatusEffect reducedBlkBonus = new StatusEffect(Stat.Version.BLOCK, amount/2, StatusEffect.Type.INCOMING);
 		reducedBlkBonus.makePercentage();
 		
-		StatusEffect armorBonus = new StatusEffect(StatVersion.ARMOR, amount, StatusEffectType.INCOMING);
+		StatusEffect armorBonus = new StatusEffect(Stat.Version.ARMOR, amount, StatusEffect.Type.INCOMING);
 		armorBonus.makePercentage();
 		
-		StatusEffect reducedArmorBonus = new StatusEffect(StatVersion.ARMOR, amount/2, StatusEffectType.INCOMING);
+		StatusEffect reducedArmorBonus = new StatusEffect(Stat.Version.ARMOR, amount/2, StatusEffect.Type.INCOMING);
 		reducedArmorBonus.makePercentage();
 		
 		// Create the base Conditions (only difference is duration)

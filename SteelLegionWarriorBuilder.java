@@ -157,7 +157,7 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 	}
 	
 	@Override
-	public SteelLegionWarriorBuilder Type(CharacterType type) {
+	public SteelLegionWarriorBuilder Type(Character.Type type) {
 		this.Type = type;
 		return this;
 	}

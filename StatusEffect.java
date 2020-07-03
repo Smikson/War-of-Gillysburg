@@ -2,26 +2,27 @@ package WyattWitemeyer.WarOfGillysburg;
 
 // See WyattWitemeyer.WarOfGillysburg.Condition.java for implementation of: Requirement and DualRequirement.
 
-enum StatusEffectType {
-	BASIC, INCOMING, OUTGOING;
-}
 
 public class StatusEffect {
+	public static enum Type {
+		BASIC, INCOMING, OUTGOING;
+	}
+	
 	// Variables
-	private StatVersion altered;
+	private Stat.Version altered;
 	private double value;
 	public int amountAdded;
 	
 	// Specifications
 	private Requirement applyRequirement;
 	private DualRequirement applyDualRequirement;
-	private StatusEffectType seType;
+	private Type seType;
 	private boolean isFlat;
 	private boolean affectsSelf;
 	public boolean isApplied;
 	
 	// Constructors
-	public StatusEffect(StatVersion altered, double value, StatusEffectType type) {
+	public StatusEffect(Stat.Version altered, double value, Type type) {
 		this.altered = altered;
 		this.value = value;
 		this.amountAdded = 0;
@@ -33,15 +34,15 @@ public class StatusEffect {
 		this.affectsSelf = true;
 		this.isApplied = false;
 	}
-	public StatusEffect(StatVersion altered, double value) {
-		this(altered, value, StatusEffectType.BASIC);
+	public StatusEffect(Stat.Version altered, double value) {
+		this(altered, value, Type.BASIC);
 	}
 	public StatusEffect() {
-		this(StatVersion.EMPTY, 0);
+		this(Stat.Version.EMPTY, 0);
 	}
 	
 	// Get methods
-	public StatVersion getAlteredStat() {
+	public Stat.Version getAlteredStat() {
 		return this.altered;
 	}
 	public double getValue() {
@@ -53,7 +54,7 @@ public class StatusEffect {
 	public DualRequirement getApplyDualRequirement() {
 		return this.applyDualRequirement;
 	}
-	public StatusEffectType getType() {
+	public Type getType() {
 		return this.seType;
 	}
 	public boolean isFlat() {
@@ -97,7 +98,7 @@ public class StatusEffect {
 		if (!this.isFlat()) {
 			ret += "%";
 		}
-		if (this.seType != StatusEffectType.BASIC) {
+		if (this.seType != Type.BASIC) {
 			ret += " " + this.seType.toString();
 		}
 		ret += " " + this.getAlteredStat().toString();

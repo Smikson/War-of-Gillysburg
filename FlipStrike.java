@@ -95,7 +95,7 @@ public class FlipStrike extends Ability {
 	
 	private void setPreAttackBonus() {
 		// Creates the StatusEffect (is always 15%)
-		StatusEffect apBonus = new StatusEffect(StatVersion.ARMOR_PIERCING, 15, StatusEffectType.OUTGOING);
+		StatusEffect apBonus = new StatusEffect(Stat.Version.ARMOR_PIERCING, 15, StatusEffect.Type.OUTGOING);
 		apBonus.makePercentage();
 		
 		// Creates the Condition

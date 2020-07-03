@@ -37,14 +37,14 @@ class HighGround extends Terrain {
 		super("High Ground");
 		
 		// Add Bonuses
-		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, 10 + eAccBonus, StatusEffectType.BASIC);
+		StatusEffect accuracyBonus = new StatusEffect(Stat.Version.ACCURACY, 10 + eAccBonus, StatusEffect.Type.BASIC);
 		
-		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, 3 + eCritBonus, StatusEffectType.BASIC);
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, 3 + eCritBonus, StatusEffect.Type.BASIC);
 		
-		StatusEffect dodgeBonus = new StatusEffect(StatVersion.DODGE, 10 + eDodgeBlockBonus, StatusEffectType.BASIC);
-		StatusEffect blockBonus = new StatusEffect(StatVersion.BLOCK, 10 + eDodgeBlockBonus, StatusEffectType.BASIC);
+		StatusEffect dodgeBonus = new StatusEffect(Stat.Version.DODGE, 10 + eDodgeBlockBonus, StatusEffect.Type.BASIC);
+		StatusEffect blockBonus = new StatusEffect(Stat.Version.BLOCK, 10 + eDodgeBlockBonus, StatusEffect.Type.BASIC);
 		
-		StatusEffect accuracyDeduction = new StatusEffect(StatVersion.ACCURACY, -5 + eEnemyAccDeduction, StatusEffectType.INCOMING);
+		StatusEffect accuracyDeduction = new StatusEffect(Stat.Version.ACCURACY, -5 + eEnemyAccDeduction, StatusEffect.Type.INCOMING);
 		accuracyDeduction.makeAffectOther();
 		
 		this.addStatusEffect(accuracyBonus);
@@ -72,19 +72,19 @@ class Hill extends Terrain {
 		};
 		
 		// Add Bonuses
-		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, 15 + eAccBonus, StatusEffectType.BASIC);
+		StatusEffect accuracyBonus = new StatusEffect(Stat.Version.ACCURACY, 15 + eAccBonus, StatusEffect.Type.BASIC);
 		
-		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, 5 + eCritBonus, StatusEffectType.BASIC);
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, 5 + eCritBonus, StatusEffect.Type.BASIC);
 		
-		StatusEffect dodgeBonus = new StatusEffect(StatVersion.DODGE, 10 + eDodgeBlockBonus, StatusEffectType.INCOMING);
+		StatusEffect dodgeBonus = new StatusEffect(Stat.Version.DODGE, 10 + eDodgeBlockBonus, StatusEffect.Type.INCOMING);
 		dodgeBonus.setDualRequirement(melee);
-		StatusEffect blockBonus = new StatusEffect(StatVersion.BLOCK, 10 + eDodgeBlockBonus, StatusEffectType.INCOMING);
+		StatusEffect blockBonus = new StatusEffect(Stat.Version.BLOCK, 10 + eDodgeBlockBonus, StatusEffect.Type.INCOMING);
 		blockBonus.setDualRequirement(melee);
 		
-		StatusEffect enemyAccuracyBonus = new StatusEffect(StatVersion.ACCURACY, 15 + eEnemyAccBonus, StatusEffectType.INCOMING);
+		StatusEffect enemyAccuracyBonus = new StatusEffect(Stat.Version.ACCURACY, 15 + eEnemyAccBonus, StatusEffect.Type.INCOMING);
 		enemyAccuracyBonus.setDualRequirement(nonMelee);
 		enemyAccuracyBonus.makeAffectOther();
-		StatusEffect enemyCritBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, 5 + eEnemyCritBonus, StatusEffectType.INCOMING);
+		StatusEffect enemyCritBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, 5 + eEnemyCritBonus, StatusEffect.Type.INCOMING);
 		enemyCritBonus.setDualRequirement(nonMelee);
 		enemyCritBonus.makeAffectOther();
 		
@@ -110,12 +110,12 @@ class Cover extends Terrain {
 		};
 		
 		// Add Bonuses
-		StatusEffect dodgeBonus = new StatusEffect(StatVersion.DODGE, 5 + eDodgeBlockBonus, StatusEffectType.INCOMING);
+		StatusEffect dodgeBonus = new StatusEffect(Stat.Version.DODGE, 5 + eDodgeBlockBonus, StatusEffect.Type.INCOMING);
 		dodgeBonus.setDualRequirement(nonMelee);
-		StatusEffect blockBonus = new StatusEffect(StatVersion.BLOCK, 5 + eDodgeBlockBonus, StatusEffectType.INCOMING);
+		StatusEffect blockBonus = new StatusEffect(Stat.Version.BLOCK, 5 + eDodgeBlockBonus, StatusEffect.Type.INCOMING);
 		blockBonus.setDualRequirement(nonMelee);
 		
-		StatusEffect accuracyDeduction = new StatusEffect(StatVersion.ACCURACY, -5 + eEnemyAccDeduction, StatusEffectType.INCOMING);
+		StatusEffect accuracyDeduction = new StatusEffect(Stat.Version.ACCURACY, -5 + eEnemyAccDeduction, StatusEffect.Type.INCOMING);
 		accuracyDeduction.setDualRequirement(nonMelee);
 		accuracyDeduction.makeAffectOther();
 		
@@ -134,14 +134,14 @@ class Tree extends Terrain {
 		super("Tree");
 		
 		// Add Bonuses
-		StatusEffect accuracyBonus = new StatusEffect(StatVersion.ACCURACY, 15 + eAccBonus, StatusEffectType.BASIC);
+		StatusEffect accuracyBonus = new StatusEffect(Stat.Version.ACCURACY, 15 + eAccBonus, StatusEffect.Type.BASIC);
 		
-		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, 5 + eCritBonus, StatusEffectType.BASIC);
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, 5 + eCritBonus, StatusEffect.Type.BASIC);
 		
-		StatusEffect dodgeBonus = new StatusEffect(StatVersion.DODGE, 15 + eDodgeBlockBonus, StatusEffectType.BASIC);
-		StatusEffect blockBonus = new StatusEffect(StatVersion.BLOCK, 15 + eDodgeBlockBonus, StatusEffectType.BASIC);
+		StatusEffect dodgeBonus = new StatusEffect(Stat.Version.DODGE, 15 + eDodgeBlockBonus, StatusEffect.Type.BASIC);
+		StatusEffect blockBonus = new StatusEffect(Stat.Version.BLOCK, 15 + eDodgeBlockBonus, StatusEffect.Type.BASIC);
 		
-		StatusEffect enemyAccuracyDeduction = new StatusEffect(StatVersion.ACCURACY, -10 + eEnemyAccDeduction, StatusEffectType.INCOMING);
+		StatusEffect enemyAccuracyDeduction = new StatusEffect(Stat.Version.ACCURACY, -10 + eEnemyAccDeduction, StatusEffect.Type.INCOMING);
 		enemyAccuracyDeduction.makeAffectOther();
 		
 		this.addStatusEffect(accuracyBonus);

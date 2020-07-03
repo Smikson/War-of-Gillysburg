@@ -110,9 +110,9 @@ public class AgileFighter extends Ability {
 		int critAmount = this.calcCritAmount();
 		
 		// Create the Accuracy and Crit status effects
-		StatusEffect accBonus = new StatusEffect(StatVersion.ACCURACY, accAmount, StatusEffectType.OUTGOING);
+		StatusEffect accBonus = new StatusEffect(Stat.Version.ACCURACY, accAmount, StatusEffect.Type.OUTGOING);
 		accBonus.makePercentage();
-		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, critAmount, StatusEffectType.OUTGOING);
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, critAmount, StatusEffect.Type.OUTGOING);
 		critBonus.makeFlat();
 		
 		// Create the Condition (duration 0 since used for 1 attack) and add the Accuracy status effect (only add the critical effect if rank 11+)
@@ -130,9 +130,9 @@ public class AgileFighter extends Ability {
 		int critAmount = this.calcCritAmount();
 		
 		// Create the Accuracy and Crit status effects
-		StatusEffect accBonus = new StatusEffect(StatVersion.ACCURACY, accAmount, StatusEffectType.OUTGOING);
+		StatusEffect accBonus = new StatusEffect(Stat.Version.ACCURACY, accAmount, StatusEffect.Type.OUTGOING);
 		accBonus.makePercentage();
-		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, critAmount, StatusEffectType.OUTGOING);
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, critAmount, StatusEffect.Type.OUTGOING);
 		critBonus.makeFlat();
 		
 		// Create the Condition (duration 0 since used for 1 attack) and add the Accuracy status effect (only add the critical effect if rank 11+)
@@ -149,7 +149,7 @@ public class AgileFighter extends Ability {
 		int blkAmount = this.calcBaseAccAmt()/2;
 		
 		// Create the Status Effect
-		StatusEffect blkBonus = new StatusEffect(StatVersion.BLOCK, blkAmount, StatusEffectType.OUTGOING);
+		StatusEffect blkBonus = new StatusEffect(Stat.Version.BLOCK, blkAmount, StatusEffect.Type.OUTGOING);
 		blkBonus.makePercentage();
 		
 		// Create the Condition with duration of 1
@@ -163,7 +163,7 @@ public class AgileFighter extends Ability {
 		int blkAmount = this.calcAbilityAccAmt()/2;
 		
 		// Create the Status Effect
-		StatusEffect blkBonus = new StatusEffect(StatVersion.BLOCK, blkAmount, StatusEffectType.OUTGOING);
+		StatusEffect blkBonus = new StatusEffect(Stat.Version.BLOCK, blkAmount, StatusEffect.Type.OUTGOING);
 		blkBonus.makePercentage();
 		
 		// Create the Condition with duration of 1

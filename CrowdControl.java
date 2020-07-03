@@ -83,9 +83,9 @@ class Blind extends CrowdControl {
 	public Blind(String name, int duration, Requirement actReq) {
 		super(name, duration, actReq);
 		
-		StatusEffect dodgeReduction = new StatusEffect(StatVersion.DODGE, -90, StatusEffectType.BASIC);
-		StatusEffect blockReduction = new StatusEffect(StatVersion.BLOCK, -70, StatusEffectType.BASIC);
-		StatusEffect speedReduction = new StatusEffect(StatVersion.SPEED, -50, StatusEffectType.BASIC);
+		StatusEffect dodgeReduction = new StatusEffect(Stat.Version.DODGE, -90, StatusEffect.Type.BASIC);
+		StatusEffect blockReduction = new StatusEffect(Stat.Version.BLOCK, -70, StatusEffect.Type.BASIC);
+		StatusEffect speedReduction = new StatusEffect(Stat.Version.SPEED, -50, StatusEffect.Type.BASIC);
 		this.addStatusEffect(dodgeReduction);
 		this.addStatusEffect(blockReduction);
 		this.addStatusEffect(speedReduction);
@@ -145,7 +145,7 @@ class Slow extends CrowdControl {
 		super(name, duration, actReq);
 		this.value = -val;
 		
-		StatusEffect speedReductionEffect = new StatusEffect(StatVersion.SPEED, this.getValue(), StatusEffectType.BASIC);
+		StatusEffect speedReductionEffect = new StatusEffect(Stat.Version.SPEED, this.getValue(), StatusEffect.Type.BASIC);
 		speedReductionEffect.makeFlat();
 		this.addStatusEffect(speedReductionEffect);
 	}
@@ -174,7 +174,7 @@ class Snare extends CrowdControl {
 	public Snare(String name, int duration, Requirement actReq) {
 		super(name, duration, actReq);
 		
-		StatusEffect dodgeReduction = new StatusEffect(StatVersion.DODGE, -90, StatusEffectType.BASIC);
+		StatusEffect dodgeReduction = new StatusEffect(Stat.Version.DODGE, -90, StatusEffect.Type.BASIC);
 		this.addStatusEffect(dodgeReduction);
 	}
 	public Snare(String name, int duration) {
@@ -209,8 +209,8 @@ class Stun extends CrowdControl {
 	public Stun(String name, int duration, Requirement actReq) {
 		super(name, duration, actReq);
 		
-		StatusEffect dodgeReduction = new StatusEffect(StatVersion.DODGE, -100, StatusEffectType.BASIC);
-		StatusEffect blockReduction = new StatusEffect(StatVersion.BLOCK, -75, StatusEffectType.BASIC);
+		StatusEffect dodgeReduction = new StatusEffect(Stat.Version.DODGE, -100, StatusEffect.Type.BASIC);
+		StatusEffect blockReduction = new StatusEffect(Stat.Version.BLOCK, -75, StatusEffect.Type.BASIC);
 		this.addStatusEffect(dodgeReduction);
 		this.addStatusEffect(blockReduction);
 	}

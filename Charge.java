@@ -176,9 +176,9 @@ public class Charge extends Ability{
 		}
 		
 		// Create the Status Effects
-		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, critAmount, StatusEffectType.OUTGOING);
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, critAmount, StatusEffect.Type.OUTGOING);
 		critBonus.makeFlat();
-		StatusEffect apBonus = new StatusEffect(StatVersion.ARMOR_PIERCING, apAmount, StatusEffectType.OUTGOING);
+		StatusEffect apBonus = new StatusEffect(Stat.Version.ARMOR_PIERCING, apAmount, StatusEffect.Type.OUTGOING);
 		apBonus.makePercentage();
 		
 		// Create the Condition (only add Armor Piercing bonus if at rank 9+) with duration 0 since it immediately disappears.

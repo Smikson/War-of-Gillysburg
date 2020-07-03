@@ -1,35 +1,38 @@
 package WyattWitemeyer.WarOfGillysburg;
 
-enum StatVersion {
-	HEALTH, DAMAGE, ARMOR, ARMOR_PIERCING, ACCURACY, DODGE, BLOCK, CRITICAL_CHANCE, SPEED, ATTACK_SPEED, RANGE, THREAT, TACTICAL_THREAT, STANDARD_DEVIATION_DOWN, STANDARD_DEVIATION_UP, EMPTY;
-}
+
 
 public class Stat {
-	private StatVersion version; // Used to match the constants.
+	// List of the types of stats that are possible (useful for stat-altering effects)
+	public static enum Version {
+		HEALTH, DAMAGE, ARMOR, ARMOR_PIERCING, ACCURACY, DODGE, BLOCK, CRITICAL_CHANCE, SPEED, ATTACK_SPEED, RANGE, THREAT, TACTICAL_THREAT, STANDARD_DEVIATION_DOWN, STANDARD_DEVIATION_UP, EMPTY;
+	}
+	
+	private Version version; // Used to match the constants.
 	private int total;
 	public int bonus;
 	
 	
-	public Stat(int value, int extra, StatVersion type) {
+	public Stat(int value, int extra, Version type) {
 		this.total = value;
 		this.bonus = extra;
 		this.version = type;
 	}
-	public Stat(int value, StatVersion type) {
+	public Stat(int value, Version type) {
 		this(value, 0, type);
 	}
-	public Stat(StatVersion type) {
+	public Stat(Version type) {
 		this(0, 0, type);
 	}
 	public Stat() {
-		this(0,0, StatVersion.EMPTY);
+		this(0,0, Version.EMPTY);
 	}
 	
 	
 	public int getTotal() {
 		return this.total;
 	}
-	public StatVersion getVersion() {
+	public Version getVersion() {
 		return this.version;
 	}
 	

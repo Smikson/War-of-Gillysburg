@@ -61,7 +61,7 @@ public class VengeanceStrike extends Ability {
 		};
 		
 		// Create the Status Effect
-		StatusEffect dmgRed = new StatusEffect(StatVersion.DAMAGE, -amount, StatusEffectType.OUTGOING);
+		StatusEffect dmgRed = new StatusEffect(Stat.Version.DAMAGE, -amount, StatusEffect.Type.OUTGOING);
 		dmgRed.makePercentage();
 		dmgRed.setDualRequirement(isOwner);
 		
@@ -79,7 +79,7 @@ public class VengeanceStrike extends Ability {
 		}
 		
 		// Create the Status Effect
-		StatusEffect dmgBuff = new StatusEffect(StatVersion.DAMAGE, amount, StatusEffectType.OUTGOING);
+		StatusEffect dmgBuff = new StatusEffect(Stat.Version.DAMAGE, amount, StatusEffect.Type.OUTGOING);
 		dmgBuff.makePercentage();
 		
 		// Create the Condition that contains this effect (duration of 0 since immediately unapplied)

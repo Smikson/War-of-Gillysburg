@@ -171,13 +171,13 @@ public class SwordplayProwess extends Ability {
 		}
 		
 		// Create the Status Effects
-		StatusEffect dmgBonus = new StatusEffect(StatVersion.DAMAGE, damageAmount, StatusEffectType.OUTGOING);
+		StatusEffect dmgBonus = new StatusEffect(Stat.Version.DAMAGE, damageAmount, StatusEffect.Type.OUTGOING);
 		dmgBonus.makePercentage();
 		
-		StatusEffect accBonus = new StatusEffect(StatVersion.ACCURACY, accuracyAmount, StatusEffectType.OUTGOING);
+		StatusEffect accBonus = new StatusEffect(Stat.Version.ACCURACY, accuracyAmount, StatusEffect.Type.OUTGOING);
 		accBonus.makePercentage();
 		
-		StatusEffect critBonus = new StatusEffect(StatVersion.CRITICAL_CHANCE, critAmount, StatusEffectType.OUTGOING);
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, critAmount, StatusEffect.Type.OUTGOING);
 		critBonus.makeFlat();
 		
 		// Create the Condition that contains this effect permanently (-1) since it is consumed once used (implemented in Steel Legion Warrior Class)
