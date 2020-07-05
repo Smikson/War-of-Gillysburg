@@ -130,14 +130,14 @@ public class Attack {
 		// Make sure neither target is dead:
 		if (this.getAttacker().isDead()) {
 			System.out.println(this.getAttacker().getName() + " is dead. Thus, " + this.getAttacker().getName() + " is incapable of attacking.");
-			System.out.println("Continue with attack anyway? Y or N");
+			System.out.println("Continue with attack anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				return;
 			}
 		}
 		if (this.getDefender().isDead()) {
 			System.out.println(this.getDefender().getName() + " is already dead. The attack would have no effect.");
-			System.out.println("Continue with attack anyway? Y or N");
+			System.out.println("Continue with attack anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				return;
 			}

@@ -35,7 +35,7 @@ public class Charge extends Ability{
 			this.cooldown = 4;
 		}
 		// The Ability always starts off Cooldown
-		this.turnCount = this.cooldown;
+		this.setOffCooldown();
 	}
 	
 	// Calculates each scaler

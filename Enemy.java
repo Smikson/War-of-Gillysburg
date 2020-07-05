@@ -111,7 +111,7 @@ public class Enemy extends Character {
 		
 		// State if Character is dead
 		if (this.getCurrentHealth() <= 0) {
-			System.out.println(this.getName() + " is dead. Have turn anyway? Y or N");
+			System.out.println(this.getName() + " is dead. Have turn anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				this.endTurn();
 				return;
@@ -121,6 +121,15 @@ public class Enemy extends Character {
 		// Do action based on command given
 		boolean flag = true;
 		while (flag) {
+			// If turn actions are spent, ask to continue
+			if (this.turnActionsSpent()) {
+				System.out.println("\n" + this.getName() + "'s Turn Actions have been spent, End turn?");
+				if (BattleSimulator.getInstance().askYorN()) {
+					flag = false;
+					break;
+				}
+			}
+			
 			// Display available actions
 			this.beginTurnDisplay();
 			
@@ -140,7 +149,7 @@ public class Enemy extends Character {
 	                		.type(AttackType.SLASHING)
 	                		.build();
 	                basicAtk.execute();
-	                flag = false;
+	                this.useTurnActions();
 	                break;
 	            case "2": // Display Threat Order
 	            	this.displayThreatOrder();

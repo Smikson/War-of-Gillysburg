@@ -48,7 +48,7 @@ class HoldItRightThere extends Ability {
 		StatusEffect blockBonus = new StatusEffect(Stat.Version.BLOCK, amount, StatusEffect.Type.INCOMING);
 		DualRequirement req = (Character withEffect, Character other) -> {
 			// Prompt controller if blocking for an ally
-			System.out.println("Is " + this.owner.getName() + " blocking for an ally? Y or N");
+			System.out.println("Is " + this.owner.getName() + " blocking for an ally?");
 			return BattleSimulator.getInstance().askYorN();
 		};
 		blockBonus.setDualRequirement(req);
@@ -454,7 +454,7 @@ class ShieldBash extends Ability {
 		if (this.rank() >= 5) {
 			this.cooldown = 3;
 		}
-		this.turnCount = this.cooldown;  // The Ability always starts off Cooldown
+		this.setOffCooldown();  // The Ability always starts off Cooldown
 	}
 	
 	private void setScaler() {
@@ -701,7 +701,7 @@ class ShieldReflection extends Ability {
 		if (this.rank() >= 5) {
 			this.cooldown = 4;
 		}
-		this.turnCount = this.cooldown;  // The Ability always starts off Cooldown
+		this.setOffCooldown();  // The Ability always starts off Cooldown
 	}
 	
 	private void setScaler() {
@@ -799,7 +799,7 @@ class TauntingAttack extends Ability {
 		if (this.rank() >= 5) {
 			this.cooldown = 3;
 		}
-		this.turnCount = this.cooldown;  // The Ability always starts off Cooldown
+		this.setOffCooldown();  // The Ability always starts off Cooldown
 	}
 	
 	private void setScaler() {
@@ -963,7 +963,7 @@ class LeaderStrike extends Ability {
 		if (this.rank() >= 7) {
 			this.cooldown = 4;
 		}
-		this.turnCount = this.cooldown;  // The Ability always starts off Cooldown
+		this.setOffCooldown();  // The Ability always starts off Cooldown
 	}
 	
 	private void setScaler() {
@@ -1222,6 +1222,11 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 
 // The Steel Legion Tank itself:
 public class SteelLegionTank extends Character {
+	// Enumerates the names of the abilities so Cooldown and use functions can be called
+	public static enum AbilityNames {
+		HoldItRightThere, EnchantedArmor, ShieldSkills, ProfessionalLaughter, ShieldBash, ShieldReflection, TauntingAttack, LeaderStrike, HaHaHaYouCantKillMe
+	}
+	
 	// Passive Abilities
 	private HoldItRightThere HoldItRightThere; // Unique Passive Ability (UPA)
 	private EnchantedArmor EnchantedArmor;
@@ -1347,7 +1352,7 @@ public class SteelLegionTank extends Character {
 		
 		// State if Character is dead
 		if (this.getCurrentHealth() <= 0) {
-			System.out.println(this.getName() + " is dead. Have turn anyway? Y or N");
+			System.out.println(this.getName() + " is dead. Have turn anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				this.endTurn();
 				return;
@@ -1363,13 +1368,22 @@ public class SteelLegionTank extends Character {
 		// Reduces the Cooldown of all Abilities that need it.
 		for (Ability a : abilities) {
 			if (a.onCooldown()) {
-				a.incrementTurn();
+				a.decrementTurnsRemaining();
 			}
 		}
 		
 		// Do action based on command given
 		boolean flag = true;
 		while (flag) {
+			// If turn actions are spent, ask to continue
+			if (this.turnActionsSpent()) {
+				System.out.println("\n" + this.getName() + "'s Turn Actions have been spent, End turn?");
+				if (BattleSimulator.getInstance().askYorN()) {
+					flag = false;
+					break;
+				}
+			}
+			
 			// Display available actions
 			this.beginTurnDisplay();
 			
@@ -1389,7 +1403,7 @@ public class SteelLegionTank extends Character {
 	                		.type(AttackType.SLASHING)
 	                		.build();
 	                basicAtk.execute();
-	                flag = false;
+	                this.useTurnActions();
 	                break;
 	            case "2": // Shield Bash
 	            	target = BattleSimulator.getInstance().targetSingle();
@@ -1397,7 +1411,7 @@ public class SteelLegionTank extends Character {
 	                	break;
 	                }
 	                this.useShieldBash(target);
-	                flag = false;
+	                this.useTurnActions();
 	                break;
 	            case "3": // Shield Reflection
 	            	System.out.println("Choose enemies hit by attack:");
@@ -1417,7 +1431,7 @@ public class SteelLegionTank extends Character {
 	                	attackTargets.clear();
 	                }
 	                this.useShieldReflection(attackTargets, blindedTargets);
-	                flag = false;
+	                this.useTurnActions();
 	                break;
 	            case "4": // Taunting Attack
 	            	target = BattleSimulator.getInstance().targetSingle();
@@ -1425,7 +1439,7 @@ public class SteelLegionTank extends Character {
 	                	break;
 	                }
 	                this.useTauntingAttack(target);
-	                flag = false;
+	                this.useTurnActions();
 	                break;
 	            case "5": // Leader Strike
 	            	target = BattleSimulator.getInstance().targetSingle();
@@ -1433,11 +1447,11 @@ public class SteelLegionTank extends Character {
 	                	break;
 	                }
 	                this.useLeaderStrike(target);
-	                flag = false;
+	                this.useTurnActions();
 	                break;
 	            case "6": // HaHaHaYouCantKillMe
 	            	this.useHahahaYouCantKillMe();
-	                flag = false;
+	            	this.useTurnActions();
 	                break;
 	            case "7": // Alter Character
 	            	Character chosen = BattleSimulator.getInstance().targetSingle();
@@ -1518,7 +1532,7 @@ public class SteelLegionTank extends Character {
 	private void useShieldSkillsHealing(int numBlinded) {
 		// First, non-healing-wise, if 7 enemies are hit at rank 15, the Cooldown of Shield Bash is refreshed.
 		if (this.ShieldSkills.rank() >= 15 && numBlinded >= 7) {
-			this.ShieldBash.turnCount = ShieldBash.cooldown();
+			this.ShieldBash.setOffCooldown();
 		}
 		
 		// Calculates the amount of healing based on missing Health and the number of enemies blinded
@@ -1541,7 +1555,7 @@ public class SteelLegionTank extends Character {
 	// Deals the Damage from the "Shield Bash" Ability (Ability 1)
 	public void useShieldBash(Character enemy) {
 		// Before anything, put Shield Bash "on Cooldown"
-		this.ShieldBash.resetCounter();
+		this.ShieldBash.setOnCooldown();
 		
 		// Apply bonus pre-condition (will have 0 value if rank is not big enough)
 		Condition preCondition = this.ShieldBash.getSelfPreAttackBonus();
@@ -1581,7 +1595,7 @@ public class SteelLegionTank extends Character {
 			if (cdr > this.ShieldBash.cooldown()) {
 				cdr = this.ShieldBash.cooldown();
 			}
-			this.ShieldBash.turnCount = cdr;
+			this.ShieldBash.setTurnsRemaining(this.ShieldBash.cooldown() - cdr);
 			
 			// Increment numMisses
 			this.ShieldBash.numMisses++;
@@ -1596,7 +1610,7 @@ public class SteelLegionTank extends Character {
 	// Deals the Damage from the "Shield Reflection" Ability (Ability 2) to multiple enemies
 	public void useShieldReflection(LinkedList<Character> enemies, LinkedList<Character> blinded) {
 		// Before anything, put Shield Reflection "on Cooldown"
-		this.ShieldReflection.resetCounter();
+		this.ShieldReflection.setOnCooldown();
 		
 		// Make the attack against all enemies affected
 		for (Character enemy : enemies) {
@@ -1629,7 +1643,7 @@ public class SteelLegionTank extends Character {
 	// Deals the Damage from the "Taunting Attack" Ability (Ability 3)
 	public void useTauntingAttack(Character enemy) {
 		// Before anything, put Tauning Attack "on Cooldown"
-		this.TauntingAttack.resetCounter();
+		this.TauntingAttack.setOnCooldown();
 		
 		// Apply bonus accuracy pre-condition (will have 0 value if rank is not big enough)
 		Condition preCondition = this.TauntingAttack.getPreAttackBonus();
@@ -1679,7 +1693,7 @@ public class SteelLegionTank extends Character {
 	// Deals the Damage from the "Leader Strike" Ability (Ability 4) and Calculates the amount healed for allies.
 	public void useLeaderStrike(Character enemy) {
 		// Before anything, put Tauning Attack "on Cooldown"
-		this.LeaderStrike.resetCounter();
+		this.LeaderStrike.setOnCooldown();
 		
 		// Apply bonus accuracy pre-condition (will have 0 value if rank is not big enough)
 		Condition preCondition = this.LeaderStrike.getPreAttackBonus();
@@ -1744,7 +1758,7 @@ public class SteelLegionTank extends Character {
 	// Restores the Character to full health and grants bonuses from the ULTIMATE Ability "HaHaHa You Can't Kill Me!"
 	public void useHahahaYouCantKillMe() {
 		// Before anything, put HahahaYouCantKillMe "on Cooldown"
-		this.HaHaHaYouCantKillMe.resetCounter();
+		this.HaHaHaYouCantKillMe.setOnCooldown();
 		
 		// Heal to full Health
 		int healing = this.getHealth() - this.getCurrentHealth();

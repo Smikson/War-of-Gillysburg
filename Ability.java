@@ -6,7 +6,7 @@ public class Ability {
 	private Character owner;
 	private int rank;
 	protected int cooldown;
-	public int turnCount;
+	private int turnsRemaining;
 	protected double scaler;
 	
 	// Constructors
@@ -15,7 +15,7 @@ public class Ability {
 		this.owner = owner;
 		this.rank = rank;
 		this.cooldown = 0;
-		this.turnCount = 0;
+		this.turnsRemaining = 0;
 		this.scaler = 1.0;
 	}
 	
@@ -29,25 +29,36 @@ public class Ability {
 	public int cooldown() {
 		return this.cooldown;
 	}
-	public int turnCount() {
-		return this.turnCount;
+	public int turnsRemaining() {
+		return this.turnsRemaining;
 	}
 	public double getScaler() {
 		return this.scaler;
 	}
 	
 	// Methods to deal with Cooldowns
-	public void incrementTurn() {
-		this.turnCount++;
+	public void decrementTurnsRemaining() {
+		this.setTurnsRemaining(this.turnsRemaining - 1);
 	}
-	public void resetCounter() {
-		this.turnCount = 0;
+	public void setTurnsRemaining(int turns) {
+		if (turns >= 0 && turns <= this.cooldown) {
+			this.turnsRemaining = turns;
+		}
+	}
+	public void setOnCooldown() {
+		this.setTurnsRemaining(this.cooldown);
+	}
+	public void setOffCooldown() {
+		this.setTurnsRemaining(0);
 	}
 	public boolean onCooldown() {
-		return this.turnCount < this.cooldown;
+		return this.turnsRemaining > 0;
 	}
 	
+	// Use functions to be overridden by each class
+	// Add int parameter for version number.
 	public void use() {
+		this.setOnCooldown();
 		System.out.println("Warning: The Ability, " + this.name + ", does not have a use() function defined!");
 	}
 	
@@ -60,22 +71,29 @@ public class Ability {
 
 
 class UltimateAbility extends Ability {
-	private boolean onCdown;
+	private int charges;
 	
 	// Constructors
-	public UltimateAbility(String name, Character owner, int rank) {
+	public UltimateAbility(String name, Character owner, int rank, int charges) {
 		super(name, owner, rank);
-		this.onCdown = false;
+		this.charges = charges;
+	}
+	public UltimateAbility(String name, Character owner, int rank) {
+		this(name, owner, rank, 1);
 	}
 	
 	// Slightly Different Cooldown Functions since it can only be used once by default
+	public void useCharges(int numCharges) {
+		this.charges -= numCharges;
+	}
+	
 	@Override
-	public void resetCounter() {
-		this.onCdown = true;
+	public void setOnCooldown() {
+		this.useCharges(1);
 	}
 	
 	@Override
 	public boolean onCooldown() {
-		return this.onCdown;
+		return this.charges > 0;
 	}
 }

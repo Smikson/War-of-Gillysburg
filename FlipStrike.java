@@ -31,7 +31,7 @@ public class FlipStrike extends Ability {
 			this.cooldown = 3;
 		}
 		// The Ability always starts off Cooldown
-		this.turnCount = this.cooldown;
+		this.setOffCooldown();
 	}
 	
 	// Calculates and sets the damage scaler

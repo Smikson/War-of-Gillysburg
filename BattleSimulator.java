@@ -112,6 +112,9 @@ public class BattleSimulator {
 	// Prompt methods
 	// Returns true if yes, false if no
 	public boolean askYorN() {
+		// Prompt for Y or N:
+		System.out.print("Y or N: ");
+		
 		// Get the response (uppercase it so only have to match one thing)
 		String response = this.getPrompter().nextLine().toUpperCase();
 		while (true) {
@@ -340,7 +343,7 @@ public class BattleSimulator {
 	// Prompts adjustments to the turn order
 	private void promptAdjustTurnOrder() {
 		// Prompt for any adjustments
-		System.out.println("\nAdjust turn order? Y or N");
+		System.out.println("\nAdjust turn order?");
 		if (this.askYorN()) {
 			while (true) {
 				// Pick a Character to adjust
@@ -390,7 +393,7 @@ public class BattleSimulator {
 				}
 				
 				// Prompt for further adjustment.
-				System.out.println("\nAdjust turn order? Y or N");
+				System.out.println("\nAdjust turn order?");
 				// If done (they responded no), return to be done
 				if (!this.askYorN()) {
 					return;

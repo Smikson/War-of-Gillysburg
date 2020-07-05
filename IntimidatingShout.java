@@ -45,7 +45,7 @@ public class IntimidatingShout extends Ability {
 			this.cooldown = 4;
 		}
 		// The Ability always starts off Cooldown
-		this.turnCount = this.cooldown;
+		this.setOffCooldown();
 	}
 	
 	// Calculates the amount of damage reduction for Normal enemies (other enemies are multiples of this number)

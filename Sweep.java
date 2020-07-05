@@ -29,7 +29,7 @@ public class Sweep extends Ability {
 			this.cooldown = 3;
 		}
 		// The ability always starts off Cooldown
-		this.turnCount = this.cooldown;
+		this.setOffCooldown();
 	}
 	
 	// Calculates the damage scaler

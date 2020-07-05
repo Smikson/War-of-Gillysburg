@@ -58,8 +58,9 @@ public class Character {
 	protected LinkedList<Condition> conditions;
 	protected LinkedList<DamageOverTime> dotEffects;
 	
-	// Holds the possible actions a Character can take on their turn
+	// Holds the possible actions a Character can take on their turn and a boolean to control when the Character's turn is over
 	private LinkedList<String> commands;
+	private boolean turnActionsSpent;
 	
 	// Store the previous attack made (for use in Character Abilities sometimes)
 	protected LinkedList<AttackResult> AttacksMade;
@@ -198,6 +199,13 @@ public class Character {
 	}
 	public int getSTDup() {
 		return this.STDup.getTotal() + this.STDup.bonus;
+	}
+	
+	public boolean turnActionsSpent() {
+		return this.turnActionsSpent;
+	}
+	public void useTurnActions() {
+		this.turnActionsSpent = true;
 	}
 	
 	public int getCurrentHealth() {
@@ -654,6 +662,9 @@ public class Character {
 	
 	// Start of turn
 	protected void beginTurnSetup() {
+		// Make turn actions available
+		this.turnActionsSpent = false;
+		
 		// Apply a "tick" to any damage over time effects
 		for (DamageOverTime dot : this.dotEffects) {
 			if (dot.isExpired()) {
@@ -716,7 +727,7 @@ public class Character {
 		
 		// State if Character is dead
 		if (this.getCurrentHealth() < 0) {
-			System.out.println(this.getName() + " is dead. Have turn anyway? Y or N");
+			System.out.println(this.getName() + " is dead. Have turn anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				this.endTurn();
 				return;
@@ -726,6 +737,15 @@ public class Character {
 		// Do action based on command given
 		boolean flag = true;
 		while (flag) {
+			// If turn actions are spent, ask to continue
+			if (this.turnActionsSpent()) {
+				System.out.println("\n" + this.getName() + "'s Turn Actions have been spent, End turn?");
+				if (BattleSimulator.getInstance().askYorN()) {
+					flag = false;
+					break;
+				}
+			}
+			
 			// Display available actions
 			this.beginTurnDisplay();
 			
@@ -744,7 +764,7 @@ public class Character {
 	                		.type(AttackType.SLASHING)
 	                		.build();
 	                basicAtk.execute();
-	                flag = false;
+	                this.useTurnActions();
 	                break;
 	            case "2": // Alter Character
 	            	Character chosen = BattleSimulator.getInstance().targetSingle();
