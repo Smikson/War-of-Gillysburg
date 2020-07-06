@@ -55,11 +55,24 @@ public class Ability {
 		return this.turnsRemaining > 0;
 	}
 	
-	// Use functions to be overridden by each class
-	// Add int parameter for version number.
-	public void use() {
+	// Use functions to be overridden by each class (there can be multiple versions, int specifies version)
+	public void use(int version) {
+		// To also show the basic format of the use function, start by putting the Ability on Cooldown
 		this.setOnCooldown();
-		System.out.println("Warning: The Ability, " + this.name + ", does not have a use() function defined!");
+		
+		// Then, for each possible version of the Ability, specify based on the number give (if only 1 use function is present, the check must be the version 1 by default)
+		if (version == 1) {
+			this.use();
+			return;
+		}
+		
+		// Print a warning if this function is ever actually directly called
+		System.out.println("Warning: The Ability, " + this.name + ", does not have a use(" + version + ") function defined, but it was called!");
+	}
+	public void use() {
+		// Put the Ability on Cooldown (still to show format), then print a warning
+		this.setOnCooldown();
+		System.out.println("Warning: The Ability, " + this.name + ", does not have a use(1) function defined, but it was called!");
 	}
 	
 	// Used to print the Ability's name for reference

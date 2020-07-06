@@ -82,6 +82,7 @@ public class Tester {
 		BattleSimulator.getInstance().initiate();
 		
 		
+		
 		/*
 		// Writes CurrentHealth of all characters to the BattleHealthData.txt File.
 		BufferedWriter writer = new BufferedWriter(new FileWriter("BattleHealthData.txt"));
