@@ -41,9 +41,13 @@ public class Ability {
 		this.setTurnsRemaining(this.turnsRemaining - 1);
 	}
 	public void setTurnsRemaining(int turns) {
-		if (turns >= 0 && turns <= this.cooldown) {
-			this.turnsRemaining = turns;
+		if (turns < 0) {
+			turns = 0;
 		}
+		if (turns > this.cooldown) {
+			turns = this.cooldown;
+		}
+		this.turnsRemaining = turns;
 	}
 	public void setOnCooldown() {
 		this.setTurnsRemaining(this.cooldown);

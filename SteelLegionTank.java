@@ -231,7 +231,8 @@ class EnchantedArmor extends Ability {
 	}
 	
 	// Creates a use function to be used at the end of the owner's turn. Heals the owner for the specified amount
-	public void useHealing() {
+	@Override
+	public void use() {
 		// Calculates the amount of healing based on Maximum Health
 		int healing = (int) Math.round(this.getScaler() * this.owner.getHealth());
 		
@@ -284,6 +285,31 @@ class ShieldSkills extends Ability {
 	}
 	public double getScalerBlind5() {
 		return this.scalerBlind5;
+	}
+	
+	// Create a use function that is called when Shield Reflection hits multiple enemies. The version number is how many enemies are blinded
+	@Override
+	public void use(int numBlinded) {
+		// First, non-healing-wise, if 7 enemies are hit at rank 15, the Cooldown of Shield Bash is refreshed.
+		if (this.rank() >= 15 && numBlinded >= 7) {
+			this.owner.setAbilityCD(SteelLegionTank.AbilityNames.ShieldBash, 0);
+		}
+		
+		// Calculates the amount of healing based on missing Health and the number of enemies blinded
+		int healing = 0;
+		if ((this.rank() < 11 && numBlinded >= 3) || (this.rank() >= 11 && numBlinded >= 3 && numBlinded < 5)) {
+			healing = (int) Math.round(this.getScalerBlind3() * (this.owner.getHealth() - this.owner.getCurrentHealth()));
+		}
+		else if (this.rank() >= 11 && numBlinded >= 5){
+			healing = (int) Math.round((this.getScalerBlind3() + this.getScalerBlind5()) * (this.owner.getHealth() - this.owner.getCurrentHealth()));
+		}
+		
+		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
+		healing = this.owner.restoreHealth(healing);
+		if (healing == 0) {
+			return;
+		}
+		System.out.println(this.owner.getName() + " healed for " + healing + " Health for a new total of " + this.owner.getCurrentHealth());
 	}
 }
 
@@ -425,7 +451,6 @@ class ShieldBash extends Ability {
 	
 	// Keeps track of the number of previous Shield Bash misses, if a previous attack has been blocked, and if this Ability critically hit (for bonus effects)
 	public int numMisses;
-	public boolean didBlock;
 	public boolean didCrit;
 	
 	
@@ -435,7 +460,6 @@ class ShieldBash extends Ability {
 		this.owner = source;
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
-		this.didBlock = false;
 		this.didCrit = false;
 		
 		// Sets the Cooldown and Scaler of the Ability
@@ -479,11 +503,11 @@ class ShieldBash extends Ability {
 		// Bonuses for "Shield Skills" rank
 		for (int walker = 6; walker < this.ssRank; walker++) {
 			// Ranks 6-10 grant +.2x damage to scaler if an attack was blocked
-			if (walker <= 10 && this.didBlock) {
+			if (walker <= 10 && this.owner.didBlock) {
 				this.scaler += .2;
 			}
 			// Rank 15 grants +.5x damage to scaler if an attack was blocked
-			else if (walker == 15 && this.didBlock) {
+			else if (walker == 15 && this.owner.didBlock) {
 				this.scaler += .5;
 			}
 		}
@@ -554,11 +578,11 @@ class ShieldBash extends Ability {
 		// Bonuses for "Shield Skills" rank
 		for (int walker = 11; walker <= this.ssRank; walker++) {
 			// Ranks 11-15 grant +2% extra accuracy deduction if an attack was blocked
-			if (walker <= 15 && this.didBlock) {
+			if (walker <= 15 && this.owner.didBlock) {
 				amount += 2;
 			}
 			// Rank 15 grants an additional 5% accuracy deduction on top of that (total of a bonus 7% from rank 15) if an attack was blocked
-			if (walker == 15 && this.didBlock) {
+			if (walker == 15 && this.owner.didBlock) {
 				amount += 5;
 			}
 		}
@@ -664,6 +688,70 @@ class ShieldBash extends Ability {
 		this.setScaler();
 		return this.scaler;
 	}
+	
+	// Use function called when the action is chosen from the possible Commands
+	@Override
+	public void use() {
+		// Before anything, put Shield Bash "on Cooldown"
+		this.setOnCooldown();
+		
+		// Target a chosen enemy
+		Character enemy = BattleSimulator.getInstance().targetSingle();
+        if (enemy.equals(Character.EMPTY)) {
+        	return;
+        }
+		
+		// Apply bonus pre-condition (will have 0 value if rank is not big enough)
+		Condition preCondition = this.getSelfPreAttackBonus();
+		this.owner.apply(preCondition);
+		
+		// Make the attack
+		Attack bashAtk = new AttackBuilder()
+				.attacker(this.owner)
+				.defender(enemy)
+				.isTargeted()
+				.scaler(this.getScaler())
+				.type(AttackType.SMASHING)
+				.build();
+		bashAtk.execute();
+		
+		// Unapply the bonus pre-conditions
+		this.owner.unapply(preCondition);
+		
+		// Change the didCrit of "Shield Bash" to match if the Ability critically struck (this may affect the effects below when received)
+		this.didCrit = this.owner.previousAttack().didCrit();
+		
+		// If the attack hit, apply all the conditions (will be 0 if not effective due to rank) and revert numMisses to 0
+		if (this.owner.previousAttack().didHit()) {
+			// Add all conditions to enemy hit
+			Stun stunEffect = this.getStunEffect();
+			enemy.addCondition(stunEffect);
+			Condition accuracyReduction = this.getEnemyAccuracyReduction();
+			enemy.addCondition(accuracyReduction);
+			
+			// Change numMisses back to 0
+			this.numMisses = 0;
+		}
+		// If the attack missed, check to see if its Cooldown is reduced by "Shield Skills" and increment numMisses
+		else {
+			// Each point in "Shield Skills" causes a reduction of 1 up to a maximum of the Cooldown itself
+			int cdr = this.owner.getAbilityRank(SteelLegionTank.AbilityNames.ShieldSkills);
+			if (cdr > this.cooldown()) {
+				cdr = this.cooldown();
+			}
+			this.setTurnsRemaining(this.cooldown() - cdr);
+			
+			// Increment numMisses
+			this.numMisses++;
+		}
+		
+		// Reset didBlock (of "Shield Bash" and "Shield Reflection") and didCrit to false (using this ability consumes the buff if present)
+		this.owner.didBlock = false;
+		this.didCrit = false;
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
+	}
 }
 
 // Ability 2: "Shield Reflection"
@@ -678,14 +766,12 @@ class ShieldReflection extends Ability {
 	private int ssRank;
 	
 	// Keeps track of if a previous attack has been blocked
-	public boolean didBlock;
 	
 	public ShieldReflection(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
 		super("Ability 2: \"Shield Reflection\"", source, rank);
 		this.owner = source;
 		this.ssRank = ShieldSkillsRank;
-		this.didBlock = false;
 		
 		// Sets the Cooldown and Scaler of the Ability
 		this.setCooldown();
@@ -721,11 +807,11 @@ class ShieldReflection extends Ability {
 		// Bonuses for "Shield Skills" rank
 		for (int walker = 6; walker < this.ssRank; walker++) {
 			// Ranks 6-10 grant +.2x damage to scaler if an attack was blocked
-			if (walker <= 10 && this.didBlock) {
+			if (walker <= 10 && this.owner.didBlock) {
 				this.scaler += .2;
 			}
 			// Rank 15 grants +.5x damage to scaler if an attack was blocked
-			else if (walker == 15 && this.didBlock) {
+			else if (walker == 15 && this.owner.didBlock) {
 				this.scaler += .5;
 			}
 		}
@@ -759,6 +845,57 @@ class ShieldReflection extends Ability {
 		// Returns the scaler, but sets it again first in case things changed because of "didBlock" or "numMisses"
 		this.setScaler();
 		return this.scaler;
+	}
+	
+	// Use function called when the action is chosen from the possible Commands
+	@Override
+	public void use() {
+		// Select enemies to attack and blind
+		System.out.println("Choose enemies hit by attack:");
+    	LinkedList<Character> enemies = BattleSimulator.getInstance().targetMultiple();
+        if (enemies.isEmpty()) {
+        	return;
+        }
+        if (enemies.contains(Character.EMPTY)) {
+        	enemies.clear();
+        }
+        System.out.println("Choose enemies blinded:");
+        LinkedList<Character> blinded = BattleSimulator.getInstance().targetMultiple();
+        if (blinded.isEmpty()) {
+        	return;
+        }
+        if (blinded.contains(Character.EMPTY)) {
+        	blinded.clear();
+        }
+		
+		// Before anything, put Shield Reflection "on Cooldown"
+		this.setOnCooldown();
+		
+		// Make the attack against all enemies affected
+		for (Character enemy : enemies) {
+			Attack reflectAtk = new AttackBuilder()
+					.attacker(this.owner)
+					.defender(enemy)
+					.isAOE()
+					.scaler(this.getScaler())
+					.type(AttackType.LIGHT)
+					.build();
+			reflectAtk.execute();
+		}
+		
+		// Blind all enemies affected
+		for (Character enemy : blinded) {
+			enemy.addCondition(this.getBlindEffect());
+		}
+		
+		// Add the possible healing string based on bonus effects from the "Shield Skills" Ability (will be empty String if nothing happens)
+		this.owner.useAbility(SteelLegionTank.AbilityNames.ShieldSkills, blinded.size());
+		
+		// Reset didBlock (of "Shield Bash" and "Shield Reflection") to false (using this ability consumes the buff if present)
+		this.owner.didBlock = false;
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
 	}
 }
 
@@ -921,6 +1058,66 @@ class TauntingAttack extends Ability {
 		// Returns the condition, but sets it again first in case things changed because of "numMisses"
 		this.setPreAttackBonus();
 		return this.selfPreAttackBonus;
+	}
+	
+	// Use function called when the action is chosen from the possible Commands
+	@Override
+	public void use() {
+		// Select the target enemy
+		Character enemy = BattleSimulator.getInstance().targetSingle();
+        if (enemy.equals(Character.EMPTY)) {
+        	return;
+        }
+		
+		// Before anything, put Tauning Attack "on Cooldown"
+		this.setOnCooldown();
+		
+		// Apply bonus accuracy pre-condition (will have 0 value if rank is not big enough)
+		Condition preCondition = this.getPreAttackBonus();
+		this.owner.apply(preCondition);
+		
+		// Make the attack
+		Attack tauntAtk = new AttackBuilder()
+				.attacker(this.owner)
+				.defender(enemy)
+				.isTargeted()
+				.scaler(this.getScaler())
+				.type(AttackType.SLASHING)
+				.build();
+		tauntAtk.execute();
+		
+		// Unapply the bonus accuracy pre-condition
+		this.owner.unapply(preCondition);
+		
+		// If the attack hit, apply the taunt condition (will be 0 if not effective due to rank) and revert numMisses to 0
+		if (this.owner.previousAttack().didHit()) {
+			// Add taunt condition to enemy hit
+			Condition tauntEffect = this.getTauntEffectHit();
+			if (tauntEffect.duration() > 0) {
+				enemy.addCondition(tauntEffect);
+				System.out.println(enemy.getName() + " is also taunted for " + tauntEffect.duration() + " turns!");
+			}
+			
+			// Change numMisses back to 0
+			this.numMisses = 0;
+		}
+		// If the attack missed, still apply the taunt condition if it is effective (will be 0 if not) and increment numMisses
+		else {
+			// Add taunt condition to enemy hit
+			Condition tauntEffect = this.getTauntEffectMiss(enemy);
+			if (tauntEffect.duration() > 0) {
+				enemy.addCondition(tauntEffect);
+				System.out.println(enemy.getName() + " is also taunted for " + tauntEffect.duration() + " turns!");
+			}
+			
+			// Increment numMisses if necessary (shield skills rank 15)
+			if (this.owner.getAbilityRank(SteelLegionTank.AbilityNames.ShieldSkills) >= 15) {
+				this.numMisses++;
+			}
+		}
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
 	}
 }
 
@@ -1107,6 +1304,80 @@ class LeaderStrike extends Ability {
 		}
 		return false;
 	}
+	
+	// Use function called when the action is chosen from the possible Commands
+	@Override
+	public void use() {
+		// Select the enemy to use the ability on
+		Character enemy = BattleSimulator.getInstance().targetSingle();
+        if (enemy.equals(Character.EMPTY)) {
+        	return;
+        }
+		
+		// Before anything, put Leader Strike "on Cooldown"
+		this.setOnCooldown();
+		
+		// Apply bonus accuracy pre-condition (will have 0 value if rank is not big enough)
+		Condition preCondition = this.getPreAttackBonus();
+		this.owner.apply(preCondition);
+		
+		// Make the attack
+		Attack leadAtk = new AttackBuilder()
+				.attacker(this.owner)
+				.defender(enemy)
+				.isTargeted()
+				.scaler(this.getScaler())
+				.type(AttackType.SLASHING)
+				.build();
+		leadAtk.execute();
+		
+		// Unapply the bonus accuracy pre-condition
+		this.owner.unapply(preCondition);
+		
+		// If the attack hit revert numMisses to 0, if it missed, increment numMisses
+		if (this.owner.previousAttack().didHit()) {
+			this.numMisses = 0;
+		}
+		else {
+			// Increment numMisses if necessary (shield skills rank 15)
+			if (this.owner.getAbilityRank(SteelLegionTank.AbilityNames.ShieldSkills) >= 15) {
+				this.numMisses++;
+			}
+		}
+		
+		
+		// Past rank 3, this Character is included for the buffs in "allies", either way, create a copy of the list so the original is unchanged (extra safety net)
+		LinkedList<Character> alliesCopy = new LinkedList<>();
+		for (Character ally : BattleSimulator.getInstance().getAllies()) {
+			alliesCopy.add(ally);
+		}
+		if (!alliesCopy.contains(this.owner) && this.rank() >= 3) {  // Adds this if not present and should be
+			alliesCopy.add(this.owner);
+		}
+		if (alliesCopy.contains(this.owner) && this.rank() < 3) {  // Removes this if present and should not be
+			alliesCopy.remove(this.owner);
+		}
+		
+		// Calculates and adds the amount of Healing received for each ally affected by the Ability (in the list) and apply the damage boost
+		for (Character ally : alliesCopy) {
+			// Calculates the healing amount for the ally in the list
+			int healing = (int)Math.round(ally.getHealth() * this.getHealingScaler());
+			
+			healing = ally.restoreHealth(healing);
+			System.out.println(ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth());
+			
+			// Applies the damage boost to each ally affected
+			ally.addCondition(this.getAllyDamageBonus());
+			
+			// Checks to see if each ally's attack will stun the next target, and adds it to the return if so.
+			if (this.willStun()) {
+				System.out.println(ally.getName() + " will also stun the next target hit");
+			}
+		}
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
+	}
 }
 
 // ULTIMATE Ability: "Hahaha! You Can't Kill Me!"
@@ -1216,6 +1487,63 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 		this.setAllyDamageBonus();
 		return this.allyDamageBonus;
 	}
+	
+	// Use function called when the action is chosen from the possible Commands
+	@Override
+	public void use() {
+		// Before anything, put HahahaYouCantKillMe "on Cooldown"
+		this.setOnCooldown();
+		
+		// Heal to full Health
+		int healing = this.owner.getHealth() - this.owner.getCurrentHealth();
+		healing = this.owner.restoreHealth(healing);
+		System.out.println(this.owner.getName() + " healed for " + healing + " Health for a new total of " + this.owner.getCurrentHealth());
+		
+		// Apply Additional Conditions
+		this.owner.addCondition(this.getSelfArmorBonus());
+		for (Character enemy : BattleSimulator.getInstance().getEnemies()) {
+			enemy.addCondition(this.getEnemyTauntEffect(enemy));
+		}
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
+	}
+	
+	// Use function called when the Steel Legion Tank dies
+	public void useDeath() {
+		// Create a list to hold all allies
+		LinkedList<Character> allies = BattleSimulator.getInstance().getAllies();
+		
+		// All this only happens at rank 3
+		if (this.rank() >= 3) {
+			// Restore each ally for 25% of their max Health and give each ally the damage buff from the Ability
+			for (Character ally : allies) {
+				if (!ally.equals(this.owner)) {
+					// Calculates the healing amount for the ally in the list
+					int healing = (int)Math.round(ally.getHealth() * .25);
+					
+					healing = ally.restoreHealth(healing);
+					System.out.println(ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth());
+					
+					// Gives each ally the Damage buff and Invincibility for 1 turn
+					ally.addCondition(this.getAllyDamageBonus());
+					ally.addCondition(new Invincible("HaHaHa You Can't Kill Me: Invincibility", 1));
+				}
+			}
+		}
+	}
+	
+	// Use function with specified version
+	@Override
+	public void use(int version) {
+		// If 2, specify the Death Version
+		if (version == 2) {
+			this.useDeath();
+			return;
+		}
+		// Otherwise use the base version where 1 is use() and anything else is a warning
+		super.use(version);
+	}
 }
 
 
@@ -1240,8 +1568,11 @@ public class SteelLegionTank extends Character {
 	private LeaderStrike LeaderStrike;
 	private HaHaHaYouCantKillMe HaHaHaYouCantKillMe;
 	
+	// Keeps track of the buff for if a previous attack was blocked
+	public boolean didBlock;
+	
 	// A List of all Abilities so all Cooldowns can be reduced at once
-	private LinkedList<Ability> abilities;
+	private HashMap<AbilityNames, Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Tank subclass.
 	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, Type type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
@@ -1258,16 +1589,16 @@ public class SteelLegionTank extends Character {
 		this.HaHaHaYouCantKillMe = new HaHaHaYouCantKillMe(this, haRank);
 		
 		// Add Abilities to a list for Cooldown purposes
-		this.abilities = new LinkedList<>();
-		this.abilities.add(this.HoldItRightThere);
-		this.abilities.add(this.EnchantedArmor);
-		this.abilities.add(this.ShieldSkills);
-		this.abilities.add(this.ProfessionalLaughter);
-		this.abilities.add(this.ShieldBash);
-		this.abilities.add(this.ShieldReflection);
-		this.abilities.add(this.TauntingAttack);
-		this.abilities.add(this.LeaderStrike);
-		this.abilities.add(this.HaHaHaYouCantKillMe);
+		this.abilities = new HashMap<>();
+		this.abilities.put(SteelLegionTank.AbilityNames.HoldItRightThere, this.HoldItRightThere);
+		this.abilities.put(SteelLegionTank.AbilityNames.EnchantedArmor, this.EnchantedArmor);
+		this.abilities.put(SteelLegionTank.AbilityNames.ShieldSkills, this.ShieldSkills);
+		this.abilities.put(SteelLegionTank.AbilityNames.ProfessionalLaughter, this.ProfessionalLaughter);
+		this.abilities.put(SteelLegionTank.AbilityNames.ShieldBash, this.ShieldBash);
+		this.abilities.put(SteelLegionTank.AbilityNames.ShieldReflection, this.ShieldReflection);
+		this.abilities.put(SteelLegionTank.AbilityNames.TauntingAttack, this.TauntingAttack);
+		this.abilities.put(SteelLegionTank.AbilityNames.LeaderStrike, this.LeaderStrike);
+		this.abilities.put(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe, this.HaHaHaYouCantKillMe);
 		
 		// Add new commands for Abilities
 		this.addCommand(1, "Shield Bash");
@@ -1275,6 +1606,9 @@ public class SteelLegionTank extends Character {
 		this.addCommand(3, "Taunting Attack");
 		this.addCommand(4, "Leader Strike");
 		this.addCommand(5, "HaHaHaYouCantKillMe");
+		
+		// Set didBlock to false to start
+		this.didBlock = false;
 	}
 	public SteelLegionTank(SteelLegionTank copy) {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), copy.getHoldItRightThereRank(), copy.getEnchantedArmorRank(), copy.getShieldSkillsRank(), copy.getProfessionalLaughterRank(), copy.getShieldBashRank(), copy.getShieldReflectionRank(), copy.getTauntingAttackRank(), copy.getTauntingAttackRank(), copy.getHaHaHaYouCantKillMeRank());
@@ -1307,6 +1641,27 @@ public class SteelLegionTank extends Character {
 	}
 	public int getHaHaHaYouCantKillMeRank() {
 		return this.HaHaHaYouCantKillMe.rank();
+	}
+	
+	// Functions to use an Ability or affect its Cooldown
+	public void useAbility(SteelLegionTank.AbilityNames name, int version) {
+		Ability chosen = this.abilities.get(name);
+		chosen.use(version);
+	}
+	public void useAbility(SteelLegionTank.AbilityNames name) {
+		this.useAbility(name, 1);
+	}
+	
+	// Function to set an ability's Cooldown
+	public void setAbilityCD(SteelLegionTank.AbilityNames name, int turnsRemaining) {
+		Ability chosen = this.abilities.get(name);
+		chosen.setTurnsRemaining(turnsRemaining);
+	}
+	
+	// Function to get the rank of an Ability
+	public int getAbilityRank(SteelLegionTank.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.rank();
 	}
 	
 	// Overrides the prompt to give class conditions
@@ -1366,7 +1721,7 @@ public class SteelLegionTank extends Character {
 		}
 		
 		// Reduces the Cooldown of all Abilities that need it.
-		for (Ability a : abilities) {
+		for (Ability a : abilities.values()) {
 			if (a.onCooldown()) {
 				a.decrementTurnsRemaining();
 			}
@@ -1406,52 +1761,19 @@ public class SteelLegionTank extends Character {
 	                this.useTurnActions();
 	                break;
 	            case "2": // Shield Bash
-	            	target = BattleSimulator.getInstance().targetSingle();
-	                if (target.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                this.useShieldBash(target);
-	                this.useTurnActions();
+	            	this.useAbility(SteelLegionTank.AbilityNames.ShieldBash);
 	                break;
 	            case "3": // Shield Reflection
-	            	System.out.println("Choose enemies hit by attack:");
-	            	LinkedList<Character> attackTargets = BattleSimulator.getInstance().targetMultiple();
-	                if (attackTargets.isEmpty()) {
-	                	break;
-	                }
-	                if (attackTargets.contains(Character.EMPTY)) {
-	                	attackTargets.clear();
-	                }
-	                System.out.println("Choose enemies blinded:");
-	                LinkedList<Character> blindedTargets = BattleSimulator.getInstance().targetMultiple();
-	                if (blindedTargets.isEmpty()) {
-	                	break;
-	                }
-	                if (blindedTargets.contains(Character.EMPTY)) {
-	                	attackTargets.clear();
-	                }
-	                this.useShieldReflection(attackTargets, blindedTargets);
-	                this.useTurnActions();
+	            	this.useAbility(SteelLegionTank.AbilityNames.ShieldReflection);
 	                break;
 	            case "4": // Taunting Attack
-	            	target = BattleSimulator.getInstance().targetSingle();
-	                if (target.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                this.useTauntingAttack(target);
-	                this.useTurnActions();
+	            	this.useAbility(SteelLegionTank.AbilityNames.TauntingAttack);
 	                break;
 	            case "5": // Leader Strike
-	            	target = BattleSimulator.getInstance().targetSingle();
-	                if (target.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                this.useLeaderStrike(target);
-	                this.useTurnActions();
+	            	this.useAbility(SteelLegionTank.AbilityNames.LeaderStrike);
 	                break;
 	            case "6": // HaHaHaYouCantKillMe
-	            	this.useHahahaYouCantKillMe();
-	            	this.useTurnActions();
+	            	this.useAbility(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe);
 	                break;
 	            case "7": // Alter Character
 	            	Character chosen = BattleSimulator.getInstance().targetSingle();
@@ -1477,7 +1799,7 @@ public class SteelLegionTank extends Character {
 		this.endTurnSetup();
 		
 		// Use Enchanted Armor Healing (end of turn effect)
-		this.EnchantedArmor.useHealing();
+		this.EnchantedArmor.use();
 		
 		// State facts
 		System.out.println(this.getName() + "'s turn is over.");
@@ -1491,13 +1813,13 @@ public class SteelLegionTank extends Character {
 	@Override
 	protected void applyPostAttackEffects(AttackResult atkRes) {
 		super.applyPostAttackEffects(atkRes);
-		this.ShieldBash.didBlock = !atkRes.didHit();
-		this.ShieldReflection.didBlock = !atkRes.didHit();
+		this.didBlock = !atkRes.didHit();
 		if (this.isDead() && this.HaHaHaYouCantKillMe.rank() >= 3) {
-			this.useDeathHaHaHaYouCantKillMe(BattleSimulator.getInstance().getAllies());
+			this.useAbility(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe, 2);
 		}
 	}
 	
+	/*
 	// Methods to use "Hold It Right There" Unique Passive
 	public void addHoldItRightThereBlockBonus() {
 		// Do not add Condition if already present
@@ -1525,30 +1847,6 @@ public class SteelLegionTank extends Character {
 		
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
 		healing = this.restoreHealth(healing);
-		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
-	}
-	
-	// Deals with the healing (and rank 15 Cooldown) portion of the "Shield Skills" Passive from hitting multiple enemies with "Shield Reflection"
-	private void useShieldSkillsHealing(int numBlinded) {
-		// First, non-healing-wise, if 7 enemies are hit at rank 15, the Cooldown of Shield Bash is refreshed.
-		if (this.ShieldSkills.rank() >= 15 && numBlinded >= 7) {
-			this.ShieldBash.setOffCooldown();
-		}
-		
-		// Calculates the amount of healing based on missing Health and the number of enemies blinded
-		int healing = 0;
-		if ((this.ShieldSkills.rank() < 11 && numBlinded >= 3) || (this.ShieldSkills.rank() >= 11 && numBlinded >= 3 && numBlinded < 5)) {
-			healing = (int) Math.round(this.ShieldSkills.getScalerBlind3() * (this.getHealth() - this.getCurrentHealth()));
-		}
-		else if (this.ShieldSkills.rank() >= 11 && numBlinded >= 5){
-			healing = (int) Math.round((this.ShieldSkills.getScalerBlind3() + this.ShieldSkills.getScalerBlind5()) * (this.getHealth() - this.getCurrentHealth()));
-		}
-		
-		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.restoreHealth(healing);
-		if (healing == 0) {
-			return;
-		}
 		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
 	}
 	
@@ -1602,8 +1900,7 @@ public class SteelLegionTank extends Character {
 		}
 		
 		// Reset didBlock (of "Shield Bash" and "Shield Reflection") and didCrit to false (using this ability consumes the buff if present)
-		this.ShieldBash.didBlock = false;
-		this.ShieldReflection.didBlock = false;
+		this.didBlock = false;
 		this.ShieldBash.didCrit = false;
 	}
 	
@@ -1630,11 +1927,10 @@ public class SteelLegionTank extends Character {
 		}
 		
 		// Add the possible healing string based on bonus effects from the "Shield Skills" Ability (will be empty String if nothing happens)
-		this.useShieldSkillsHealing(blinded.size());
+		this.useAbility(SteelLegionTank.AbilityNames.ShieldSkills, blinded.size());
 		
 		// Reset didBlock (of "Shield Bash" and "Shield Reflection") to false (using this ability consumes the buff if present)
-		this.ShieldBash.didBlock = false;
-		this.ShieldReflection.didBlock = false;
+		this.didBlock = false;
 	}
 	public void useShieldReflection(LinkedList<Character> enemies) {
 		this.useShieldReflection(enemies, enemies);
@@ -1792,4 +2088,5 @@ public class SteelLegionTank extends Character {
 			}
 		}
 	}
+	*/
 }

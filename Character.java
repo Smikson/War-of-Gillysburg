@@ -828,7 +828,7 @@ public class Character {
 		System.out.println(this.getName() + "'s turn is over.");
 		
 		// Return (though basic, this is a model to be overwritten)
-		System.out.println("Enter something the press enter to continue.");
+		System.out.println("Enter something then press enter to continue.");
 		BattleSimulator.getInstance().getPrompter().nextLine();
 		System.out.println("\n-----------------------------------------------------------------------------");
 	}

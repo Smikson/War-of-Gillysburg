@@ -14,6 +14,7 @@ public class PlayerDataBase {
 			.setShieldReflectionRank(10)
 			.setTauntingAttackRank(10)
 			.setLeaderStrikeRank(10)
+			.setHaHaHaYouCantKillMeRank(3)
 			.build();
 	public static final SilentDeathShadow JAIME = new CharacterBuilder()
 			.Name("Jaime")
