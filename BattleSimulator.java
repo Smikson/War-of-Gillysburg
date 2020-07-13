@@ -135,11 +135,13 @@ public class BattleSimulator {
 	}
 	
 	// Returns a chosen number of a list of Strings (nth string chosen -- NOT INDEX)
-	public int promptSelect(LinkedList<String> choices) {
+	public int promptSelect(String prompt, boolean noneOption, LinkedList<String> choices) {
 		int choice = 0;
 		// Display options
-		System.out.println("Choose one of these options:");
-		System.out.println("0. None (Cancel)");
+		System.out.println(prompt);
+		if (noneOption) {
+			System.out.println("0. None (Cancel)");
+		}
 		for (int i = 0; i < choices.size(); i++) {
 			System.out.println("" + (i+1) + ". " + choices.get(i));
 		}
@@ -153,7 +155,7 @@ public class BattleSimulator {
 				this.getPrompter().nextLine();
 				
 				// If their response is in the bounds, return the numbered choice
-				if (choice <= choices.size() && choice >= 0) {
+				if ((choice <= choices.size() && choice > 0) || (choice == 0 && noneOption)) {
 					return choice;
 				}
 				// If their response is not in the bounds, notify and prompt again
@@ -169,6 +171,14 @@ public class BattleSimulator {
 				System.out.print("Choice? ");
 			}
 		}
+	}
+	public int promptSelect(String prompt, LinkedList<String> choices) {
+		// Default has a none Option if unspecified
+		return this.promptSelect(prompt, true, choices);
+	}
+	public int promptSelect(LinkedList<String> choices) {
+		// Default has "Choose one of these options:" as prompt
+		return this.promptSelect("Choose one of these options:", choices);
 	}
 	
 	// Return a chosen Character in combatants (or EMPTY if 0 chosen)
