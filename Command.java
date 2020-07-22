@@ -100,6 +100,15 @@ class BasicAttack extends Command {
 		// Otherwise do a target multiple attack. First get all the target enemies
 		LinkedList<Character> chosen = BattleSimulator.getInstance().targetMultiple();
 		
+		// If they responded requesting to go back (the list is empty), end the current function
+		if (chosen.isEmpty()) {
+        	return;
+        }
+		// If they chose no target (contains Character.EMPTY), clear the list
+        if (chosen.contains(Character.EMPTY)) {
+        	chosen.clear();
+        }
+		
 		// Loop through the list of targets
 		for (Character choice : chosen) {
 			// For each character, make the targeted choice the defender of the attack and execute the attack
@@ -129,11 +138,16 @@ class AlterCharacter extends Command {
 	// Overrides the abstract execute function to allow for the altering of a Character
 	@Override
 	public void execute() {
+		// Choose a target to alter
 		Character chosen = BattleSimulator.getInstance().targetSingle();
+		
+		// If requested to go back, end the current function
     	if (chosen.equals(Character.EMPTY)) {
     		return;
     	}
-		//this.getOwner().promptAlterCharacter();
+    	
+    	// Prompt for altering the chosen Character
+		chosen.promptAlterCharacter();
 	}
 }
 
