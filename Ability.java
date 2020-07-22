@@ -20,6 +20,9 @@ public class Ability {
 	}
 	
 	// Get methods
+	public String getName() {
+		return this.name;
+	}
 	public Character getOwner() {
 		return this.owner;
 	}

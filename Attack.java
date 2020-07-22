@@ -5,6 +5,8 @@ enum AttackType {
 }
 
 public class Attack {
+	
+	
 	// Constant for Empty Attacks to build up with
 	public static final Attack EMPTY = new Attack();
 	
