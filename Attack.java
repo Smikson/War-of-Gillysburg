@@ -1,11 +1,10 @@
 package WyattWitemeyer.WarOfGillysburg;
 
-enum AttackType {
-	TRUE, SLASHING, SMASHING, PIERCING, MAGIC, FIRE, ICE, LIGHTNING, ARCANE, POISON, BLEED, EXPLOSIVE, LIGHT, NECROMANTIC;
-}
 
 public class Attack {
-	
+	public static enum DmgType {
+		TRUE, SLASHING, SMASHING, PIERCING, MAGIC, FIRE, ICE, LIGHTNING, ARCANE, POISON, BLEED, EXPLOSIVE, LIGHT, NECROMANTIC;
+	}
 	
 	// Constant for Empty Attacks to build up with
 	public static final Attack EMPTY = new Attack();
@@ -13,7 +12,7 @@ public class Attack {
 	// Variables for each element of an attack
 	private Character attacker;		// The Character attacking
 	private Character defender;		// The Chatacter being attacked
-	private AttackType type;		// The type of attack made
+	private Attack.DmgType type;		// The type of attack made
 	private boolean usesScaler;		// Determines if the attack uses a scaler for damage (true) or a specified flat numeric amount (false)
 	private double scaler;			// If a scaler is used (the usual), holds the Damage scaler of the attack
 	private int flatDamage;			// If a scaler is not used, holds the specified flat numeric damage amount
@@ -25,7 +24,7 @@ public class Attack {
 	private boolean hasDeviation;	// Determines if the attack uses STDup and STDdown to deviate the attack
 	
 	// Constructors
-	public Attack(Character attacker, Character defender, AttackType type, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation) {
+	public Attack(Character attacker, Character defender, Attack.DmgType type, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = type;
@@ -42,7 +41,7 @@ public class Attack {
 	public Attack() {
 		this.attacker = Character.EMPTY;
 		this.defender = Character.EMPTY;
-		this.type = AttackType.TRUE;
+		this.type = Attack.DmgType.TRUE;
 		this.usesScaler = true;
 		this.scaler = 1.0;
 		this.flatDamage = 0;
@@ -61,7 +60,7 @@ public class Attack {
 	public Character getDefender() {
 		return this.defender;
 	}
-	public AttackType getAttackType() {
+	public Attack.DmgType getAttackType() {
 		return this.type;
 	}
 	public boolean usesScaler() {
@@ -305,7 +304,7 @@ class AttackBuilder {
 	// Variables for each element of an attack
 	private Character attacker;
 	private Character defender;
-	private AttackType type;
+	private Attack.DmgType type;
 	private boolean usesScaler;
 	private double scaler;
 	private int flatDamage;
@@ -346,7 +345,7 @@ class AttackBuilder {
 		return this;
 	}
 	
-	public AttackBuilder type(AttackType aType) {
+	public AttackBuilder type(Attack.DmgType aType) {
 		this.type = aType;
 		return this;
 	}

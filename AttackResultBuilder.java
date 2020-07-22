@@ -4,7 +4,7 @@ public class AttackResultBuilder {
 	// Variables for each element of an attack result
 	private Character attacker;
 	private Character defender;
-	private AttackType type;
+	private Attack.DmgType type;
 	private boolean didHit;
 	private boolean didCrit;
 	private double damageDealt;
@@ -36,7 +36,7 @@ public class AttackResultBuilder {
 		return this;
 	}
 	
-	public AttackResultBuilder type(AttackType atkType) {
+	public AttackResultBuilder type(Attack.DmgType atkType) {
 		this.type = atkType;
 		return this;
 	}

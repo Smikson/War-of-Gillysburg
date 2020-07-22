@@ -32,7 +32,7 @@ class Bleed implements DamageOverTime {
 				.isAOE()
 				.usesFlatDamage()
 				.flatDamage(dmgAmount)
-				.type(AttackType.BLEED)
+				.type(Attack.DmgType.BLEED)
 				.ignoresArmor()
 				.build();
 		bleedAtk.execute();

@@ -711,7 +711,7 @@ class ShieldBash extends Ability {
 				.defender(enemy)
 				.isTargeted()
 				.scaler(this.getScaler())
-				.type(AttackType.SMASHING)
+				.type(Attack.DmgType.SMASHING)
 				.build();
 		bashAtk.execute();
 		
@@ -878,7 +878,7 @@ class ShieldReflection extends Ability {
 					.defender(enemy)
 					.isAOE()
 					.scaler(this.getScaler())
-					.type(AttackType.LIGHT)
+					.type(Attack.DmgType.LIGHT)
 					.build();
 			reflectAtk.execute();
 		}
@@ -1082,7 +1082,7 @@ class TauntingAttack extends Ability {
 				.defender(enemy)
 				.isTargeted()
 				.scaler(this.getScaler())
-				.type(AttackType.SLASHING)
+				.type(Attack.DmgType.SLASHING)
 				.build();
 		tauntAtk.execute();
 		
@@ -1327,7 +1327,7 @@ class LeaderStrike extends Ability {
 				.defender(enemy)
 				.isTargeted()
 				.scaler(this.getScaler())
-				.type(AttackType.SLASHING)
+				.type(Attack.DmgType.SLASHING)
 				.build();
 		leadAtk.execute();
 		
@@ -1575,7 +1575,7 @@ public class SteelLegionTank extends Character {
 	private HashMap<AbilityNames, Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Tank subclass.
-	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, Type type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
+	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
 		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
 		this.HoldItRightThere = new HoldItRightThere(this, upaRank);
@@ -1755,7 +1755,7 @@ public class SteelLegionTank extends Character {
 	                Attack basicAtk = new AttackBuilder()
 	                		.attacker(this)
 	                		.defender(target)
-	                		.type(AttackType.SLASHING)
+	                		.type(Attack.DmgType.SLASHING)
 	                		.build();
 	                basicAtk.execute();
 	                this.useTurnActions();

@@ -13,7 +13,7 @@ public class Enemy extends Character {
 	private boolean UseThreat;
 	private Enemy.Difficulty difficulty;
 	
-	public Enemy(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, boolean useThrt, Difficulty diff, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, Type type) {
+	public Enemy(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, boolean useThrt, Difficulty diff, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
 		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
 		this.ThreatOrder = new LinkedList<>();
 		this.UseThreat = useThrt;
@@ -146,7 +146,7 @@ public class Enemy extends Character {
 	                Attack basicAtk = new AttackBuilder()
 	                		.attacker(this)
 	                		.defender(target)
-	                		.type(AttackType.SLASHING)
+	                		.type(Attack.DmgType.SLASHING)
 	                		.build();
 	                basicAtk.execute();
 	                this.useTurnActions();

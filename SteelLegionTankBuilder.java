@@ -121,37 +121,37 @@ public class SteelLegionTankBuilder extends CharacterBuilder {
 	}
 	
 	@Override
-	public SteelLegionTankBuilder addResistance(AttackType resistance, double value) {
-		if (resistance.equals(AttackType.TRUE)) {
+	public SteelLegionTankBuilder addResistance(Attack.DmgType resistance, double value) {
+		if (resistance.equals(Attack.DmgType.TRUE)) {
 			return this;
 		}
 		
 		this.resistances.put(resistance, value);
-		if (resistance.equals(AttackType.MAGIC)) {
-			this.addResistance(AttackType.ARCANE, value);
-			this.addResistance(AttackType.FIRE, value);
-			this.addResistance(AttackType.ICE, value);
-			this.addResistance(AttackType.LIGHT, value);
-			this.addResistance(AttackType.LIGHTNING, value);
-			this.addResistance(AttackType.NECROMANTIC, value);
+		if (resistance.equals(Attack.DmgType.MAGIC)) {
+			this.addResistance(Attack.DmgType.ARCANE, value);
+			this.addResistance(Attack.DmgType.FIRE, value);
+			this.addResistance(Attack.DmgType.ICE, value);
+			this.addResistance(Attack.DmgType.LIGHT, value);
+			this.addResistance(Attack.DmgType.LIGHTNING, value);
+			this.addResistance(Attack.DmgType.NECROMANTIC, value);
 		}
 		
 		return this;
 	}
 	@Override
-	public SteelLegionTankBuilder addVulnerability(AttackType vulnerability, double value) {
-		if (vulnerability.equals(AttackType.TRUE)) {
+	public SteelLegionTankBuilder addVulnerability(Attack.DmgType vulnerability, double value) {
+		if (vulnerability.equals(Attack.DmgType.TRUE)) {
 			return this;
 		}
 		
 		this.vulnerabilities.put(vulnerability, value);
-		if (vulnerability.equals(AttackType.MAGIC)) {
-			this.addVulnerability(AttackType.ARCANE, value);
-			this.addVulnerability(AttackType.FIRE, value);
-			this.addVulnerability(AttackType.ICE, value);
-			this.addVulnerability(AttackType.LIGHT, value);
-			this.addVulnerability(AttackType.LIGHTNING, value);
-			this.addVulnerability(AttackType.NECROMANTIC, value);
+		if (vulnerability.equals(Attack.DmgType.MAGIC)) {
+			this.addVulnerability(Attack.DmgType.ARCANE, value);
+			this.addVulnerability(Attack.DmgType.FIRE, value);
+			this.addVulnerability(Attack.DmgType.ICE, value);
+			this.addVulnerability(Attack.DmgType.LIGHT, value);
+			this.addVulnerability(Attack.DmgType.LIGHTNING, value);
+			this.addVulnerability(Attack.DmgType.NECROMANTIC, value);
 		}
 		
 		return this;

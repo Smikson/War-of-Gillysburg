@@ -5,7 +5,7 @@ import WyattWitemeyer.WarOfGillysburg.Character;
 
 public class KinitchuOrderArcana extends Character{
 	// These first two methods help set up the Kinitchu Order Arcana subclass.
-	public KinitchuOrderArcana(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<AttackType,Double> resis, HashMap<AttackType,Double> vuls, Type type) {
+	public KinitchuOrderArcana(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
 		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
 	}
 	public KinitchuOrderArcana(Character ori) {

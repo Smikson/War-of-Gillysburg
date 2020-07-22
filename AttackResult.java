@@ -7,14 +7,14 @@ public class AttackResult {
 	// Variables for each element of an attack
 	private Character attacker;
 	private Character defender;
-	private AttackType type;
+	private Attack.DmgType type;
 	private boolean didHit;
 	private boolean didCrit;
 	private double damageDealt;
 	private boolean didKill;
 	
 	// Constructors
-	public AttackResult(Character attacker, Character defender, AttackType atkType, boolean didHit, boolean didCrit, double damageDealt, boolean didKill) {
+	public AttackResult(Character attacker, Character defender, Attack.DmgType atkType, boolean didHit, boolean didCrit, double damageDealt, boolean didKill) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = atkType;
@@ -26,7 +26,7 @@ public class AttackResult {
 	public AttackResult() {
 		this.attacker = Character.EMPTY;
 		this.defender = Character.EMPTY;
-		this.type = AttackType.TRUE;
+		this.type = Attack.DmgType.TRUE;
 		this.didHit = false;
 		this.didCrit = false;
 		this.damageDealt = 0;
@@ -40,7 +40,7 @@ public class AttackResult {
 	public Character getDefender() {
 		return this.defender;
 	}
-	public AttackType getType() {
+	public Attack.DmgType getType() {
 		return this.type;
 	}
 	public boolean didHit() {
