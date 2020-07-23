@@ -59,7 +59,7 @@ public class Character {
 	protected LinkedList<DamageOverTime> dotEffects;
 	
 	// Holds the possible actions a Character can take on their turn and a boolean to control when the Character's turn is over
-	private LinkedList<String> commands;
+	private LinkedList<Command> commands;
 	private boolean turnActionsSpent;
 	
 	// Store the previous attack made (for use in Character Abilities sometimes)
@@ -120,9 +120,9 @@ public class Character {
 		
 		// Initializes the possible commands for a basic Character
 		this.commands = new LinkedList<>();
-		this.commands.add("Basic Attack");
-		this.commands.add("Alter Character");
-		this.commands.add("End Turn");
+		this.commands.add(new BasicAttackCommand(this, Attack.DmgType.SLASHING));
+		this.commands.add(new AlterCharacterCommand(this));
+		this.commands.add(new EndTurnCommand(this));
 	}
 	public Character(Character copy) {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
@@ -480,17 +480,9 @@ public class Character {
 	
 	// Methods for a Character's basic turn (beginning-end)
 	// For list of commands:
-	protected void addCommand(int i, String added) {
-		this.commands.add(i, added);
-	}
-	protected void addCommand(String added) {
-		this.commands.add(added);
-	}
-	protected void displayCommands() {
-		System.out.println("Possible Actions:");
-		for (int i = 0; i < this.commands.size(); i++) {
-			System.out.println("" + (i+1) + ". " + this.commands.get(i));
-		}
+	protected void addCommand(Command added) {
+		// Added commands are added to the end of the list, but before the last two commands (Alter Character and End Turn)
+		this.commands.add(this.commands.size() - 2, added);
 	}
 	
 	// Prompts for altering a Character
@@ -710,16 +702,22 @@ public class Character {
 			combatant.applyBasicStatusEffects();
 		}
 	}
-	protected void beginTurnDisplay() {
+	protected void printTurnStats() {
 		System.out.println("It is " + this.getName() + "'s turn.");
 		System.out.println("Current Health: " + this.getCurrentHealth());
+	}
+	protected void printActiveConditions() {
 		System.out.println("Current Conditions:");
 		LinkedList<Condition> curConditions = this.getActiveConditions();
 		for (Condition c : curConditions) {
 			System.out.println("\t" + c.toString());
 		}
 		System.out.println();
-		this.displayCommands();
+	}
+	protected void beginTurnDisplay() {
+		this.printTurnStats();
+		this.printActiveConditions();
+		Command.promptCommands(this.commands);
 	}
 	public void beginTurn() {
 		// Setup
@@ -729,58 +727,28 @@ public class Character {
 		if (this.getCurrentHealth() < 0) {
 			System.out.println(this.getName() + " is dead. Have turn anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
+				System.out.println();
 				this.endTurn();
 				return;
 			}
 		}
 		
 		// Do action based on command given
-		boolean flag = true;
-		while (flag) {
+		while (true) {
 			// If turn actions are spent, ask to continue
 			if (this.turnActionsSpent()) {
 				System.out.println("\n" + this.getName() + "'s Turn Actions have been spent, End turn?");
 				if (BattleSimulator.getInstance().askYorN()) {
-					flag = false;
 					break;
 				}
 			}
 			
-			// Display available actions
+			// Display stats and prompt for available commands
 			this.beginTurnDisplay();
-			
-			System.out.print("Choice? ");
-			String responce = BattleSimulator.getInstance().getPrompter().nextLine();
-			switch(responce)
-	        {
-	            case "1": // Basic Attack
-	                Character enemy = BattleSimulator.getInstance().targetSingle();
-	                if (enemy.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                Attack basicAtk = new AttackBuilder()
-	                		.attacker(this)
-	                		.defender(enemy)
-	                		.type(Attack.DmgType.SLASHING)
-	                		.build();
-	                basicAtk.execute();
-	                this.useTurnActions();
-	                break;
-	            case "2": // Alter Character
-	            	Character chosen = BattleSimulator.getInstance().targetSingle();
-	            	if (chosen.equals(Character.EMPTY)) {
-	            		break;
-	            	}
-	            	chosen.promptAlterCharacter();
-	            	break;
-	            case "3": // End Turn
-	                flag = false;
-	                break;
-	            default:
-	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
-	        }
 		}
 		
+		// End the turn
+		System.out.println();
 		this.endTurn();
 	}
 	// End of turn
@@ -800,7 +768,7 @@ public class Character {
 				this.removeCondition(c);
 		}
 		
-		// Increment all source-incrementing, end-of-turn conditions for all Characters in battle with this Character as the source and remove respecive expired conditions
+		// Increment all source-incrementing, end-of-turn conditions for all Characters in battle with this Character as the source and remove respective expired conditions
 		// Afterwards, while we're at it, goes ahead and unapplies all basic status effects to the respective combatants
 		for (Character combatant : BattleSimulator.getInstance().getCombatants()) {
 			toRemove.clear();

@@ -48,14 +48,14 @@ public abstract class Command {
 
 // Create an additional class for Basic Attack, Alter Character, End Turn, Display Threat Order that override the execute command function?
 // Basic Attack Class: Allows for the creation of unique basic attacks that take a built attack or can create the default basic attack
-class BasicAttack extends Command {
+class BasicAttackCommand extends Command {
 	// Variables to hold if the basic attack targets only a single person, and the Attack to execute
 	private boolean singleAttack;
 	private Attack attack;
 	
 	// Constructors:
 	// Constructor for unique basic attacks based on a pre-built attack
-	public BasicAttack(Character owner, boolean singleAttack, Attack atk) {
+	public BasicAttackCommand(Character owner, boolean singleAttack, Attack atk) {
 		// First, call the super constructor specifying the command is usable (true)
 		super(owner, true);
 		
@@ -64,7 +64,7 @@ class BasicAttack extends Command {
 		this.attack = atk;
 	}
 	// Constructor for default basic attacks
-	public BasicAttack(Character owner, Attack.DmgType aType) {
+	public BasicAttackCommand(Character owner, Attack.DmgType aType) {
 		// By default, a basic attack is a single attack (will all default values and) with the specified attack type
 		this(owner, true, new AttackBuilder().attacker(owner).type(aType).build());
 	}
@@ -122,9 +122,9 @@ class BasicAttack extends Command {
 }
 
 // Alter Character: Contains the code to display and execute the "Alter Character" command. Currently no special objects with additions can be made
-class AlterCharacter extends Command {
+class AlterCharacterCommand extends Command {
 	// Constructor
-	public AlterCharacter(Character owner) {
+	public AlterCharacterCommand(Character owner) {
 		// Calls the super (Command) constructor specifying the command is usable (true)
 		super(owner, true);
 	}
@@ -152,9 +152,9 @@ class AlterCharacter extends Command {
 }
 
 // End Turn: Contains the code to display and execute the "End Turn" command. Currently no special objects with additions can be made
-class EndTurn extends Command {
+class EndTurnCommand extends Command {
 	// Constructor
-	public EndTurn(Character owner) {
+	public EndTurnCommand(Character owner) {
 		// Calls the super (Command) constructor specifying the command is usable (true)
 		super(owner, true);
 	}
@@ -165,20 +165,20 @@ class EndTurn extends Command {
 		return "End Turn";
 	}
 	
-	// Overrides the abstract execute function to simply call the end turn function for the owner
+	// Overrides the abstract execute function to simply call the use turn actions function for the owner (so that the infinite loop stops).
 	@Override
 	public void execute() {
-		this.getOwner().endTurn();
+		this.getOwner().useTurnActions();
 	}
 }
 
 // Display Threat Order: Contains the code to display and execute the "Display Threat Order" command. Currently no special objects with additions can be made
-class DisplayThreatOrder extends Command {
+class DisplayThreatOrderCommand extends Command {
 	// Variable to hold the owner as an Enemy
 	private Enemy owner;
 	
 	// Constructor: Must be an Enemy
-	public DisplayThreatOrder(Enemy owner) {
+	public DisplayThreatOrderCommand(Enemy owner) {
 		// Calls the super (Command) constructor specifying the command is usable (true)
 		super(owner, true);
 		this.owner = owner;
@@ -214,7 +214,7 @@ class AbilityCommand extends Command {
 	// Overrides the abstract display function to show the name of the Ability when choosing
 	@Override
 	public String display() {
-		return this.ability.getName();
+		return this.ability.toString();
 	}
 	
 	// Overrides the abstract execute function to call the use(1) function of the ability

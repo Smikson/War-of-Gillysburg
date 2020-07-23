@@ -46,11 +46,11 @@ public class SteelLegionWarrior extends Character {
 		this.abilities.add(this.Deflection);
 		
 		// Add new commands for Abilities
-		this.addCommand(1, "Sweep");
-		this.addCommand(2, "CHARGE!");
-		this.addCommand(3, "Flip Strike");
-		this.addCommand(4, "Intimidating Shout");
-		this.addCommand(5, "Deflection");
+		this.addCommand(new AbilityCommand(this.Sweep));
+		this.addCommand(new AbilityCommand(this.Charge));
+		this.addCommand(new AbilityCommand(this.FlipStrike));
+		this.addCommand(new AbilityCommand(this.IntimidatingShout));
+		this.addCommand(new AbilityCommand(this.Deflection));
 	}
 	public SteelLegionWarrior(SteelLegionWarrior copy) {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), copy.getVengeanceStrikeRank(), copy.getSwordplayProwessRank(), copy.getWarriorsMightRank(), copy.getAgileFighterRank(), copy.getSweepRank(), copy.getChargeRank(), copy.getFlipStrikeRank(), copy.getIntimidatingShoutRank(), copy.getDeflectionRank());

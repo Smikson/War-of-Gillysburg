@@ -456,7 +456,7 @@ class ShieldBash extends Ability {
 	
 	public ShieldBash(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
-		super("Ability 1: \"Shield Bash\"", source, rank);
+		super("Shield Bash (Ability 1)", source, rank);
 		this.owner = source;
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
@@ -769,7 +769,7 @@ class ShieldReflection extends Ability {
 	
 	public ShieldReflection(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
-		super("Ability 2: \"Shield Reflection\"", source, rank);
+		super("Shield Reflection (Ability 2)", source, rank);
 		this.owner = source;
 		this.ssRank = ShieldSkillsRank;
 		
@@ -916,7 +916,7 @@ class TauntingAttack extends Ability {
 	
 	public TauntingAttack(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
-		super("Ability 3: \"Taunting Attack\"", source, rank);
+		super("Taunting Attack (Ability 3)", source, rank);
 		this.owner = source;
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
@@ -1139,7 +1139,7 @@ class LeaderStrike extends Ability {
 	
 	public LeaderStrike(SteelLegionTank source, int rank, int ShieldSkillsRank) {
 		// Initialize all Ability variables to defaults
-		super("Ability 4: \"Leader Strike\"", source, rank);
+		super("Leader Strike (Ability 4)", source, rank);
 		this.owner = source;
 		this.ssRank = ShieldSkillsRank;
 		this.numMisses = 0;
@@ -1394,7 +1394,7 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 	// NOTE: This Ability does not yet implement the Character Requirement for decreased Damage.
 	public HaHaHaYouCantKillMe(SteelLegionTank source, int rank) {
 		// Initialize all Ability variables to defaults
-		super("ULTIMATE Ability: \"HaHaHa You Can't Kill Me!\"", source, rank);
+		super("HaHaHa You Can't Kill Me! (ULTIMATE Ability)", source, rank);
 		this.owner = source;
 		
 		// Set the additional effects of the Ability
@@ -1601,11 +1601,11 @@ public class SteelLegionTank extends Character {
 		this.abilities.put(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe, this.HaHaHaYouCantKillMe);
 		
 		// Add new commands for Abilities
-		this.addCommand(1, "Shield Bash");
-		this.addCommand(2, "Shield Reflection");
-		this.addCommand(3, "Taunting Attack");
-		this.addCommand(4, "Leader Strike");
-		this.addCommand(5, "HaHaHaYouCantKillMe");
+		this.addCommand(new AbilityCommand(this.ShieldBash));
+		this.addCommand(new AbilityCommand(this.ShieldReflection));
+		this.addCommand(new AbilityCommand(this.TauntingAttack));
+		this.addCommand(new AbilityCommand(this.LeaderStrike));
+		this.addCommand(new AbilityCommand(this.HaHaHaYouCantKillMe));
 		
 		// Set didBlock to false to start
 		this.didBlock = false;
@@ -1701,24 +1701,9 @@ public class SteelLegionTank extends Character {
 	// Overrides the begin and end turn function of Character to include reducing the Cooldowns of Abilities.
 	// Start of Turn override
 	@Override
-	public void beginTurn() {
-		// Base Setup
-		this.beginTurnSetup();
-		
-		// State if Character is dead
-		if (this.getCurrentHealth() <= 0) {
-			System.out.println(this.getName() + " is dead. Have turn anyway?");
-			if (!BattleSimulator.getInstance().askYorN()) {
-				this.endTurn();
-				return;
-			}
-		}
-		
-		// Setup for Class
-		// Checks to see if it is the beginning of the round (Rank 15 of Professional Laughter gives Taunt)
-		if (BattleSimulator.getInstance().getRound() == 1 && this.ProfessionalLaughter.rank() >= 15) {
-			System.out.println("You have \"Taunt\" for 2 rounds.\n");
-		}
+	protected void beginTurnSetup() {
+		// Do the usual setup
+		super.beginTurnSetup();
 		
 		// Reduces the Cooldown of all Abilities that need it.
 		for (Ability a : abilities.values()) {
@@ -1726,87 +1711,29 @@ public class SteelLegionTank extends Character {
 				a.decrementTurnsRemaining();
 			}
 		}
-		
-		// Do action based on command given
-		boolean flag = true;
-		while (flag) {
-			// If turn actions are spent, ask to continue
-			if (this.turnActionsSpent()) {
-				System.out.println("\n" + this.getName() + "'s Turn Actions have been spent, End turn?");
-				if (BattleSimulator.getInstance().askYorN()) {
-					flag = false;
-					break;
-				}
-			}
-			
-			// Display available actions
-			this.beginTurnDisplay();
-			
-			System.out.print("Choice? ");
-			String responce = BattleSimulator.getInstance().getPrompter().nextLine();
-			Character target;
-			switch(responce)
-	        {
-	            case "1": // Basic Attack
-	                target = BattleSimulator.getInstance().targetSingle();
-	                if (target.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                Attack basicAtk = new AttackBuilder()
-	                		.attacker(this)
-	                		.defender(target)
-	                		.type(Attack.DmgType.SLASHING)
-	                		.build();
-	                basicAtk.execute();
-	                this.useTurnActions();
-	                break;
-	            case "2": // Shield Bash
-	            	this.useAbility(SteelLegionTank.AbilityNames.ShieldBash);
-	                break;
-	            case "3": // Shield Reflection
-	            	this.useAbility(SteelLegionTank.AbilityNames.ShieldReflection);
-	                break;
-	            case "4": // Taunting Attack
-	            	this.useAbility(SteelLegionTank.AbilityNames.TauntingAttack);
-	                break;
-	            case "5": // Leader Strike
-	            	this.useAbility(SteelLegionTank.AbilityNames.LeaderStrike);
-	                break;
-	            case "6": // HaHaHaYouCantKillMe
-	            	this.useAbility(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe);
-	                break;
-	            case "7": // Alter Character
-	            	Character chosen = BattleSimulator.getInstance().targetSingle();
-	            	if (chosen.equals(Character.EMPTY)) {
-	            		break;
-	            	}
-	            	chosen.promptAlterCharacter();
-	            	break;
-	            case "8": // End Turn
-	                flag = false;
-	                break;
-	            default:
-	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
-	        }
-		}
-		
-		this.endTurn();
 	}
+	
+	@Override
+	protected void printTurnStats() {
+		// Prints all the usual stats
+		super.printTurnStats();
+		
+		// Then, checks to see if it is the beginning of the round (Rank 15 of Professional Laughter gives Taunt)
+		if (BattleSimulator.getInstance().getRound() == 1 && this.ProfessionalLaughter.rank() >= 15) {
+			System.out.println("You have \"Taunt\" for 2 rounds.\n");
+		}
+	}
+	
 	// End of Turn Override
 	@Override
-	public void endTurn() {
-		// Setup
-		this.endTurnSetup();
+	public void endTurnSetup() {
+		// Normal Setup
+		super.endTurnSetup();
 		
-		// Use Enchanted Armor Healing (end of turn effect)
-		this.EnchantedArmor.use();
-		
-		// State facts
-		System.out.println(this.getName() + "'s turn is over.");
-		
-		// Return
-		System.out.println("Enter something the press enter to continue.");
-		BattleSimulator.getInstance().getPrompter().nextLine();
+		// If not dead, use Enchanted Armor Healing (end of turn effect)
+		if (!this.isDead()) {
+			this.EnchantedArmor.use();
+		}
 	}
 	
 	// Overrides "applyPostAttackEffects" in order to also store the fact that an attack was blocked in "Shield Bash" and "Shield Reflection"
@@ -1818,275 +1745,4 @@ public class SteelLegionTank extends Character {
 			this.useAbility(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe, 2);
 		}
 	}
-	
-	/*
-	// Methods to use "Hold It Right There" Unique Passive
-	public void addHoldItRightThereBlockBonus() {
-		// Do not add Condition if already present
-		for (Condition c : this.getAllConditions()) {
-			if (c.getName() == this.HoldItRightThere.getSelfBlockCondition().getName()) {
-				return;
-			}
-		}
-		this.addCondition(this.HoldItRightThere.getSelfBlockCondition());
-	}
-	public void useHoldItRightThereHaltCondition(Character enemy) {
-		// If condition is present, remove it first
-		for (Condition c : enemy.getAllConditions()) {
-			if (c.getName() == this.HoldItRightThere.getEnemyHaltCondition().getName()) {
-				enemy.removeCondition(c);
-			}
-		}
-		enemy.addCondition(this.HoldItRightThere.getEnemyHaltCondition());
-	}
-	
-	// Deals with the healing from the "Enchanted Armor" Passive
-	public void useEnchantedArmorHealing() {
-		// Calculates the amount of healing based on Maximum Health
-		int healing = (int) Math.round(this.EnchantedArmor.getScaler() * this.getHealth());
-		
-		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.restoreHealth(healing);
-		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
-	}
-	
-	// Deals the Damage from the "Shield Bash" Ability (Ability 1)
-	public void useShieldBash(Character enemy) {
-		// Before anything, put Shield Bash "on Cooldown"
-		this.ShieldBash.setOnCooldown();
-		
-		// Apply bonus pre-condition (will have 0 value if rank is not big enough)
-		Condition preCondition = this.ShieldBash.getSelfPreAttackBonus();
-		this.apply(preCondition);
-		
-		// Make the attack
-		Attack bashAtk = new AttackBuilder()
-				.attacker(this)
-				.defender(enemy)
-				.isTargeted()
-				.scaler(this.ShieldBash.getScaler())
-				.type(AttackType.SMASHING)
-				.build();
-		bashAtk.execute();
-		
-		// Unapply the bonus pre-conditions
-		this.unapply(preCondition);
-		
-		// Change the didCrit of "Shield Bash" to match if the Ability critically struck (this may affect the effects below when received)
-		this.ShieldBash.didCrit = this.previousAttack().didCrit();
-		
-		// If the attack hit, apply all the conditions (will be 0 if not effective due to rank) and revert numMisses to 0
-		if (this.previousAttack().didHit()) {
-			// Add all conditions to enemy hit
-			Stun stunEffect = this.ShieldBash.getStunEffect();
-			enemy.addCondition(stunEffect);
-			Condition accuracyReduction = this.ShieldBash.getEnemyAccuracyReduction();
-			enemy.addCondition(accuracyReduction);
-			
-			// Change numMisses back to 0
-			this.ShieldBash.numMisses = 0;
-		}
-		// If the attack missed, check to see if its Cooldown is reduced by "Shield Skills" and increment numMisses
-		else {
-			// Each point in "Shield Skills" causes a reduction of 1 up to a maximum of the Cooldown itself
-			int cdr = this.ShieldSkills.rank();
-			if (cdr > this.ShieldBash.cooldown()) {
-				cdr = this.ShieldBash.cooldown();
-			}
-			this.ShieldBash.setTurnsRemaining(this.ShieldBash.cooldown() - cdr);
-			
-			// Increment numMisses
-			this.ShieldBash.numMisses++;
-		}
-		
-		// Reset didBlock (of "Shield Bash" and "Shield Reflection") and didCrit to false (using this ability consumes the buff if present)
-		this.didBlock = false;
-		this.ShieldBash.didCrit = false;
-	}
-	
-	// Deals the Damage from the "Shield Reflection" Ability (Ability 2) to multiple enemies
-	public void useShieldReflection(LinkedList<Character> enemies, LinkedList<Character> blinded) {
-		// Before anything, put Shield Reflection "on Cooldown"
-		this.ShieldReflection.setOnCooldown();
-		
-		// Make the attack against all enemies affected
-		for (Character enemy : enemies) {
-			Attack reflectAtk = new AttackBuilder()
-					.attacker(this)
-					.defender(enemy)
-					.isAOE()
-					.scaler(this.ShieldReflection.getScaler())
-					.type(AttackType.LIGHT)
-					.build();
-			reflectAtk.execute();
-		}
-		
-		// Blind all enemies affected
-		for (Character enemy : blinded) {
-			enemy.addCondition(this.ShieldReflection.getBlindEffect());
-		}
-		
-		// Add the possible healing string based on bonus effects from the "Shield Skills" Ability (will be empty String if nothing happens)
-		this.useAbility(SteelLegionTank.AbilityNames.ShieldSkills, blinded.size());
-		
-		// Reset didBlock (of "Shield Bash" and "Shield Reflection") to false (using this ability consumes the buff if present)
-		this.didBlock = false;
-	}
-	public void useShieldReflection(LinkedList<Character> enemies) {
-		this.useShieldReflection(enemies, enemies);
-	}
-	
-	// Deals the Damage from the "Taunting Attack" Ability (Ability 3)
-	public void useTauntingAttack(Character enemy) {
-		// Before anything, put Tauning Attack "on Cooldown"
-		this.TauntingAttack.setOnCooldown();
-		
-		// Apply bonus accuracy pre-condition (will have 0 value if rank is not big enough)
-		Condition preCondition = this.TauntingAttack.getPreAttackBonus();
-		this.apply(preCondition);
-		
-		// Make the attack
-		Attack tauntAtk = new AttackBuilder()
-				.attacker(this)
-				.defender(enemy)
-				.isTargeted()
-				.scaler(this.TauntingAttack.getScaler())
-				.type(AttackType.SLASHING)
-				.build();
-		tauntAtk.execute();
-		
-		// Unapply the bonus accuracy pre-condition
-		this.unapply(preCondition);
-		
-		// If the attack hit, apply the taunt condition (will be 0 if not effective due to rank) and revert numMisses to 0
-		if (this.previousAttack().didHit()) {
-			// Add taunt condition to enemy hit
-			Condition tauntEffect = this.TauntingAttack.getTauntEffectHit();
-			if (tauntEffect.duration() > 0) {
-				enemy.addCondition(tauntEffect);
-				System.out.println(enemy.getName() + " is also taunted for " + tauntEffect.duration() + " turns!");
-			}
-			
-			// Change numMisses back to 0
-			this.TauntingAttack.numMisses = 0;
-		}
-		// If the attack missed, still apply the taunt condition if it is effective (will be 0 if not) and increment numMisses
-		else {
-			// Add taunt condition to enemy hit
-			Condition tauntEffect = this.TauntingAttack.getTauntEffectMiss(enemy);
-			if (tauntEffect.duration() > 0) {
-				enemy.addCondition(tauntEffect);
-				System.out.println(enemy.getName() + " is also taunted for " + tauntEffect.duration() + " turns!");
-			}
-			
-			// Increment numMisses if necessary (shield skills rank 15)
-			if (this.ShieldSkills.rank() >= 15) {
-				this.TauntingAttack.numMisses++;
-			}
-		}
-	}
-	
-	// Deals the Damage from the "Leader Strike" Ability (Ability 4) and Calculates the amount healed for allies.
-	public void useLeaderStrike(Character enemy) {
-		// Before anything, put Tauning Attack "on Cooldown"
-		this.LeaderStrike.setOnCooldown();
-		
-		// Apply bonus accuracy pre-condition (will have 0 value if rank is not big enough)
-		Condition preCondition = this.LeaderStrike.getPreAttackBonus();
-		this.apply(preCondition);
-		
-		// Make the attack
-		Attack leadAtk = new AttackBuilder()
-				.attacker(this)
-				.defender(enemy)
-				.isTargeted()
-				.scaler(this.LeaderStrike.getScaler())
-				.type(AttackType.SLASHING)
-				.build();
-		leadAtk.execute();
-		
-		// Unapply the bonus accuracy pre-condition
-		this.unapply(preCondition);
-		
-		// If the attack hit revert numMisses to 0, if it missed, increment numMisses
-		if (this.previousAttack().didHit()) {
-			this.LeaderStrike.numMisses = 0;
-		}
-		else {
-			// Increment numMisses if necessary (shield skills rank 15)
-			if (this.ShieldSkills.rank() >= 15) {
-				this.TauntingAttack.numMisses++;
-			}
-		}
-		
-		
-		// Past rank 3, this Character is included for the buffs in "allies", either way, create a copy of the list so the original is unchanged (extra safety net)
-		LinkedList<Character> alliesCopy = new LinkedList<>();
-		for (Character ally : BattleSimulator.getInstance().getAllies()) {
-			alliesCopy.add(ally);
-		}
-		if (!alliesCopy.contains(this) && this.LeaderStrike.rank() >= 3) {  // Adds this if not present and should be
-			alliesCopy.add(this);
-		}
-		if (alliesCopy.contains(this) && this.LeaderStrike.rank() < 3) {  // Removes this if present and should not be
-			alliesCopy.remove(this);
-		}
-		
-		// Calculates and adds the amount of Healing received for each ally affected by the Ability (in the list) and apply the damage boost
-		for (Character ally : alliesCopy) {
-			// Calculates the healing amount for the ally in the list
-			int healing = (int)Math.round(ally.getHealth() * this.LeaderStrike.getHealingScaler());
-			
-			healing = ally.restoreHealth(healing);
-			System.out.println(ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth());
-			
-			// Applies the damage boost to each ally affected
-			ally.addCondition(this.LeaderStrike.getAllyDamageBonus());
-			
-			// Checks to see if each ally's attack will stun the next target, and adds it to the return if so.
-			if (this.LeaderStrike.willStun()) {
-				System.out.println(ally.getName() + " will also stun the next target hit");
-			}
-		}
-	}
-	
-	
-	// Restores the Character to full health and grants bonuses from the ULTIMATE Ability "HaHaHa You Can't Kill Me!"
-	public void useHahahaYouCantKillMe() {
-		// Before anything, put HahahaYouCantKillMe "on Cooldown"
-		this.HaHaHaYouCantKillMe.setOnCooldown();
-		
-		// Heal to full Health
-		int healing = this.getHealth() - this.getCurrentHealth();
-		healing = this.restoreHealth(healing);
-		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
-		
-		// Apply Additional Conditions
-		this.addCondition(this.HaHaHaYouCantKillMe.getSelfArmorBonus());
-		for (Character enemy : BattleSimulator.getInstance().getEnemies()) {
-			enemy.addCondition(this.HaHaHaYouCantKillMe.getEnemyTauntEffect(enemy));
-		}
-	}
-	
-	// Gives all allies the appropriate buffs if you die while "HaHaHa You Can't Kill Me!" is active
-	public void useDeathHaHaHaYouCantKillMe(List<Character> allies) {
-		// All this only happens at rank 3
-		if (this.HaHaHaYouCantKillMe.rank() >= 3) {
-			// Restore each ally for 25% of their max Health and give each ally the damage buff from the Ability
-			for (Character ally : allies) {
-				if (!ally.equals(this)) {
-					// Calculates the healing amount for the ally in the list
-					int healing = (int)Math.round(ally.getHealth() * .25);
-					
-					healing = ally.restoreHealth(healing);
-					System.out.println(ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth());
-					
-					// Gives each ally the Damage buff and Invincibility for 1 turn
-					ally.addCondition(this.HaHaHaYouCantKillMe.getAllyDamageBonus());
-					ally.addCondition(new Invincible("HaHaHa You Can't Kill Me: Invincibility", 1));
-				}
-			}
-		}
-	}
-	*/
 }

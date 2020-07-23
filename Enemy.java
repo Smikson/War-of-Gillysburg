@@ -21,7 +21,7 @@ public class Enemy extends Character {
 		
 		
 		// Adds new command for Displaying the Enemy's Threat Order
-		this.addCommand(1, "Display Threat Order");
+		this.addCommand(new DisplayThreatOrderCommand(this));
 	}
 	public Enemy(Enemy copy) {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.usesThreat(), copy.getDifficulty(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
@@ -100,75 +100,5 @@ public class Enemy extends Character {
 		for (Character c : this.ThreatOrder) {
 			System.out.println(c.getName());
 		}
-	}
-	
-	
-	// Overrides the begin turn function of Character to include displaying Threat Order.
-	@Override
-	public void beginTurn() {
-		// Base Setup
-		this.beginTurnSetup();
-		
-		// State if Character is dead
-		if (this.getCurrentHealth() <= 0) {
-			System.out.println(this.getName() + " is dead. Have turn anyway?");
-			if (!BattleSimulator.getInstance().askYorN()) {
-				this.endTurn();
-				return;
-			}
-		}
-		
-		// Do action based on command given
-		boolean flag = true;
-		while (flag) {
-			// If turn actions are spent, ask to continue
-			if (this.turnActionsSpent()) {
-				System.out.println("\n" + this.getName() + "'s Turn Actions have been spent, End turn?");
-				if (BattleSimulator.getInstance().askYorN()) {
-					flag = false;
-					break;
-				}
-			}
-			
-			// Display available actions
-			this.beginTurnDisplay();
-			
-			System.out.print("Choice? ");
-			String responce = BattleSimulator.getInstance().getPrompter().nextLine();
-			Character target;
-			switch(responce)
-	        {
-	            case "1": // Basic Attack
-	                target = BattleSimulator.getInstance().targetSingle();
-	                if (target.equals(Character.EMPTY)) {
-	                	break;
-	                }
-	                Attack basicAtk = new AttackBuilder()
-	                		.attacker(this)
-	                		.defender(target)
-	                		.type(Attack.DmgType.SLASHING)
-	                		.build();
-	                basicAtk.execute();
-	                this.useTurnActions();
-	                break;
-	            case "2": // Display Threat Order
-	            	this.displayThreatOrder();
-	            	break;
-	            case "3": // Alter Character
-	            	Character chosen = BattleSimulator.getInstance().targetSingle();
-	            	if (chosen.equals(Character.EMPTY)) {
-	            		break;
-	            	}
-	            	chosen.promptAlterCharacter();
-	            	break;
-	            case "4": // End Turn
-	                flag = false;
-	                break;
-	            default:
-	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
-	        }
-		}
-		
-		this.endTurn();
 	}
 }
