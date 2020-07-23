@@ -35,38 +35,6 @@ public class Tester {
 		enemies.add(spi2);
 		enemies.add(spi3);
 		
-		/*
-		// Gets all characters CurrentHealth from the file BattleHealthData.txt and stores in the CurrentHealthStatus List
-		Scanner sc = new Scanner(new File("BattleHealthData.txt"));
-		LinkedList<String> currentHealthStatus = new LinkedList<>();
-		while (sc.hasNextLine()) {
-			currentHealthStatus.add(sc.nextLine());
-		}
-		sc.close();
-		
-		// Puts data in a map with the name as the key and the CurrentHealth as the value
-		HashMap<String, Integer> currentHealth = new HashMap<>();
-		for (String line : currentHealthStatus) {
-			try {
-				currentHealth.put((line.split(": ")[0]), Integer.parseInt(line.split(": ")[1]));
-			}
-			catch (Exception e) {
-				System.out.println("File is not in correct format.");
-			}
-		}
-		
-		// Sets the CurrentHealth of the combatants to the data in the file
-		for (Character ally : allies) {
-			if (currentHealth.containsKey(ally.getName())) {
-				ally.setCurrentHealth(currentHealth.get(ally.getName()));
-			}
-		}
-		for (Enemy enemy : enemies) {
-			if (currentHealth.containsKey(enemy.getName())) {
-				enemy.setCurrentHealth(currentHealth.get(enemy.getName()));
-			}
-		}
-		*/
 		
 		// THE ACTION TAKES PLACE HERE
 		//LinkedList<Character> listed = new LinkedList<>();
@@ -81,17 +49,6 @@ public class Tester {
 		BattleSimulator.getInstance().addEnemy(spi3);
 		BattleSimulator.getInstance().initiate();
 		
-		
-		/*
-		// Writes CurrentHealth of all characters to the BattleHealthData.txt File.
-		BufferedWriter writer = new BufferedWriter(new FileWriter("BattleHealthData.txt"));
-		for (Character ally : allies) {
-			writer.write(ally.getName() + ": " + ally.getCurrentHealth() + "\n");
-		}
-		for (Enemy enemy : enemies) {
-			writer.write(enemy.getName() + ": " + enemy.getCurrentHealth() + "\n");
-		}
-		writer.close();*/
 		
 		
 	}

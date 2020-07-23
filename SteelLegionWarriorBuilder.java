@@ -44,123 +44,98 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 	// Overrides the functions necessary from CharacterBuilder when constant stats are given.
 	@Override
 	public SteelLegionWarriorBuilder Name(String name) {
-		this.name = name;
+		super.Name(name);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder Level(int level) {
-		this.Level = level;
+		super.Level(level);
 		return this;
 	}
 	
 	@Override
 	public SteelLegionWarriorBuilder bonusHealth(int bonusHealth) {
-		this.bHealth = bonusHealth;
+		super.bonusHealth(bonusHealth);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusDamage(int bonusDamage) {
-		this.bDamage = bonusDamage;
+		super.bonusDamage(bonusDamage);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusArmor(int bonusArmor) {
-		this.bArmor = bonusArmor;
+		super.bonusArmor(bonusArmor);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusArmorPiercing(int bonusArmorPiercing) {
-		this.bArmorPiercing = bonusArmorPiercing;
+		super.bonusArmorPiercing(bonusArmorPiercing);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusAccuracy(int bonusAccuracy) {
-		this.bAccuracy = bonusAccuracy;
+		super.bonusAccuracy(bonusAccuracy);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusBlock(int bonusBlock) {
-		this.bBlock = bonusBlock;
+		super.bonusBlock(bonusBlock);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusCriticalChance(int bonusCriticalChance) {
-		this.bCriticalChance = bonusCriticalChance;
+		super.bonusCriticalChance(bonusCriticalChance);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusSpeed(int bonusSpeed) {
-		this.bSpeed = bonusSpeed;
+		super.bonusSpeed(bonusSpeed);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusAttackSpeed(int bonusAttackSpeed) {
-		this.bAttackSpeed = bonusAttackSpeed;
+		super.bonusAttackSpeed(bonusAttackSpeed);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusThreat(int bonusThreat) {
-		this.bThreat = bonusThreat;
+		super.bonusThreat(bonusThreat);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusTacticalThreat(int bonusTacticalThreat) {
-		this.bTacticalThreat = bonusTacticalThreat;
+		super.bonusTacticalThreat(bonusTacticalThreat);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusSTDdown(int bonusSTDdown) {
-		this.bSTDdown = bonusSTDdown;
+		super.bonusSTDdown(bonusSTDdown);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder bonusSTDup(int bonusSTDup) {
-		this.bSTDup = bonusSTDup;
+		super.bonusSTDup(bonusSTDup);
 		return this;
 	}
 	
 	@Override
 	public SteelLegionWarriorBuilder addResistance(Attack.DmgType resistance, double value) {
-		if (resistance.equals(Attack.DmgType.TRUE)) {
-			return this;
-		}
-		
-		this.resistances.put(resistance, value);
-		if (resistance.equals(Attack.DmgType.MAGIC)) {
-			this.addResistance(Attack.DmgType.ARCANE, value);
-			this.addResistance(Attack.DmgType.FIRE, value);
-			this.addResistance(Attack.DmgType.ICE, value);
-			this.addResistance(Attack.DmgType.LIGHT, value);
-			this.addResistance(Attack.DmgType.LIGHTNING, value);
-			this.addResistance(Attack.DmgType.NECROMANTIC, value);
-		}
-		
+		super.addResistance(resistance, value);
 		return this;
 	}
 	@Override
 	public SteelLegionWarriorBuilder addVulnerability(Attack.DmgType vulnerability, double value) {
-		if (vulnerability.equals(Attack.DmgType.TRUE)) {
-			return this;
-		}
-		
-		this.vulnerabilities.put(vulnerability, value);
-		if (vulnerability.equals(Attack.DmgType.MAGIC)) {
-			this.addVulnerability(Attack.DmgType.ARCANE, value);
-			this.addVulnerability(Attack.DmgType.FIRE, value);
-			this.addVulnerability(Attack.DmgType.ICE, value);
-			this.addVulnerability(Attack.DmgType.LIGHT, value);
-			this.addVulnerability(Attack.DmgType.LIGHTNING, value);
-			this.addVulnerability(Attack.DmgType.NECROMANTIC, value);
-		}
-		
+		super.addVulnerability(vulnerability, value);
 		return this;
 	}
 	
 	@Override
 	public SteelLegionWarriorBuilder Type(Character.Type type) {
-		this.Type = type;
+		super.Type(type);
 		return this;
 	}
+	
 	
 	// Sets the ranks of each Ability (then defines the base Cooldown and Scaler based on that)
 	

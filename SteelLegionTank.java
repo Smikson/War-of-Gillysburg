@@ -1572,7 +1572,7 @@ public class SteelLegionTank extends Character {
 	public boolean didBlock;
 	
 	// A List of all Abilities so all Cooldowns can be reduced at once
-	private HashMap<AbilityNames, Ability> abilities;
+	private HashMap<SteelLegionTank.AbilityNames, Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Tank subclass.
 	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
@@ -1610,9 +1610,13 @@ public class SteelLegionTank extends Character {
 		// Set didBlock to false to start
 		this.didBlock = false;
 	}
-	public SteelLegionTank(SteelLegionTank copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), copy.getHoldItRightThereRank(), copy.getEnchantedArmorRank(), copy.getShieldSkillsRank(), copy.getProfessionalLaughterRank(), copy.getShieldBashRank(), copy.getShieldReflectionRank(), copy.getTauntingAttackRank(), copy.getTauntingAttackRank(), copy.getHaHaHaYouCantKillMeRank());
+	public SteelLegionTank(Character copy, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), upaRank, eArmorRank, sSkillsRank, profLaughRank, sBashRank, sReflectRank, tAttackRank, lStrikeRank, haRank);
 	}
+	public SteelLegionTank(SteelLegionTank copy) {
+		this(copy, copy.getHoldItRightThereRank(), copy.getEnchantedArmorRank(), copy.getShieldSkillsRank(), copy.getProfessionalLaughterRank(), copy.getShieldBashRank(), copy.getShieldReflectionRank(), copy.getTauntingAttackRank(), copy.getTauntingAttackRank(), copy.getHaHaHaYouCantKillMeRank());
+	}
+	
 	
 	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)
 	public int getHoldItRightThereRank() {
@@ -1744,5 +1748,264 @@ public class SteelLegionTank extends Character {
 		if (this.isDead() && this.HaHaHaYouCantKillMe.rank() >= 3) {
 			this.useAbility(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe, 2);
 		}
+	}
+}
+
+// Builds a Steel Legion Warrior
+class SteelLegionTankBuilder extends CharacterBuilder {
+	// Creates all the Ability fields
+	private int HoldItRightThereRank;
+	private int EnchantedArmorRank;
+	private int ShieldSkillsRank;
+	private int ProfessionalLaughterRank;
+	private int ShieldBashRank;
+	private int ShieldReflectionRank;
+	private int TauntingAttackRank;
+	private int LeaderStrikeRank;
+	private int HaHaHaYouCantKillMeRank;
+	
+	// Constructs a SteelLegionTankBuilder (populating the CharacterBuilder variables) based on the constant stats from Character
+	public SteelLegionTankBuilder(Character base) {
+		super(base);
+		this.HoldItRightThereRank = 0;
+		this.EnchantedArmorRank = 0;
+		this.ShieldSkillsRank = 0;
+		this.ProfessionalLaughterRank = 0;
+		this.ShieldBashRank = 0;
+		this.ShieldReflectionRank = 0;
+		this.TauntingAttackRank = 0;
+		this.LeaderStrikeRank = 0;
+		this.HaHaHaYouCantKillMeRank = 0;
+	}
+	public SteelLegionTankBuilder(SteelLegionTank base) {
+		super(base);
+		this.HoldItRightThereRank = base.getHoldItRightThereRank();
+		this.EnchantedArmorRank = base.getEnchantedArmorRank();
+		this.ShieldSkillsRank = base.getShieldSkillsRank();
+		this.ProfessionalLaughterRank = base.getProfessionalLaughterRank();
+		this.ShieldBashRank = base.getShieldBashRank();
+		this.ShieldReflectionRank = base.getShieldReflectionRank();
+		this.TauntingAttackRank = base.getTauntingAttackRank();
+		this.LeaderStrikeRank = base.getLeaderStrikeRank();
+		this.HaHaHaYouCantKillMeRank = base.getHaHaHaYouCantKillMeRank();
+	}
+	public SteelLegionTankBuilder() {
+		this(Character.STEEL_LEGION_TANK);
+	}
+	
+	
+	// Overrides the functions necessary from CharacterBuilder when constant stats are given.
+	@Override
+	public SteelLegionTankBuilder Name(String name) {
+		super.Name(name);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder Level(int level) {
+		super.Level(level);
+		return this;
+	}
+	
+	@Override
+	public SteelLegionTankBuilder bonusHealth(int bonusHealth) {
+		super.bonusHealth(bonusHealth);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusDamage(int bonusDamage) {
+		super.bonusDamage(bonusDamage);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusArmor(int bonusArmor) {
+		super.bonusArmor(bonusArmor);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusArmorPiercing(int bonusArmorPiercing) {
+		super.bonusArmorPiercing(bonusArmorPiercing);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusAccuracy(int bonusAccuracy) {
+		super.bonusAccuracy(bonusAccuracy);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusBlock(int bonusBlock) {
+		super.bonusBlock(bonusBlock);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusCriticalChance(int bonusCriticalChance) {
+		super.bonusCriticalChance(bonusCriticalChance);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusSpeed(int bonusSpeed) {
+		super.bonusSpeed(bonusSpeed);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusAttackSpeed(int bonusAttackSpeed) {
+		super.bonusAttackSpeed(bonusAttackSpeed);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusThreat(int bonusThreat) {
+		super.bonusThreat(bonusThreat);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusTacticalThreat(int bonusTacticalThreat) {
+		super.bonusTacticalThreat(bonusTacticalThreat);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusSTDdown(int bonusSTDdown) {
+		super.bonusSTDdown(bonusSTDdown);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder bonusSTDup(int bonusSTDup) {
+		super.bonusSTDup(bonusSTDup);
+		return this;
+	}
+	
+	@Override
+	public SteelLegionTankBuilder addResistance(Attack.DmgType resistance, double value) {
+		super.addResistance(resistance, value);
+		return this;
+	}
+	@Override
+	public SteelLegionTankBuilder addVulnerability(Attack.DmgType vulnerability, double value) {
+		super.addVulnerability(vulnerability, value);
+		return this;
+	}
+	
+	@Override
+	public SteelLegionTankBuilder Type(Character.Type type) {
+		super.Type(type);
+		return this;
+	}
+	
+	
+	// Sets the ranks of each Ability (then defines the base Cooldown and Scaler based on that)
+	
+	// Hold It Right There (Passive Ability)
+	public SteelLegionTankBuilder setHoldItRightThereRank(int newRank) {
+		this.HoldItRightThereRank = newRank;
+		return this;
+	}
+	// Enchanted Armor (Passive Ability):
+	public SteelLegionTankBuilder setEnchantedArmorRank(int newRank) {
+		this.EnchantedArmorRank = newRank;
+		return this;
+	}
+	// Shield Skills (Passive Ability):
+	public SteelLegionTankBuilder setShieldSkillsRank(int newRank) {
+		this.ShieldSkillsRank = newRank;
+		return this;
+	}
+	// Professional Laughter (Passive Ability):
+	public SteelLegionTankBuilder setProfessionalLaughterRank(int newRank) {
+		this.ProfessionalLaughterRank = newRank;
+		return this;
+	}
+	
+	// Shield Bash (Ability 1):
+	public SteelLegionTankBuilder setShieldBashRank(int newRank) {
+		this.ShieldBashRank = newRank;
+		return this;
+	}
+	// Shield Reflection (Ability 2):
+	public SteelLegionTankBuilder setShieldReflectionRank(int newRank) {
+		this.ShieldReflectionRank = newRank;
+		return this;
+	}
+	// Taunting Attack (Ability 3):
+	public SteelLegionTankBuilder setTauntingAttackRank(int newRank) {
+		this.TauntingAttackRank = newRank;
+		return this;
+	}
+	// Leader Strike (Ability 4):
+	public SteelLegionTankBuilder setLeaderStrikeRank(int newRank) {
+		this.LeaderStrikeRank = newRank;
+		return this;
+	}
+	// Taunting Attack (ULTIMATE):
+	public SteelLegionTankBuilder setHaHaHaYouCantKillMeRank(int newRank) {
+		this.HaHaHaYouCantKillMeRank = newRank;
+		return this;
+	}
+	
+	private void setBaseStats() {
+		// Each stat is already set to its level 1 base value
+		// Note: below only occurs if they specified a level, since the base level is 0.
+		// "Level Up" each stat: (Multiply by the given multiplier for each level up to the current level)
+		for (int counter = 2; counter <= this.Level; counter++) {
+			// Statically increasing stats (increases by same amount each level)
+			this.Damage = (int)Math.round(this.Damage * 1.03);
+			this.Armor = (int)Math.round(this.Armor * 1.05);
+			this.ArmorPiercing = (int)Math.round(this.ArmorPiercing * 1.05);
+			this.Accuracy = (int)Math.round(this.Accuracy * 1.05);
+			this.Block = (int)Math.round(this.Block * 1.05);
+			
+			// Dynamically increasing stats
+			// Health changes at intervals of 5 and 10
+			if (counter % 10 == 0) {
+				this.Health = (int)Math.round(this.Health * 1.07);
+			}
+			else if (counter % 5 == 0) {
+				this.Health = (int)Math.round(this.Health * 1.05);
+			}
+			else {
+				this.Health = (int)Math.round(this.Health * 1.03);
+			}
+			
+			// Attack Speed increases every 20 levels by 2
+			if (counter % 20 == 0) {
+				this.AttackSpeed += 2;
+			}
+			
+			// Threat increases with various amounts at the given levels
+			if (counter == 10) {
+				this.Threat += 5;
+			}
+			if (counter == 30) {
+				this.Threat += 6;
+			}
+			if (counter == 50) {
+				this.Threat += 7;
+			}
+			if (counter == 70) {
+				this.Threat += 8;
+			}
+			if (counter == 90) {
+				this.Threat += 10;
+			}
+		}
+		
+		// Calculate the bonus stats given by certain Abilities
+		if (this.EnchantedArmorRank > 0) {
+			EnchantedArmor ea = new EnchantedArmor(this.EnchantedArmorRank);
+			this.bArmor += ea.getBonusArmor();
+			this.bBlock += ea.getBonusBlock();
+		}
+		if (this.ProfessionalLaughterRank > 0) {
+			ProfessionalLaughter pf = new ProfessionalLaughter(this.ProfessionalLaughterRank);
+			this.bThreat += pf.getBonusThreat();
+			this.bTacticalThreat += pf.getBonusTacticalThreat();
+			this.bHealth += pf.getBonusHealth();
+		}
+	}
+	
+	// Finishes the build by returning a SteelLegionTank Character
+	public SteelLegionTank build() {
+		// Sets the base stats based on level and abilities
+		this.setBaseStats();
+		
+		// Return the Steel Legion Tank
+		return new SteelLegionTank(super.build(), this.HoldItRightThereRank, this.EnchantedArmorRank, this.ShieldSkillsRank, this.ProfessionalLaughterRank, this.ShieldBashRank, this.ShieldReflectionRank, this.TauntingAttackRank, this.LeaderStrikeRank, this.HaHaHaYouCantKillMeRank);
 	}
 }

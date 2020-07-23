@@ -2,7 +2,6 @@ package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
 
-
 public class Enemy extends Character {
 	// A list of the possible types of enemies
 	public static enum Difficulty {
@@ -23,9 +22,13 @@ public class Enemy extends Character {
 		// Adds new command for Displaying the Enemy's Threat Order
 		this.addCommand(new DisplayThreatOrderCommand(this));
 	}
-	public Enemy(Enemy copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.usesThreat(), copy.getDifficulty(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
+	public Enemy(Character copy, boolean useThrt, Difficulty diff) {
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), useThrt, diff, copy.getResistances(), copy.getVulnerabilities(), copy.getType());
 	}
+	public Enemy(Enemy copy) {
+		this(copy, copy.usesThreat(), copy.getDifficulty());
+	}
+	
 	
 	public boolean usesThreat() {
 		return this.UseThreat;
@@ -100,5 +103,147 @@ public class Enemy extends Character {
 		for (Character c : this.ThreatOrder) {
 			System.out.println(c.getName());
 		}
+		System.out.println();
+	}
+}
+
+
+// A helper class to aid in the building of Enemies
+class EnemyBuilder extends CharacterBuilder {
+	// Additional fields for enemies
+	protected boolean useThreat;
+	protected Enemy.Difficulty difficulty;
+	
+	// Constructs a EnemyBuilder (populating the CharacterBuilder variables) based on the constant stats from Character
+	public EnemyBuilder(Character base) {
+		super(base);
+		this.useThreat = false;
+		this.difficulty = Enemy.Difficulty.NORMAL;
+	}
+	public EnemyBuilder(Enemy base) {
+		super(base);
+		this.useThreat = base.usesThreat();
+		this.difficulty = base.getDifficulty();
+	}
+	public EnemyBuilder() {
+		this(Character.EMPTY);
+	}
+	
+	// Overrides the functions necessary from CharacterBuilder when constant stats are given.
+	@Override
+	public EnemyBuilder Name(String name) {
+		super.Name(name);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Level(int level) {
+		super.Level(level);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Health(int health) {
+		super.Health(health);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Damage(int damage) {
+		super.Damage(damage);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Armor(int armor) {
+		super.Armor(armor);
+		return this;
+	}
+	@Override
+	public EnemyBuilder ArmorPiercing(int armorPiercing) {
+		super.ArmorPiercing(armorPiercing);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Accuracy(int accuracy) {
+		super.Accuracy(accuracy);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Dodge(int dodge) {
+		super.Dodge(dodge);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Block(int block) {
+		super.Block(block);
+		return this;
+	}
+	@Override
+	public EnemyBuilder CriticalChance(int criticalChance) {
+		super.CriticalChance(criticalChance);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Speed(int speed) {
+		super.Speed(speed);
+		return this;
+	}
+	@Override
+	public EnemyBuilder AttackSpeed(int attackSpeed) {
+		super.AttackSpeed(attackSpeed);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Range(int range) {
+		super.Range(range);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Threat(int threat) {
+		super.Threat(threat);
+		return this;
+	}
+	@Override
+	public EnemyBuilder TacticalThreat(int tacticalThreat) {
+		super.TacticalThreat(tacticalThreat);
+		return this;
+	}
+	@Override
+	public EnemyBuilder STDdown(int stdDown) {
+		super.STDdown(stdDown);
+		return this;
+	}
+	@Override
+	public EnemyBuilder STDup(int stdUp) {
+		super.STDup(stdUp);
+		return this;
+	}
+	@Override
+	public EnemyBuilder addResistance(Attack.DmgType resistance, double value) {
+		super.addResistance(resistance, value);
+		return this;
+	}
+	@Override
+	public EnemyBuilder addVulnerability(Attack.DmgType vulnerability, double value) {
+		super.addVulnerability(vulnerability, value);
+		return this;
+	}
+	@Override
+	public EnemyBuilder Type(Character.Type type) {
+		super.Type(type);
+		return this;
+	}
+	
+	
+	// Enemy specific fields
+	public EnemyBuilder UseThreat(boolean useThrt) {
+		this.useThreat = useThrt;
+		return this;
+	}
+	public EnemyBuilder Difficulty(Enemy.Difficulty diff) {
+		this.difficulty = diff;
+		return this;
+	}
+	
+	// Finishes building the enemy
+	public Enemy build() {
+		return new Enemy(super.build(), this.useThreat, this.difficulty);
 	}
 }
