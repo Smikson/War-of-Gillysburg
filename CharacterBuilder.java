@@ -40,6 +40,7 @@ public class CharacterBuilder {
 	protected int bSTDdown;
 	protected int bSTDup;
 	
+	protected Attack.DmgType baseDmgType;
 	protected HashMap<Attack.DmgType,Double> resistances;
 	protected HashMap<Attack.DmgType,Double> vulnerabilities;
 	
@@ -65,6 +66,7 @@ public class CharacterBuilder {
 		this.STDdown = c.getSTDdown();
 		this.STDup = c.getSTDup();
 		
+		this.baseDmgType = c.getBaseDmgType();
 		this.resistances = c.getResistances();
 		this.vulnerabilities = c.getVulnerabilities();
 		
@@ -237,6 +239,10 @@ public class CharacterBuilder {
 		return this;
 	}
 	
+	public CharacterBuilder baseDmgType(Attack.DmgType dmgType) {
+		this.baseDmgType = dmgType;
+		return this;
+	}
 	public CharacterBuilder addResistance(Attack.DmgType resistance, double value) {
 		if (resistance.equals(Attack.DmgType.TRUE)) {
 			return this;
@@ -453,6 +459,7 @@ public class CharacterBuilder {
 							 this.TacticalThreat + this.bTacticalThreat,
 							 this.STDdown,
 							 this.STDup,
+							 this.baseDmgType,
 							 this.resistances,
 							 this.vulnerabilities,
 							 this.Type);
@@ -485,6 +492,7 @@ public class CharacterBuilder {
 									    this.TacticalThreat + this.bTacticalThreat,
 									    this.STDdown,
 									    this.STDup,
+									    this.baseDmgType,
 									    this.resistances,
 									    this.vulnerabilities,
 									    this.Type);
@@ -517,6 +525,7 @@ public class CharacterBuilder {
 								  this.TacticalThreat + this.bTacticalThreat,
 								  this.STDdown,
 								  this.STDup,
+								  this.baseDmgType,
 								  this.resistances,
 								  this.vulnerabilities,
 								  this.Type);
@@ -549,6 +558,7 @@ public class CharacterBuilder {
 									  this.TacticalThreat + this.bTacticalThreat,
 									  this.STDdown,
 									  this.STDup,
+									  this.baseDmgType,
 									  this.resistances,
 									  this.vulnerabilities,
 									  this.Type);
@@ -581,6 +591,7 @@ public class CharacterBuilder {
 									 this.TacticalThreat + this.bTacticalThreat,
 									 this.STDdown,
 									 this.STDup,
+									 this.baseDmgType,
 									 this.resistances,
 									 this.vulnerabilities,
 									 this.Type);
@@ -613,6 +624,7 @@ public class CharacterBuilder {
 									 this.TacticalThreat + this.bTacticalThreat,
 									 this.STDdown,
 									 this.STDup,
+									 this.baseDmgType,
 									 this.resistances,
 									 this.vulnerabilities,
 									 this.Type);
@@ -645,6 +657,7 @@ public class CharacterBuilder {
 											   this.TacticalThreat + this.bTacticalThreat,
 											   this.STDdown,
 											   this.STDup,
+											   this.baseDmgType,
 											   this.resistances,
 											   this.vulnerabilities,
 											   this.Type);
@@ -677,6 +690,7 @@ public class CharacterBuilder {
 									 this.TacticalThreat + this.bTacticalThreat,
 									 this.STDdown,
 									 this.STDup,
+									 this.baseDmgType,
 									 this.resistances,
 									 this.vulnerabilities,
 									 this.Type);
@@ -709,6 +723,7 @@ public class CharacterBuilder {
 												 this.TacticalThreat + this.bTacticalThreat,
 												 this.STDdown,
 												 this.STDup,
+												 this.baseDmgType,
 												 this.resistances,
 												 this.vulnerabilities,
 												 this.Type);
@@ -741,6 +756,7 @@ public class CharacterBuilder {
 											 this.TacticalThreat + this.bTacticalThreat,
 											 this.STDdown,
 											 this.STDup,
+											 this.baseDmgType,
 											 this.resistances,
 											 this.vulnerabilities,
 											 this.Type);
@@ -773,6 +789,7 @@ public class CharacterBuilder {
 									   this.TacticalThreat + this.bTacticalThreat,
 									   this.STDdown,
 									   this.STDup,
+									   this.baseDmgType,
 									   this.resistances,
 									   this.vulnerabilities,
 									   this.Type);
@@ -805,6 +822,7 @@ public class CharacterBuilder {
 												  this.TacticalThreat + this.bTacticalThreat,
 												  this.STDdown,
 												  this.STDup,
+												  this.baseDmgType,
 												  this.resistances,
 												  this.vulnerabilities,
 												  this.Type);
@@ -837,6 +855,7 @@ public class CharacterBuilder {
 										    this.TacticalThreat + this.bTacticalThreat,
 										    this.STDdown,
 										    this.STDup,
+										    this.baseDmgType,
 										    this.resistances,
 										    this.vulnerabilities,
 										    this.Type);

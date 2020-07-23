@@ -168,6 +168,7 @@ public class EnemyDataBase {
 			.CriticalChance(0)
 			.Speed(5)
 			.AttackSpeed(11)
+			.baseDmgType(Attack.DmgType.SLASHING)
 			.UseThreat(true)
 			.build();
 	
@@ -183,6 +184,7 @@ public class EnemyDataBase {
 			.CriticalChance(5)
 			.Speed(4)
 			.AttackSpeed(11)
+			.baseDmgType(Attack.DmgType.SLASHING)
 			.UseThreat(true)
 			.build();
 	

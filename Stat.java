@@ -5,7 +5,7 @@ package WyattWitemeyer.WarOfGillysburg;
 public class Stat {
 	// List of the types of stats that are possible (useful for stat-altering effects)
 	public static enum Version {
-		HEALTH, DAMAGE, ARMOR, ARMOR_PIERCING, ACCURACY, DODGE, BLOCK, CRITICAL_CHANCE, SPEED, ATTACK_SPEED, RANGE, THREAT, TACTICAL_THREAT, STANDARD_DEVIATION_DOWN, STANDARD_DEVIATION_UP, CURRENT_HEALTH, SHIELDS, EMPTY;
+		HEALTH, DAMAGE, ARMOR, ARMOR_PIERCING, ACCURACY, DODGE, BLOCK, CRITICAL_CHANCE, SPEED, ATTACK_SPEED, RANGE, THREAT, TACTICAL_THREAT, STANDARD_DEVIATION_DOWN, STANDARD_DEVIATION_UP, SHIELDS, EMPTY;
 	}
 	
 	private Version version; // Used to match the constants.

@@ -20,9 +20,9 @@ public class SteelLegionWarrior extends Character {
 	
 	
 	// These first two methods help set up the Steel Legion Warrior subclass.
-	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
+	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, type);
 		this.VengeanceStrike = new VengeanceStrike(this, vsRank);
 		this.SwordplayProwess = new SwordplayProwess(this, spRank);
 		this.WarriorsMight = new WarriorsMight(this, wmRank);
@@ -53,7 +53,7 @@ public class SteelLegionWarrior extends Character {
 		this.addCommand(new AbilityCommand(this.Deflection));
 	}
 	public SteelLegionWarrior(SteelLegionWarrior copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), copy.getVengeanceStrikeRank(), copy.getSwordplayProwessRank(), copy.getWarriorsMightRank(), copy.getAgileFighterRank(), copy.getSweepRank(), copy.getChargeRank(), copy.getFlipStrikeRank(), copy.getIntimidatingShoutRank(), copy.getDeflectionRank());
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), copy.getVengeanceStrikeRank(), copy.getSwordplayProwessRank(), copy.getWarriorsMightRank(), copy.getAgileFighterRank(), copy.getSweepRank(), copy.getChargeRank(), copy.getFlipStrikeRank(), copy.getIntimidatingShoutRank(), copy.getDeflectionRank());
 	}
 	
 	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)

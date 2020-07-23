@@ -120,6 +120,11 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 	}
 	
 	@Override
+	public SteelLegionWarriorBuilder baseDmgType(Attack.DmgType dmgType) {
+		super.baseDmgType(dmgType);
+		return this;
+	}
+	@Override
 	public SteelLegionWarriorBuilder addResistance(Attack.DmgType resistance, double value) {
 		super.addResistance(resistance, value);
 		return this;
@@ -270,6 +275,7 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 				   					  this.TacticalThreat + this.bTacticalThreat,
 				   					  this.STDdown,
 				   					  this.STDup,
+				   					  this.baseDmgType,
 				   					  this.resistances,
 				   					  this.vulnerabilities,
 				   					  this.Type,

@@ -9,21 +9,21 @@ public class Character {
 	}
 	
 	// Static Characters to aid with Character building and leveling up from a base level.
-	public static final Character EMPTY = new Character("Null",0,0,0,0,0,0,0,0,0,0,0,0,0,0,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.NONE);
-	public static final Character STEEL_LEGION_TANK = new Character("Tank",0,750,70,185,100,125,0,38,2,3,1,1,20,3,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character STEEL_LEGION_WARRIOR = new Character("Warrior",0,635,85,162,118,125,0,30,5,6,5,1,15,5,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character STEEL_LEGION_BARBARIAN = new Character("Barbarian",0,530,125,158,124,100,0,28,7,6,6,1,12,8,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character SENTINEL_SNIPER = new Character("Sniper",0,400,140,118,146,160,27,0,8,5,8,8,5,20,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character SENTINEL_SPECIALIST = new Character("Specialist",0,500,100,138,140,140,25,0,5,5,7,5,7,18,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character SENTINEL_ARC_ARCHER = new Character("Arc Archer",0,350,85,125,130,150,43,0,7,6,35,6,6,19,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character SILENT_DEATH_SHADOW = new Character("Shadow",0,375,150,117,147,118,33,0,10,7,5,1,2,25,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character SILENT_DEATH_POISON_SPECIALIST = new Character("Poison Specialist",0,480,110,140,128,115,24,0,5,4,4,1,6,15,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character SILENT_DEATH_HUNTER = new Character("Hunter",0,520,100,146,126,125,23,0,6,4,5,4,4,16,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character KINITCHU_ORDER_DRAGON_FIRE_WIZARD = new Character("Pyromancer",0,370,155,121,142,120,20,0,8,4,4,5,4,23,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character KINITCHU_ORDER_THAUMRATURGE = new Character("Ice Wizard",0,510,105,150,121,122,21,0,6,4,4,5,17,7,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character KINITCHU_ORDER_ARCANA = new Character("Arcana",0,325,165,115,152,140,18,0,9,4,6,5,6,17,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character KINITCHU_ORDER_LUMINESCENT_WIZARD = new Character("Luminescent Wizard",0,425,120,120,134,135,21,0,8,4,5,5,3,24,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character KINITCHU_ORDER_NECROMANCER = new Character("Necromancer",0,410,130,119,138,125,20,0,5,4,4,5,6,19,90,110, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character EMPTY = new Character("Null",0,0,0,0,0,0,0,0,0,0,0,0,0,0,90,110, Attack.DmgType.SLASHING,new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.NONE);
+	public static final Character STEEL_LEGION_TANK = new Character("Tank",0,750,70,185,100,125,0,38,2,3,1,1,20,3,90,110, Attack.DmgType.SLASHING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character STEEL_LEGION_WARRIOR = new Character("Warrior",0,635,85,162,118,125,0,30,5,6,5,1,15,5,90,110, Attack.DmgType.SLASHING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character STEEL_LEGION_BARBARIAN = new Character("Barbarian",0,530,125,158,124,100,0,28,7,6,6,1,12,8,90,110, Attack.DmgType.SMASHING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character SENTINEL_SNIPER = new Character("Sniper",0,400,140,118,146,160,27,0,8,5,8,8,5,20,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character SENTINEL_SPECIALIST = new Character("Specialist",0,500,100,138,140,140,25,0,5,5,7,5,7,18,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character SENTINEL_ARC_ARCHER = new Character("Arc Archer",0,350,85,125,130,150,43,0,7,6,35,6,6,19,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character SILENT_DEATH_SHADOW = new Character("Shadow",0,375,150,117,147,118,33,0,10,7,5,1,2,25,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character SILENT_DEATH_POISON_SPECIALIST = new Character("Poison Specialist",0,480,110,140,128,115,24,0,5,4,4,1,6,15,90,110, Attack.DmgType.SLASHING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character SILENT_DEATH_HUNTER = new Character("Hunter",0,520,100,146,126,125,23,0,6,4,5,4,4,16,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character KINITCHU_ORDER_DRAGON_FIRE_WIZARD = new Character("Pyromancer",0,370,155,121,142,120,20,0,8,4,4,5,4,23,90,110, Attack.DmgType.FIRE, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character KINITCHU_ORDER_THAUMRATURGE = new Character("Ice Wizard",0,510,105,150,121,122,21,0,6,4,4,5,17,7,90,110, Attack.DmgType.ICE, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character KINITCHU_ORDER_ARCANA = new Character("Arcana",0,325,165,115,152,140,18,0,9,4,6,5,6,17,90,110, Attack.DmgType.ARCANE, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character KINITCHU_ORDER_LUMINESCENT_WIZARD = new Character("Luminescent Wizard",0,425,120,120,134,135,21,0,8,4,5,5,3,24,90,110, Attack.DmgType.LIGHT, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character KINITCHU_ORDER_NECROMANCER = new Character("Necromancer",0,410,130,119,138,125,20,0,5,4,4,5,6,19,90,110, Attack.DmgType.NECROMANTIC, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
 	
 	// Variables of each stat of the character
 	private String name;
@@ -48,6 +48,7 @@ public class Character {
 	private int CurrentHealth;
 	private int Shields;
 	
+	private Attack.DmgType baseDmgType;
 	private HashMap<Attack.DmgType,Double> resistances;
 	private HashMap<Attack.DmgType,Double> vulnerabilities;
 	
@@ -67,7 +68,7 @@ public class Character {
 	protected LinkedList<AttackResult> AttacksDefended;
 	
 	// Constructor (sets each stat variable)
-	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
+	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
 		this.name = nam;
 		this.Level = lvl;
 		this.Health = new Stat(hp, Stat.Version.HEALTH);
@@ -89,6 +90,7 @@ public class Character {
 		this.CurrentHealth = this.Health.getTotal();
 		this.Shields = 0;
 		
+		this.baseDmgType = dmgType;
 		this.resistances = resis;
 		this.vulnerabilities = vuls;
 		
@@ -120,12 +122,12 @@ public class Character {
 		
 		// Initializes the possible commands for a basic Character
 		this.commands = new LinkedList<>();
-		this.commands.add(new BasicAttackCommand(this, Attack.DmgType.SLASHING));
+		this.commands.add(new BasicAttackCommand(this, this.baseDmgType));
 		this.commands.add(new AlterCharacterCommand(this));
 		this.commands.add(new EndTurnCommand(this));
 	}
 	public Character(Character copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
 	}
 	public Character() {
 		this(Character.EMPTY);
@@ -179,6 +181,9 @@ public class Character {
 		return this.TacticalThreat.getTotal() + this.TacticalThreat.bonus;
 	}
 	
+	public Attack.DmgType getBaseDmgType() {
+		return this.baseDmgType;
+	}
 	public HashMap<Attack.DmgType,Double> getResistances() {
 		// Copies the list so alterations do not occur on the Character itself
 		HashMap<Attack.DmgType,Double> copy = this.resistances;

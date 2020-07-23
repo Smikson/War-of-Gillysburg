@@ -1575,9 +1575,9 @@ public class SteelLegionTank extends Character {
 	private HashMap<SteelLegionTank.AbilityNames, Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Tank subclass.
-	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
+	public SteelLegionTank(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, resis, vuls, type);
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, type);
 		this.HoldItRightThere = new HoldItRightThere(this, upaRank);
 		this.EnchantedArmor = new EnchantedArmor(this, eArmorRank);
 		this.ShieldSkills = new ShieldSkills(this, sSkillsRank);
@@ -1611,7 +1611,7 @@ public class SteelLegionTank extends Character {
 		this.didBlock = false;
 	}
 	public SteelLegionTank(Character copy, int upaRank, int eArmorRank, int sSkillsRank, int profLaughRank, int sBashRank, int sReflectRank, int tAttackRank, int lStrikeRank, int haRank) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), upaRank, eArmorRank, sSkillsRank, profLaughRank, sBashRank, sReflectRank, tAttackRank, lStrikeRank, haRank);
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), upaRank, eArmorRank, sSkillsRank, profLaughRank, sBashRank, sReflectRank, tAttackRank, lStrikeRank, haRank);
 	}
 	public SteelLegionTank(SteelLegionTank copy) {
 		this(copy, copy.getHoldItRightThereRank(), copy.getEnchantedArmorRank(), copy.getShieldSkillsRank(), copy.getProfessionalLaughterRank(), copy.getShieldBashRank(), copy.getShieldReflectionRank(), copy.getTauntingAttackRank(), copy.getTauntingAttackRank(), copy.getHaHaHaYouCantKillMeRank());
@@ -1872,6 +1872,11 @@ class SteelLegionTankBuilder extends CharacterBuilder {
 		return this;
 	}
 	
+	@Override
+	public SteelLegionTankBuilder baseDmgType(Attack.DmgType dmgType) {
+		super.baseDmgType(dmgType);
+		return this;
+	}
 	@Override
 	public SteelLegionTankBuilder addResistance(Attack.DmgType resistance, double value) {
 		super.addResistance(resistance, value);
