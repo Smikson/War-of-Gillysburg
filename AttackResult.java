@@ -40,7 +40,7 @@ public class AttackResult {
 	public Character getDefender() {
 		return this.defender;
 	}
-	public Attack.DmgType getType() {
+	public Attack.DmgType getDmgType() {
 		return this.type;
 	}
 	public boolean didHit() {
@@ -71,7 +71,7 @@ class AttackResultBuilder {
 	public AttackResultBuilder(AttackResult atk) {
 		this.attacker = atk.getAttacker();
 		this.defender = atk.getDefender();
-		this.type = atk.getType();
+		this.type = atk.getDmgType();
 		this.didHit = atk.didHit();
 		this.didCrit = atk.didCrit();
 		this.damageDealt = atk.damageDealt();

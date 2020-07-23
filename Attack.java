@@ -60,7 +60,7 @@ public class Attack {
 	public Character getDefender() {
 		return this.defender;
 	}
-	public Attack.DmgType getAttackType() {
+	public Attack.DmgType getDmgType() {
 		return this.type;
 	}
 	public boolean usesScaler() {
@@ -89,6 +89,38 @@ public class Attack {
 	}
 	public boolean hasDeviation() {
 		return this.hasDeviation;
+	}
+	
+	// Overrides the toString function that may be helpful when debugging
+	@Override
+	public String toString() {
+		// Creates the additional String needed for certain variables
+		String dmgText = "";
+		if (this.usesScaler()) {
+			dmgText = "Scaler:   " + this.getScaler();
+		}
+		else {
+			dmgText = "Damage:   " + this.getFlatDamageAmount();
+		}
+		String critText = "Crit:     ";
+		if (this.guaranteedCrit) {
+			critText += "Guaranteed";
+		}
+		else if (this.canCrit) {
+			critText += "Possible";
+		}
+		else {
+			critText += "Impossible";
+		}
+		// Returns the String formatted together
+		return  "Attacker: " + this.getAttacker().getName() + "\n" +
+				"Defender: " + this.getDefender().getName() + "\n" +
+				"DmgType:  " + this.getDmgType() + "\n" +
+				dmgText + "\n" +
+				"Missable: " + this.canMiss + "\n" +
+				critText + "\n" +
+				"Armor:    " + (this.ignoresArmor? "Ignored" : "Applies") + "\n" +
+				"Deviates: " + this.hasDeviation();
 	}
 	
 	// Functions to help execute the attack held in the variables of the class
@@ -163,7 +195,7 @@ public class Attack {
 			AttackResult atkResult = new AttackResultBuilder()
 					.attacker(this.getAttacker())
 					.defender(this.getDefender())
-					.type(this.getAttackType())
+					.type(this.getDmgType())
 					.didHit(false)
 					.didCrit(false)
 					.damageDealt(0)
@@ -231,14 +263,14 @@ public class Attack {
 		
 		// The defender takes the damage -- CHANGE? (Includes printing the result)
 		// dmgTaken = this.getAttacker().dealDamage(this.getDefender(), dmgTaken, this.getAttackType());
-		dmgTaken = this.getDefender().takeDamage(dmgTaken, this.getAttackType());
+		dmgTaken = this.getDefender().takeDamage(dmgTaken, this.getDmgType());
 		
 		// Attack output
 		if (didCrit) {
-			System.out.println(this.getAttacker().getName() + " scored a CRITCAL HIT against " + this.getDefender().getName() + " for a total of " + dmgTaken + " " + this.getAttackType().toString() + " damage!");
+			System.out.println(this.getAttacker().getName() + " scored a CRITCAL HIT against " + this.getDefender().getName() + " for a total of " + dmgTaken + " " + this.getDmgType().toString() + " damage!");
 		}
 		else {
-			System.out.println(this.getAttacker().getName() + " hit " + this.getDefender().getName() + " for a total of " + dmgTaken + " " + this.getAttackType().toString() + " damage!");
+			System.out.println(this.getAttacker().getName() + " hit " + this.getDefender().getName() + " for a total of " + dmgTaken + " " + this.getDmgType().toString() + " damage!");
 		}
 		
 		if (this.getDefender().isDead()) {
@@ -283,7 +315,7 @@ public class Attack {
 		AttackResult atkResult = new AttackResultBuilder()
 				.attacker(this.getAttacker())
 				.defender(this.getDefender())
-				.type(this.getAttackType())
+				.type(this.getDmgType())
 				.didHit(true)
 				.didCrit(didCrit)
 				.damageDealt(dmgTaken)
@@ -319,7 +351,7 @@ class AttackBuilder {
 	public AttackBuilder(Attack base) {
 		this.attacker = base.getAttacker();
 		this.defender = base.getDefender();
-		this.type = base.getAttackType();
+		this.type = base.getDmgType();
 		this.usesScaler = base.usesScaler();
 		this.scaler = base.getScaler();
 		this.flatDamage = base.getFlatDamageAmount();
