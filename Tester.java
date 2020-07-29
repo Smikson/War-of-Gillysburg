@@ -37,7 +37,6 @@ public class Tester {
 		
 		
 		// THE ACTION TAKES PLACE HERE
-		//LinkedList<Character> listed = new LinkedList<>();
 		SteelLegionTank ally1 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 1").build();
 		SteelLegionTank ally2 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 2").build();
 		SteelLegionTank ally3 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 3").build();
@@ -48,7 +47,6 @@ public class Tester {
 		BattleSimulator.getInstance().addEnemy(spi2);
 		BattleSimulator.getInstance().addEnemy(spi3);
 		BattleSimulator.getInstance().initiate();
-		
 		
 		
 	}

@@ -52,8 +52,11 @@ public class SteelLegionWarrior extends Character {
 		this.addCommand(new AbilityCommand(this.IntimidatingShout));
 		this.addCommand(new AbilityCommand(this.Deflection));
 	}
+	public SteelLegionWarrior(Character copy, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), vsRank, spRank, wmRank, afRank, sweepRank, chargeRank, fsRank, isRank, deflectRank);
+	}
 	public SteelLegionWarrior(SteelLegionWarrior copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), copy.getVengeanceStrikeRank(), copy.getSwordplayProwessRank(), copy.getWarriorsMightRank(), copy.getAgileFighterRank(), copy.getSweepRank(), copy.getChargeRank(), copy.getFlipStrikeRank(), copy.getIntimidatingShoutRank(), copy.getDeflectionRank());
+		this(copy, copy.getVengeanceStrikeRank(), copy.getSwordplayProwessRank(), copy.getWarriorsMightRank(), copy.getAgileFighterRank(), copy.getSweepRank(), copy.getChargeRank(), copy.getFlipStrikeRank(), copy.getIntimidatingShoutRank(), copy.getDeflectionRank());
 	}
 	
 	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)

@@ -1,54 +1,35 @@
 package WyattWitemeyer.WarOfGillysburg;
 
-class Bleed implements DamageOverTime {
-	// Variable declarations
-	private Character source;
-	private Character affected;
-	private int dmgAmount;
-	private int counter;
+class BleedDOT extends DamageOT {
+	// Holds the Bleed's attack
+	private Attack bleedAtk;
 	
 	// Constructor
-	public Bleed(Character source, Character affected, int dmg, int numTurns) {
-		this.source = source;
-		this.affected = affected;
-		this.dmgAmount = dmg;
-		this.counter = numTurns;
-	}
-	
-	// The Bleed effect can be removed when all of its "ticks" have been used.
-	@Override
-	public boolean isExpired() {
-		return this.counter <= 0;
-	}
-	
-	// When bleed activates, it deals damage to the affected target (from the source) based on the Damage amount specified
-	@Override
-	public void activate() {
-		// Since attacks use a scaler (and the normal attack affects and conditions must still be applied), 
-		// A scaler is calculated based on the source's Damage stat. Then, the attack is made (Bleed effects always ignore armor).
-		Attack bleedAtk = new AttackBuilder()
-				.attacker(this.source)
-				.defender(this.affected)
-				.isAOE()
-				.usesFlatDamage()
-				.flatDamage(dmgAmount)
+	public BleedDOT(SteelLegionWarrior source, Character affected, int duration, int damage) {
+		super(source, "Swordplay Prowess: Bleed Effect", duration);
+		this.bleedAtk = new AttackBuilder()
+				.attacker(source)
+				.defender(affected)
 				.type(Attack.DmgType.BLEED)
+				.isAOE()
 				.ignoresArmor()
+				.usesFlatDamage()
+				.flatDamage(damage)
 				.build();
-		bleedAtk.execute();
-		
-		// Decrement counter to signify a "tick" of Bleed damage being applied
-		this.counter--;
 	}
 	
-	// When printing the bleed effect for display purposes
+	// For the bleed effect, activating executes the attack
 	@Override
-	public String displayString() {
-		String ret = "Bleeding: " + this.counter + " turns left - Source: " + this.source.getName();
-		return ret;
+	public void executeDOT() {
+		this.bleedAtk.execute();
+	}
+	
+	// Returns the display line (without the tabs) of the Bleed DOT effect in the Condition
+	@Override
+	public String getDOTString() {
+		return "Bleeding: Deals ~" + this.bleedAtk.getFlatDamageAmount() + " damage at the beginning of each round.";
 	}
 }
-
 
 public class SwordplayProwess extends Ability {
 	// Holds the owner of the Ability as a Steel Legion Warrior

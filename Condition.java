@@ -35,7 +35,7 @@ public class Condition {
 	private boolean isActive;
 	
 	// Functionality Variables
-	public int turnCount;
+	private int turnCount;
 	private LinkedList<StatusEffect> effects;
 	private Requirement activeRequirement;
 	private HashSet<Condition> linkedConditions;
@@ -117,8 +117,12 @@ public class Condition {
 	public void activate() {
 		this.isActive = true;
 	}
+	// Function to increment the turn count
+	public void incrementTurn() {
+		this.turnCount++;
+	}
 	
-	// Method to determine if the duration of the condition is expired
+	// Function to determine if the duration of the condition is expired
 	public boolean isExpired() {
 		// A duration of -1 implies a permanent condition.
 		if (this.duration == -1) {

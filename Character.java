@@ -57,7 +57,6 @@ public class Character {
 	// Contains a list of the basic stats (everything but STDup/down, Current Health, and shields), conditions, and damage over time effects for looping through
 	protected LinkedList<Stat> stats;
 	protected LinkedList<Condition> conditions;
-	protected LinkedList<DamageOverTime> dotEffects;
 	
 	// Holds the possible actions a Character can take on their turn and a boolean to control when the Character's turn is over
 	private LinkedList<Command> commands;
@@ -116,7 +115,6 @@ public class Character {
 		
 		// Initializes Condition, Damage over Time, and Attack lists
 		this.conditions = new LinkedList<>();
-		this.dotEffects = new LinkedList<>();
 		this.AttacksMade = new LinkedList<>();
 		this.AttacksDefended = new LinkedList<>();
 		
@@ -464,25 +462,6 @@ public class Character {
 	}
 	
 	
-	// Methods for Damage over Time effects
-	protected void addDoT(DamageOverTime effect) {
-		this.dotEffects.add(effect);
-	}
-	protected void removeDot(DamageOverTime effect) {
-		this.dotEffects.remove(effect);
-	}
-	protected void displayDoT() {
-		if (this.dotEffects.isEmpty()) {
-			return;
-		}
-		System.out.println("Damage Over Time Effects:");
-		for (DamageOverTime dot : this.dotEffects) {
-			System.out.print("\t" + dot.displayString());
-		}
-	}
-	
-	
-	
 	// Methods for a Character's basic turn (beginning-end)
 	// For list of commands:
 	protected void addCommand(Command added) {
@@ -588,23 +567,6 @@ public class Character {
 		conditionStrings.clear();
 	}
 	
-	// Used to remove a chosen Damage over Time effect from a Character
-	protected void promptDoTRemove() {
-		// Make a parallel String list for printing
-		LinkedList<String> dotStrings = new LinkedList<>();
-		for (DamageOverTime dot : this.dotEffects) {
-			dotStrings.add(dot.displayString());
-		}
-		
-		// Remove chosen Damage Over Time Effect from Character
-		int choice = BattleSimulator.getInstance().promptSelect(dotStrings);
-		if (choice ==  0) {
-			return;
-		}
-		this.removeDot(this.dotEffects.get(choice-1));
-	}
-	
-	
 	// Prompts for how to alter this Character when chosen
 	protected void promptAlterCharacter() {
 		String choice;
@@ -613,7 +575,6 @@ public class Character {
 		System.out.println("1. Alter Current Health");
 		System.out.println("2. Add Condition");
 		System.out.println("3. Remove Condition");
-		System.out.println("4. Remove Damage over Time Effect");
 		while (true) {
 			System.out.print("Choice? ");
 			choice = BattleSimulator.getInstance().getPrompter().nextLine();
@@ -647,10 +608,6 @@ public class Character {
 	            	System.out.println();
 	            	this.promptConditionRemove();
 	                return;
-	            case "4": // Remove DoT
-	            	System.out.println();
-	            	this.promptDoTRemove();
-	            	return;
 	            default:
 	                System.out.println("Please enter a number that corresponds to one of your choices.\n");
 	        }
@@ -662,22 +619,12 @@ public class Character {
 		// Make turn actions available
 		this.turnActionsSpent = false;
 		
-		// Apply a "tick" to any damage over time effects
-		for (DamageOverTime dot : this.dotEffects) {
-			if (dot.isExpired()) {
-				this.removeDot(dot);
-			}
-			else {
-				dot.activate();
-			}
-		}
-		
 		// Conditions: Increment all non-source-incrementing, non-permanent, non-end-of-turn conditions for this Character and remove respective expired conditions
 		LinkedList<Condition> toRemove = new LinkedList<>();
 		for (Condition con : this.getActiveConditions()) {
 			// Increment non-source-incrementing and non-permanent Conditions
 			if (!con.isSourceIncrementing() && !con.isPermanent() && !con.isEndOfTurn()) {
-				con.turnCount++;
+				con.incrementTurn();
 			}
 			if (con.isExpired()) {
 				toRemove.add(con);
@@ -693,7 +640,7 @@ public class Character {
 			toRemove.clear();
 			for (Condition con : combatant.getActiveConditions()) {
 				if (con.isSourceIncrementing() && con.getSource().equals(this) && !con.isEndOfTurn()) {
-					con.turnCount++;
+					con.incrementTurn();
 				}
 				// Also removes any other conditions that are expired
 				if (con.isExpired()) {
@@ -763,7 +710,7 @@ public class Character {
 		for (Condition con : this.getActiveConditions()) {
 			// Increment non-source-incrementing and non-permanent Conditions
 			if (!con.isSourceIncrementing() && !con.isPermanent() && con.isEndOfTurn()) {
-				con.turnCount++;
+				con.incrementTurn();
 			}
 			if (con.isExpired()) {
 				toRemove.add(con);
@@ -779,7 +726,7 @@ public class Character {
 			toRemove.clear();
 			for (Condition con : combatant.getActiveConditions()) {
 				if (con.isSourceIncrementing() && con.getSource().equals(this) && con.isEndOfTurn()) {
-					con.turnCount++;
+					con.incrementTurn();
 				}
 				// Also removes any other conditions that are expired
 				if (con.isExpired()) {
