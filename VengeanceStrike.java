@@ -12,6 +12,9 @@ public class VengeanceStrike extends Ability {
 	private Condition enemyDamageReduction;
 	private Condition selfPreAttackDmgBonus;
 	
+	// Additional variable to hold the target of Vengeance Strike so that Flip Strike doesn't have to prompt
+	private Character target;
+	
 	// Constructor
 	public VengeanceStrike(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
@@ -100,5 +103,57 @@ public class VengeanceStrike extends Ability {
 	
 	public Condition getSelfPreAttackDmgBonus() {
 		return this.selfPreAttackDmgBonus;
+	}
+	
+	// Clears the counter map (should occur at the beginning of each turn for ranks 1 and 2)
+	public void clearCounterMap() {
+		this.counter.clear();
+	}
+	
+	// Function to return the target of the current Vengeance Strike (only used for Flip Strike's version)
+	public Character getTarget() {
+		return this.target;
+	}
+	
+	// Creates an execute function to make the Vengeance Strike attack, applying the correct Conditions
+	public void execute(Character enemy) {
+		// Keep track of wether or not the attack should occur (can be overridden by user)
+		boolean shouldAttack = true;
+		
+		// At rank 1, the attack can only be used once per turn (and shouldn't be used unless the counter map is empty)
+		if (this.rank() == 1 && !this.counter.isEmpty()) {
+			shouldAttack = false;
+		}
+		// At rank 2, the attack can only be used once per enemy
+		if (this.rank() == 2 && this.counter.get(enemy) != 1) {
+			shouldAttack = false;
+		}
+		
+		// Tell the user if the attack should(n't) occur, and prompt for usage
+		String negation = shouldAttack? "" : "NOT";
+		System.out.println(this.getOwner().getName() + " should " + negation + " use Vengeance Strike. Proceed with attack?");
+		if (!BattleSimulator.getInstance().askYorN()) {
+			return;
+		}
+		
+		// At this point the attack occurs.
+		// First, store the target in case it needs to be used by Flip Strike
+		this.target = enemy;
+		// If the rank is 4 or 5, the Ability uses a version of Flip Strike for the attack (accessible by use(2))
+		if (this.rank() >= 4) {
+			this.getOwner().useAbility(SteelLegionWarrior.AbilityNames.FlipStrike, 2);
+		}
+		// Otherwise, do the normal Vengeance Strike attack
+		else {
+			// Build the attack
+			Attack VenStr = new AttackBuilder()
+					.attacker(this.getOwner())
+					.defender(enemy)
+					.type(Attack.DmgType.SLASHING)
+					.isTargeted()
+					.scaler(this.scaler)
+					.build();
+			VenStr.execute();
+		}
 	}
 }

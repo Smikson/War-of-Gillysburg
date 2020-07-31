@@ -56,7 +56,8 @@ public class Ability {
 		this.setTurnsRemaining(0);
 	}
 	public boolean onCooldown() {
-		return this.turnsRemaining > 0;
+		// The ability is on Cooldown if there are turns remaining and the Cooldown exists
+		return this.turnsRemaining > 0 && this.cooldown > 0;
 	}
 	
 	// Use functions to be overridden by each class (there can be multiple versions, int specifies version)

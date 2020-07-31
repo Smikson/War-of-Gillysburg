@@ -27,15 +27,15 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 	}
 	public SteelLegionWarriorBuilder(SteelLegionWarrior base) {
 		super(base);
-		this.VengeanceStrikeRank = base.getVengeanceStrikeRank();
-		this.SwordplayProwessRank = base.getSwordplayProwessRank();
-		this.WarriorsMightRank = base.getWarriorsMightRank();
-		this.AgileFighterRank = base.getAgileFighterRank();
-		this.SweepRank = base.getSweepRank();
-		this.ChargeRank = base.getChargeRank();
-		this.FlipStrikeRank = base.getFlipStrikeRank();
-		this.IntimidatingShoutRank = base.getIntimidatingShoutRank();
-		this.DeflectionRank = base.getDeflectionRank();
+		this.VengeanceStrikeRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.VengeanceStrike);
+		this.SwordplayProwessRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.SwordplayProwess);
+		this.WarriorsMightRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.WarriorsMight);
+		this.AgileFighterRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.AgileFighter);
+		this.SweepRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.Sweep);
+		this.ChargeRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.Charge);
+		this.FlipStrikeRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.FlipStrike);
+		this.IntimidatingShoutRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.IntimidatingShout);
+		this.DeflectionRank = base.getAbilityRank(SteelLegionWarrior.AbilityNames.Deflection);
 	}
 	public SteelLegionWarriorBuilder() {
 		this(Character.STEEL_LEGION_WARRIOR);

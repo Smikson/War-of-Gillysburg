@@ -1571,7 +1571,7 @@ public class SteelLegionTank extends Character {
 	// Keeps track of the buff for if a previous attack was blocked
 	public boolean didBlock;
 	
-	// A List of all Abilities so all Cooldowns can be reduced at once
+	// Maps all Abilities so all Cooldowns can be reduced at once
 	private HashMap<SteelLegionTank.AbilityNames, Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Tank subclass.
@@ -1614,38 +1614,9 @@ public class SteelLegionTank extends Character {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), upaRank, eArmorRank, sSkillsRank, profLaughRank, sBashRank, sReflectRank, tAttackRank, lStrikeRank, haRank);
 	}
 	public SteelLegionTank(SteelLegionTank copy) {
-		this(copy, copy.getHoldItRightThereRank(), copy.getEnchantedArmorRank(), copy.getShieldSkillsRank(), copy.getProfessionalLaughterRank(), copy.getShieldBashRank(), copy.getShieldReflectionRank(), copy.getTauntingAttackRank(), copy.getTauntingAttackRank(), copy.getHaHaHaYouCantKillMeRank());
+		this(copy, copy.getAbilityRank(SteelLegionTank.AbilityNames.HoldItRightThere), copy.getAbilityRank(SteelLegionTank.AbilityNames.EnchantedArmor), copy.getAbilityRank(SteelLegionTank.AbilityNames.ShieldSkills), copy.getAbilityRank(SteelLegionTank.AbilityNames.ProfessionalLaughter), copy.getAbilityRank(SteelLegionTank.AbilityNames.ShieldBash), copy.getAbilityRank(SteelLegionTank.AbilityNames.ShieldReflection), copy.getAbilityRank(SteelLegionTank.AbilityNames.TauntingAttack), copy.getAbilityRank(SteelLegionTank.AbilityNames.TauntingAttack), copy.getAbilityRank(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe));
 	}
 	
-	
-	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)
-	public int getHoldItRightThereRank() {
-		return this.HoldItRightThere.rank();
-	}
-	public int getEnchantedArmorRank() {
-		return this.EnchantedArmor.rank();
-	}
-	public int getShieldSkillsRank() {
-		return this.ShieldSkills.rank();
-	}
-	public int getProfessionalLaughterRank() {
-		return this.ProfessionalLaughter.rank();
-	}
-	public int getShieldBashRank() {
-		return this.ShieldBash.rank();
-	}
-	public int getShieldReflectionRank() {
-		return this.ShieldReflection.rank();
-	}
-	public int getTauntingAttackRank() {
-		return this.TauntingAttack.rank();
-	}
-	public int getLeaderStrikeRank() {
-		return this.LeaderStrike.rank();
-	}
-	public int getHaHaHaYouCantKillMeRank() {
-		return this.HaHaHaYouCantKillMe.rank();
-	}
 	
 	// Functions to use an Ability or affect its Cooldown
 	public void useAbility(SteelLegionTank.AbilityNames name, int version) {
@@ -1779,15 +1750,15 @@ class SteelLegionTankBuilder extends CharacterBuilder {
 	}
 	public SteelLegionTankBuilder(SteelLegionTank base) {
 		super(base);
-		this.HoldItRightThereRank = base.getHoldItRightThereRank();
-		this.EnchantedArmorRank = base.getEnchantedArmorRank();
-		this.ShieldSkillsRank = base.getShieldSkillsRank();
-		this.ProfessionalLaughterRank = base.getProfessionalLaughterRank();
-		this.ShieldBashRank = base.getShieldBashRank();
-		this.ShieldReflectionRank = base.getShieldReflectionRank();
-		this.TauntingAttackRank = base.getTauntingAttackRank();
-		this.LeaderStrikeRank = base.getLeaderStrikeRank();
-		this.HaHaHaYouCantKillMeRank = base.getHaHaHaYouCantKillMeRank();
+		this.HoldItRightThereRank = base.getAbilityRank(SteelLegionTank.AbilityNames.HoldItRightThere);
+		this.EnchantedArmorRank = base.getAbilityRank(SteelLegionTank.AbilityNames.EnchantedArmor);
+		this.ShieldSkillsRank = base.getAbilityRank(SteelLegionTank.AbilityNames.ShieldSkills);
+		this.ProfessionalLaughterRank = base.getAbilityRank(SteelLegionTank.AbilityNames.ProfessionalLaughter);
+		this.ShieldBashRank = base.getAbilityRank(SteelLegionTank.AbilityNames.ShieldBash);
+		this.ShieldReflectionRank = base.getAbilityRank(SteelLegionTank.AbilityNames.ShieldReflection);
+		this.TauntingAttackRank = base.getAbilityRank(SteelLegionTank.AbilityNames.TauntingAttack);
+		this.LeaderStrikeRank = base.getAbilityRank(SteelLegionTank.AbilityNames.LeaderStrike);
+		this.HaHaHaYouCantKillMeRank = base.getAbilityRank(SteelLegionTank.AbilityNames.HaHaHaYouCantKillMe);
 	}
 	public SteelLegionTankBuilder() {
 		this(Character.STEEL_LEGION_TANK);

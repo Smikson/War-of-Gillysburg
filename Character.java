@@ -62,7 +62,7 @@ public class Character {
 	private LinkedList<Command> commands;
 	private boolean turnActionsSpent;
 	
-	// Store the previous attack made (for use in Character Abilities sometimes)
+	// Store the previous attacks made (for use in Character Abilities sometimes)
 	protected LinkedList<AttackResult> AttacksMade;
 	protected LinkedList<AttackResult> AttacksDefended;
 	

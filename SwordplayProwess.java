@@ -1,6 +1,6 @@
 package WyattWitemeyer.WarOfGillysburg;
 
-class BleedDOT extends DamageOT {
+class BleedDOT extends DamageOverTime {
 	// Holds the Bleed's attack
 	private Attack bleedAtk;
 	

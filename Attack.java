@@ -394,11 +394,13 @@ class AttackBuilder {
 	}
 	
 	public AttackBuilder scaler(double scaler) {
+		this.usesScaler();
 		this.scaler = scaler;
 		return this;
 	}
 	
 	public AttackBuilder flatDamage(int flatDamage) {
+		this.usesFlatDamage();
 		this.flatDamage = flatDamage;
 		return this;
 	}
@@ -442,6 +444,7 @@ class AttackBuilder {
 	}
 	
 	public AttackBuilder guaranteedCrit() {
+		this.canCrit();
 		this.guaranteedCrit = true;
 		return this;
 	}

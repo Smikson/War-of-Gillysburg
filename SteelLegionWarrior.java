@@ -2,6 +2,11 @@ package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
 public class SteelLegionWarrior extends Character {
+	// Enumerates the names of the abilities so Cooldown and use functions can be called
+	public static enum AbilityNames {
+		VengeanceStrike, SwordplayProwess, WarriorsMight, AgileFighter, Sweep, Charge, FlipStrike, IntimidatingShout, Deflection
+	}
+	
 	// Passive Abilities
 	private VengeanceStrike VengeanceStrike; // Unique Passive Ability (UPA)
 	private SwordplayProwess SwordplayProwess;
@@ -15,9 +20,8 @@ public class SteelLegionWarrior extends Character {
 	private IntimidatingShout IntimidatingShout;
 	private Deflection Deflection;
 	
-	// A List of all Abilities so all Cooldowns can be reduced at once
-	private LinkedList<Ability> abilities;
-	
+	// Maps all Abilities so all Cooldowns can be reduced at once
+	private HashMap<SteelLegionWarrior.AbilityNames, Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Warrior subclass.
 	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
@@ -34,16 +38,16 @@ public class SteelLegionWarrior extends Character {
 		this.Deflection = new Deflection(this, deflectRank);
 		
 		// Add Abilities to a list for Cooldown purposes
-		this.abilities = new LinkedList<>();
-		this.abilities.add(this.VengeanceStrike);
-		this.abilities.add(this.SwordplayProwess);
-		this.abilities.add(this.WarriorsMight);
-		this.abilities.add(this.AgileFighter);
-		this.abilities.add(this.Sweep);
-		this.abilities.add(this.Charge);
-		this.abilities.add(this.FlipStrike);
-		this.abilities.add(this.IntimidatingShout);
-		this.abilities.add(this.Deflection);
+		this.abilities = new HashMap<>();
+		this.abilities.put(SteelLegionWarrior.AbilityNames.VengeanceStrike, this.VengeanceStrike);
+		this.abilities.put(SteelLegionWarrior.AbilityNames.SwordplayProwess, this.SwordplayProwess);
+		this.abilities.put(SteelLegionWarrior.AbilityNames.WarriorsMight, this.WarriorsMight);
+		this.abilities.put(SteelLegionWarrior.AbilityNames.AgileFighter, this.AgileFighter);
+		this.abilities.put(SteelLegionWarrior.AbilityNames.Sweep, this.Sweep);
+		this.abilities.put(SteelLegionWarrior.AbilityNames.Charge, this.Charge);
+		this.abilities.put(SteelLegionWarrior.AbilityNames.FlipStrike, this.FlipStrike);
+		this.abilities.put(SteelLegionWarrior.AbilityNames.IntimidatingShout, this.IntimidatingShout);
+		this.abilities.put(SteelLegionWarrior.AbilityNames.Deflection, this.Deflection);
 		
 		// Add new commands for Abilities
 		this.addCommand(new AbilityCommand(this.Sweep));
@@ -56,36 +60,29 @@ public class SteelLegionWarrior extends Character {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), vsRank, spRank, wmRank, afRank, sweepRank, chargeRank, fsRank, isRank, deflectRank);
 	}
 	public SteelLegionWarrior(SteelLegionWarrior copy) {
-		this(copy, copy.getVengeanceStrikeRank(), copy.getSwordplayProwessRank(), copy.getWarriorsMightRank(), copy.getAgileFighterRank(), copy.getSweepRank(), copy.getChargeRank(), copy.getFlipStrikeRank(), copy.getIntimidatingShoutRank(), copy.getDeflectionRank());
+		this(copy, copy.getAbilityRank(SteelLegionWarrior.AbilityNames.VengeanceStrike), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.SwordplayProwess), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.WarriorsMight), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.AgileFighter), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.Sweep), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.Charge), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.FlipStrike), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.IntimidatingShout), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.Deflection));
 	}
 	
-	// Get methods for ranks for Abilities (sometimes assists in Character creation or testing)
-	public int getVengeanceStrikeRank() {
-		return this.VengeanceStrike.rank();
+	
+	// Functions to use an Ability or affect its Cooldown
+	public void useAbility(SteelLegionWarrior.AbilityNames name, int version) {
+		Ability chosen = this.abilities.get(name);
+		chosen.use(version);
 	}
-	public int getSwordplayProwessRank() {
-		return this.SwordplayProwess.rank();
+	public void useAbility(SteelLegionWarrior.AbilityNames name) {
+		this.useAbility(name, 1);
 	}
-	public int getWarriorsMightRank() {
-		return this.WarriorsMight.rank();
+	
+	// Function to set an ability's Cooldown
+	public void setAbilityCD(SteelLegionWarrior.AbilityNames name, int turnsRemaining) {
+		Ability chosen = this.abilities.get(name);
+		chosen.setTurnsRemaining(turnsRemaining);
 	}
-	public int getAgileFighterRank() {
-		return this.AgileFighter.rank();
-	}
-	public int getSweepRank() {
-		return this.Sweep.rank();
-	}
-	public int getChargeRank() {
-		return this.Charge.rank();
-	}
-	public int getFlipStrikeRank() {
-		return this.FlipStrike.rank();
-	}
-	public int getIntimidatingShoutRank() {
-		return this.IntimidatingShout.rank();
-	}
-	public int getDeflectionRank() {
-		return this.Deflection.rank();
+	
+	// Function to get the rank of an Ability
+	public int getAbilityRank(SteelLegionWarrior.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.rank();
 	}
 	
 	
