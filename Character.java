@@ -962,8 +962,8 @@ public class Character {
 		}
 	}
 	
-	// Applies the pre-attack and post-attack effects for the Characters (can be overridden by each class for additional effects)
-	protected void applyPreAttackEffects(Attack atk) {
+	// Functions to apply and unapply the correct attack Conditions (Incoming or Outgoing) for the Characters in an Attack
+	protected void applyAttackConditions(Attack atk) {
 		// If attacking, apply outgoing status effects
 		if (this.equals(atk.getAttacker())) {
 			this.applyOutgoingStatusEffects(atk.getDefender());
@@ -973,7 +973,7 @@ public class Character {
 			this.applyIncomingStatusEffects(atk.getAttacker());
 		}
 	}
-	protected void applyPostAttackEffects(AttackResult atkRes) {
+	protected void unapplyAttackConditions(AttackResult atkRes) {
 		// If attacking, unapply outgoing status effects, then store the attack result
 		if (this.equals(atkRes.getAttacker())) {
 			this.unapplyOutgoingStatusEffects(atkRes.getDefender());
@@ -983,6 +983,10 @@ public class Character {
 			this.unapplyIncomingStatusEffects(atkRes.getAttacker());
 		}
 	}
+	
+	// These functions apply the pre-attack and post-attack effects for the Characters (can be overridden by each class for additional effects, default of no effects)
+	protected void applyPreAttackEffects(Attack atk) {}
+	protected void applyPostAttackEffects(AttackResult atkRes) {}
 	
 	/*
 	

@@ -1,5 +1,17 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.*;
+
+// Implementation of lambda function for altering attached attacks.
+interface AttachedAlteration {
+	// Function to define an AttachedAlteration to return a new (what will be "attached") Attack for a given AttackResult from the Attack is "attached" to
+	Attack evaluate(AttackResult atkRes);
+	
+	// Default return the EMPTY Attack
+	default Attack evalDefault() {
+		return Attack.EMPTY;
+	}
+}
 
 public class Attack {
 	public static enum DmgType {
@@ -12,7 +24,7 @@ public class Attack {
 	// Variables for each element of an attack
 	private Character attacker;		// The Character attacking
 	private Character defender;		// The Chatacter being attacked
-	private Attack.DmgType type;		// The type of attack made
+	private Attack.DmgType type;	// The type of attack made
 	private boolean usesScaler;		// Determines if the attack uses a scaler for damage (true) or a specified flat numeric amount (false)
 	private double scaler;			// If a scaler is used (the usual), holds the Damage scaler of the attack
 	private int flatDamage;			// If a scaler is not used, holds the specified flat numeric damage amount
@@ -23,8 +35,17 @@ public class Attack {
 	private boolean ignoresArmor;	// Determines if the attack "ignores all armor"
 	private boolean hasDeviation;	// Determines if the attack uses STDup and STDdown to deviate the attack
 	
+	// Additional variables for single-use (this attack only) Conditions to apply
+	private LinkedList<Condition> attackerConditions;
+	private LinkedList<Condition> defenderConditions;
+	
+	// Additional variables for attacks "attached" to this Attack and, if this Attack is the attached, for any necessary alterations
+	private LinkedList<Attack> attachedAttacks;
+	private boolean hasAlteration;
+	private AttachedAlteration alteration;
+	
 	// Constructors
-	public Attack(Character attacker, Character defender, Attack.DmgType type, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation) {
+	public Attack(Character attacker, Character defender, Attack.DmgType type, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = type;
@@ -37,6 +58,13 @@ public class Attack {
 		this.guaranteedCrit = guaranteedCrit;
 		this.ignoresArmor = ignoresArmor;
 		this.hasDeviation = hasDeviation;
+		
+		this.attackerConditions = atkCons;
+		this.defenderConditions = defCons;
+		
+		this.attachedAttacks = attached;
+		this.hasAlteration = hasAlteration;
+		this.alteration = alteration;
 	}
 	public Attack() {
 		this.attacker = Character.EMPTY;
@@ -51,6 +79,13 @@ public class Attack {
 		this.guaranteedCrit = false;
 		this.ignoresArmor = false;
 		this.hasDeviation = true;
+		
+		this.attackerConditions = new LinkedList<>();
+		this.defenderConditions = new LinkedList<>();
+		
+		this.attachedAttacks = new LinkedList<>();
+		this.hasAlteration = false;
+		this.alteration = (AttackResult atkRes) -> {return Attack.EMPTY;};
 	}
 	
 	// Get methods for each element
@@ -91,10 +126,37 @@ public class Attack {
 		return this.hasDeviation;
 	}
 	
+	public LinkedList<Condition> getAttackerConditions() {
+		return this.attackerConditions;
+	}
+	public LinkedList<Condition> getDefenderConditions() {
+		return this.defenderConditions;
+	}
+	
+	public LinkedList<Attack> getAttachedAttacks() {
+		return this.attachedAttacks;
+	}
+	public boolean hasAlteration() {
+		return this.hasAlteration;
+	}
+	public AttachedAlteration getAlteration() {
+		return this.alteration;
+	}
+	
 	// Overrides the toString function that may be helpful when debugging
 	@Override
 	public String toString() {
 		// Creates the additional String needed for certain variables
+		String atkConText = "";
+		for (Condition c : this.getAttackerConditions()) {
+			atkConText += c.toString() + "\n";
+		}
+		
+		String defConText = "";
+		for (Condition c : this.getDefenderConditions()) {
+			defConText += c.toString() + "\n";
+		}
+		
 		String dmgText = "";
 		if (this.usesScaler()) {
 			dmgText = "Scaler:   " + this.getScaler();
@@ -112,15 +174,45 @@ public class Attack {
 		else {
 			critText += "Impossible";
 		}
+		
+		String attachedAtkText = "";
+		for (int i = 0; i < this.getAttachedAttacks().size(); i++) {
+			attachedAtkText += "\nAttached Attack #" + (i+1) + this.getAttachedAttacks().get(i).toString();
+		}
 		// Returns the String formatted together
 		return  "Attacker: " + this.getAttacker().getName() + "\n" +
+				"\t" + "Extra Conditions:" + atkConText +
 				"Defender: " + this.getDefender().getName() + "\n" +
+				"\t" + "Extra Conditions:" + defConText +
 				"DmgType:  " + this.getDmgType() + "\n" +
 				dmgText + "\n" +
 				"Missable: " + this.canMiss + "\n" +
 				critText + "\n" +
 				"Armor:    " + (this.ignoresArmor? "Ignored" : "Applies") + "\n" +
-				"Deviates: " + this.hasDeviation();
+				"Deviates: " + this.hasDeviation() + "\n" + 
+				"Attached Attacks:" + attachedAtkText;
+	}
+	
+	// Function to apply and unapply the single-use (for this attack) conditions
+	private void applyAttackerConditions() {
+		for (Condition c : this.getAttackerConditions()) {
+			this.attacker.apply(c);
+		}
+	}
+	private void applyDefenderConditions() {
+		for (Condition c : this.getDefenderConditions()) {
+			this.defender.apply(c);
+		}
+	}
+	private void unapplyAttackerConditions() {
+		for (Condition c : this.getAttackerConditions()) {
+			this.attacker.unapply(c);
+		}
+	}
+	private void unapplyDefenderConditions() {
+		for (Condition c : this.getDefenderConditions()) {
+			this.defender.unapply(c);
+		}
 	}
 	
 	// Functions to help execute the attack held in the variables of the class
@@ -158,6 +250,125 @@ public class Attack {
 		return ret;
 	}
 	
+	// Functions to execute the "attached" Attacks with the correct alterations
+	private void attachedExecute(AttackResultBuilder atkResBuilder) {
+		// If this attack has an alteration as an "attached" Attack
+		if (this.hasAlteration()) {
+			// Create a new attack (based on the specified alterations lambda function and the attack result so far) to execute the "attachedExecuteAttack" function
+			AttackResult atkResSoFar = atkResBuilder.build();
+			Attack atk = this.getAlteration().evaluate(atkResSoFar);
+			// If the default occured, or the attack simply is empty. Return and the "attached" Attack had no result
+			if (atk.equals(Attack.EMPTY)) {
+				return;
+			}
+			// Do the execution of the "attached" attack
+			atk.attachedExecuteAttack(atkResBuilder);
+			return;
+		}
+		// Otherwise, this attack is fine as it is and can do the execution of the "attached" attack itself
+		this.attachedExecuteAttack(atkResBuilder);
+	}
+	private void attachedExecuteAttack(AttackResultBuilder atkResBuilder) {
+		// Apply the single attack (this attack only) Conditions
+		this.applyAttackerConditions();
+		this.applyDefenderConditions();
+		
+		// Determine if the attack hits
+		boolean didHit = true;
+		if (this.canMiss()) {
+			didHit = this.landAttack();
+		}
+		
+		// If the attack missed:
+		if (!didHit) {
+			// Unapply the single attack (this attack only) Conditions
+			this.unapplyAttackerConditions();
+			this.unapplyDefenderConditions();
+			
+			// Add the Attached Attack Result to the current overall Attack Result Builder
+			AttackResult attachedAtkResult = new AttackResultBuilder()
+					.attacker(this.getAttacker())
+					.defender(this.getDefender())
+					.type(this.getDmgType())
+					.didHit(false)
+					.didCrit(false)
+					.damageDealt(0)
+					.build();
+			
+			atkResBuilder.addAttachedAttackResult(attachedAtkResult);
+			
+			// Stop the rest of the attack
+			return;
+		}
+		
+		// Calculate base amount, armor effect, critical effect, and deviated effect.
+		// Base amount
+		double baseDmgAmount;
+		if (this.usesScaler()) {
+			baseDmgAmount = this.getScaler() * this.getAttacker().getDamage();
+		}
+		else {
+			baseDmgAmount = this.getFlatDamageAmount();
+		}
+		
+		// Armor Effect. If the attack is classified as "ignoring Armor" the minimum armorEffect is 1, and the bonus (amount above 1) is increased by 50%.
+		double armorEffect;
+		if (this.ignoresArmor()) {
+			if (this.getDefender().getArmor() > this.getAttacker().getArmorPiercing()) {
+				armorEffect = 1;
+			}
+			else {
+				armorEffect = this.getAttacker().getArmorPiercing()*1d / (this.getDefender().getArmor());
+				armorEffect = (armorEffect - 1) * 1.5 + 1;
+			}
+		}
+		// Otherwise, just normal ArmorPiercing/Armor.
+		else {
+			armorEffect = this.getAttacker().getArmorPiercing()*1d / (this.getDefender().getArmor());
+		}
+		
+		// Critical Effect
+		double critEffect = this.criticalEffect();
+		boolean didCrit = critEffect > 1.0;
+		
+		// Calculate Total Damage and Deviation
+		double totalDamage = baseDmgAmount * armorEffect * critEffect;
+		
+		// Deviation Effect
+		// Calculates the minimum and maximum Damage possible due to Standard Deviation (minimum is removed if you didCrit)
+		int minDamage;
+		int maxDamage = (int)Math.round(totalDamage * this.getAttacker().getSTDup() / 100.0);
+		if (didCrit) {
+			minDamage = (int)Math.round(totalDamage);
+		}
+		else {
+			minDamage = (int)Math.round(totalDamage * this.getAttacker().getSTDdown() / 100.0);
+		}
+		
+		// Determines where on the Damage spectrum created the Ability landed, and calculates the final Damage done
+		Dice vary = new Dice(maxDamage-minDamage+1);
+		int dmgTaken = minDamage + vary.roll() - 1;
+		
+		// The defender takes the damage
+		dmgTaken = this.getDefender().takeDamage(dmgTaken, this.getDmgType());
+		
+		// Unapply the single attack (this attack only) Conditions
+		this.unapplyAttackerConditions();
+		this.unapplyDefenderConditions();
+		
+		// Add the Attached Attack Result to the current overall Attack Result Builder
+		AttackResult attachedAtkResult = new AttackResultBuilder()
+				.attacker(this.getAttacker())
+				.defender(this.getDefender())
+				.type(this.getDmgType())
+				.didHit(true)
+				.didCrit(didCrit)
+				.damageDealt(dmgTaken)
+				.build();
+		
+		atkResBuilder.addAttachedAttackResult(attachedAtkResult);
+	}
+	
 	// Executes the attack
 	public void execute() {
 		// Make sure neither target is dead:
@@ -176,9 +387,17 @@ public class Attack {
 			}
 		}
 		
+		// Apply Attack Conditions
+		this.getAttacker().applyAttackConditions(this);
+		this.getDefender().applyAttackConditions(this);
+		
 		// Apply Pre-Attack Effects
-		this.getDefender().applyPreAttackEffects(this);
 		this.getAttacker().applyPreAttackEffects(this);
+		this.getDefender().applyPreAttackEffects(this);
+		
+		// Apply the single attack (this attack only) Conditions
+		this.applyAttackerConditions();
+		this.applyDefenderConditions();
 		
 		// Determine if the attack hits
 		boolean didHit = true;
@@ -188,22 +407,34 @@ public class Attack {
 		
 		// If the attack missed:
 		if (!didHit) {
-			// Print the result
-			System.out.println(this.getAttacker().getName() + " missed " + this.getDefender().getName() + "!");
-			
-			// Store the attack attempt
-			AttackResult atkResult = new AttackResultBuilder()
+			// Start the attack result builder from the results from this missed attack
+			AttackResultBuilder atkResultBuilder = new AttackResultBuilder()
 					.attacker(this.getAttacker())
 					.defender(this.getDefender())
 					.type(this.getDmgType())
 					.didHit(false)
 					.didCrit(false)
-					.damageDealt(0)
-					.didKill(false)
-					.build();
+					.damageDealt(0);
 			
+			
+			// Unapply the single attack (this attack only) Conditions
+			this.unapplyAttackerConditions();
+			this.unapplyDefenderConditions();
+			
+			// Execute Attached Attacks, pass the AttackResultBuilder so far
+			for (Attack attached : this.getAttachedAttacks()) {
+				attached.attachedExecute(atkResultBuilder);
+			}
+			
+			// Print the final attack result and store it for both Characters
+			AttackResult atkResult = atkResultBuilder.didKill(this.getDefender().isDead()).build();
+			System.out.println(atkResult.toString());
 			this.getDefender().storeAttack(atkResult);
 			this.getAttacker().storeAttack(atkResult);
+			
+			// Unapply Attack Conditions
+			this.getDefender().unapplyAttackConditions(atkResult);
+			this.getAttacker().unapplyAttackConditions(atkResult);
 			
 			// Apply Post-Attack Effects
 			this.getDefender().applyPostAttackEffects(atkResult);
@@ -261,69 +492,38 @@ public class Attack {
 		Dice vary = new Dice(maxDamage-minDamage+1);
 		int dmgTaken = minDamage + vary.roll() - 1;
 		
-		// The defender takes the damage -- CHANGE? (Includes printing the result)
-		// dmgTaken = this.getAttacker().dealDamage(this.getDefender(), dmgTaken, this.getAttackType());
+		// The defender takes the damage
 		dmgTaken = this.getDefender().takeDamage(dmgTaken, this.getDmgType());
 		
-		// Attack output
-		if (didCrit) {
-			System.out.println(this.getAttacker().getName() + " scored a CRITCAL HIT against " + this.getDefender().getName() + " for a total of " + dmgTaken + " " + this.getDmgType().toString() + " damage!");
-		}
-		else {
-			System.out.println(this.getAttacker().getName() + " hit " + this.getDefender().getName() + " for a total of " + dmgTaken + " " + this.getDmgType().toString() + " damage!");
-		}
 		
-		if (this.getDefender().isDead()) {
-			Dice funDie = new Dice(6);
-			String funWord = "";
-			
-			switch(funDie.roll()) {
-				case 1: {
-					funWord = " utterly annihilated ";
-					break;
-				}
-				case 2: {
-					funWord = " defeated ";
-					break;
-				}
-				case 3: {
-					funWord = " obliterated ";
-					break;
-				}
-				case 4: {
-					funWord = " purged the universe of ";
-					break;
-				}
-				case 5: {
-					funWord = " destroyed ";
-					break;
-				}
-				case 6: {
-					funWord = " slew ";
-					break;
-				}
-			}
-			
-			System.out.println(this.getAttacker().getName() + funWord + this.getDefender().getName() + "!");
-		}
-		else {
-			System.out.println(this.getDefender().getName() + " has " + this.getDefender().getCurrentHealth() + " Health remaining.");
-		}
-		
-		
-		// Store the attack
-		AttackResult atkResult = new AttackResultBuilder()
+		// Start the attack result builder from the results from this successful attack
+		AttackResultBuilder atkResultBuilder = new AttackResultBuilder()
 				.attacker(this.getAttacker())
 				.defender(this.getDefender())
 				.type(this.getDmgType())
 				.didHit(true)
 				.didCrit(didCrit)
-				.damageDealt(dmgTaken)
-				.didKill(this.getDefender().isDead())
-				.build();
+				.damageDealt(dmgTaken);
 		
+		
+		// Unapply the single attack (this attack only) Conditions
+		this.unapplyAttackerConditions();
+		this.unapplyDefenderConditions();
+		
+		// Execute Attached Attacks, pass the AttackResultBuilder so far
+		for (Attack attached : this.getAttachedAttacks()) {
+			attached.attachedExecute(atkResultBuilder);
+		}
+		
+		// Print the final attack result and store it for both Characters
+		AttackResult atkResult = atkResultBuilder.didKill(this.getDefender().isDead()).build();
+		System.out.println(atkResult.toString());
 		this.getDefender().storeAttack(atkResult);
 		this.getAttacker().storeAttack(atkResult);
+		
+		// Unapply Attack Conditions
+		this.getDefender().unapplyAttackConditions(atkResult);
+		this.getAttacker().unapplyAttackConditions(atkResult);
 		
 		// Apply Post-Attack Effects
 		this.getDefender().applyPostAttackEffects(atkResult);
@@ -347,6 +547,15 @@ class AttackBuilder {
 	private boolean ignoresArmor;
 	private boolean hasDeviation;
 	
+	// Additional Variables for single-use (this attack only) Conditions to apply
+	private LinkedList<Condition> attackerConditions;
+	private LinkedList<Condition> defenderConditions;
+	
+	// Additional variables for attacks "attached" to this Attack and, if this Attack is the attached, for any necessary alterations
+	private LinkedList<Attack> attachedAttacks;
+	private boolean hasAlteration;
+	private AttachedAlteration alteration;
+	
 	// Constructors
 	public AttackBuilder(Attack base) {
 		this.attacker = base.getAttacker();
@@ -361,6 +570,13 @@ class AttackBuilder {
 		this.guaranteedCrit = base.guaranteedCrit();
 		this.ignoresArmor = base.ignoresArmor();
 		this.hasDeviation = base.hasDeviation();
+		
+		this.attackerConditions = base.getAttackerConditions();
+		this.defenderConditions = base.getDefenderConditions();
+		
+		this.attachedAttacks = base.getAttachedAttacks();
+		this.hasAlteration = base.hasAlteration();
+		this.alteration = base.getAlteration();
 	}
 	public AttackBuilder() {
 		this(Attack.EMPTY);
@@ -463,8 +679,27 @@ class AttackBuilder {
 		return this;
 	}
 	
+	public AttackBuilder addAttackerCondition(Condition added) {
+		this.attackerConditions.add(added);
+		return this;
+	}
+	public AttackBuilder addDefenderCondition(Condition added) {
+		this.defenderConditions.add(added);
+		return this;
+	}
+	
+	public AttackBuilder addAttachedAttack(Attack atk) {
+		this.attachedAttacks.add(atk);
+		return this;
+	}
+	public AttackBuilder asAttachedAlteration(AttachedAlteration alteration) {
+		this.hasAlteration = true;
+		this.alteration = alteration;
+		return this;
+	}
+	
 	// Build the attack
 	public Attack build() {
-		return new Attack(this.attacker, this.defender, this.type, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation);
+		return new Attack(this.attacker, this.defender, this.type, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.attackerConditions, this.defenderConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
 	}
 }
