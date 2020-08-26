@@ -14,8 +14,13 @@ interface AttachedAlteration {
 }
 
 public class Attack {
+	// Enums to denote additional types of variables specific for Attacks
 	public static enum DmgType {
-		TRUE, SLASHING, SMASHING, PIERCING, MAGIC, FIRE, ICE, LIGHTNING, ARCANE, POISON, BLEED, EXPLOSIVE, LIGHT, NECROMANTIC;
+		TRUE, SLASHING, SMASHING, PIERCING, FLEX, MAGIC, FIRE, ICE, ELECTRIC, ARCANE, POISON, BLEED, EXPLOSIVE, LIGHT, NECROMANTIC;
+	}
+	
+	public static enum RangeType {
+		MELEE, RANGED, OTHER
 	}
 	
 	// Constant for Empty Attacks to build up with
@@ -24,11 +29,13 @@ public class Attack {
 	// Variables for each element of an attack
 	private Character attacker;		// The Character attacking
 	private Character defender;		// The Chatacter being attacked
-	private Attack.DmgType type;	// The type of attack made
+	private Attack.DmgType type;	// The damage type of the attack made
+	private Attack.RangeType range; // The range type of the attack made
 	private boolean usesScaler;		// Determines if the attack uses a scaler for damage (true) or a specified flat numeric amount (false)
 	private double scaler;			// If a scaler is used (the usual), holds the Damage scaler of the attack
 	private int flatDamage;			// If a scaler is not used, holds the specified flat numeric damage amount
 	private boolean isTargeted;		// Determines if Targeted (true) or AOE (false)
+	private boolean canHit;			// Determines if the attack has the capability of hitting (if somehow canMiss and canHit are both false, this technically has priority)
 	private boolean canMiss;		// Determines if the attack has the capability of being dodged or blocked
 	private boolean canCrit;		// Determines if the attack has the capability of critically striking
 	private boolean guaranteedCrit;	// Determines if the attack is a guaranteed critical strike
@@ -45,14 +52,16 @@ public class Attack {
 	private AttachedAlteration alteration;
 	
 	// Constructors
-	public Attack(Character attacker, Character defender, Attack.DmgType type, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
+	public Attack(Character attacker, Character defender, Attack.DmgType type, Attack.RangeType range, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canHit, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = type;
+		this.range = range;
 		this.usesScaler = usesScaler;
 		this.scaler = scaler;
 		this.flatDamage = flatDamage;
 		this.isTargeted = isTargeted;
+		this.canHit = canHit;
 		this.canMiss = canMiss;
 		this.canCrit = canCrit;
 		this.guaranteedCrit = guaranteedCrit;
@@ -70,10 +79,12 @@ public class Attack {
 		this.attacker = Character.EMPTY;
 		this.defender = Character.EMPTY;
 		this.type = Attack.DmgType.TRUE;
+		this.range = Attack.RangeType.OTHER;
 		this.usesScaler = true;
 		this.scaler = 1.0;
 		this.flatDamage = 0;
 		this.isTargeted = true;
+		this.canHit = true;
 		this.canMiss = true;
 		this.canCrit = true;
 		this.guaranteedCrit = false;
@@ -98,6 +109,9 @@ public class Attack {
 	public Attack.DmgType getDmgType() {
 		return this.type;
 	}
+	public Attack.RangeType getRangeType() {
+		return this.range;
+	}
 	public boolean usesScaler() {
 		return this.usesScaler;
 	}
@@ -109,6 +123,12 @@ public class Attack {
 	}
 	public boolean isTargeted() {
 		return this.isTargeted;
+	}
+	public boolean isAOE() {
+		return !this.isTargeted();
+	}
+	public boolean canHit() {
+		return this.canHit;
 	}
 	public boolean canMiss() {
 		return this.canMiss;
@@ -185,7 +205,10 @@ public class Attack {
 				"Defender: " + this.getDefender().getName() + "\n" +
 				"\t" + "Extra Conditions:" + defConText +
 				"DmgType:  " + this.getDmgType() + "\n" +
+				"Range:    " + this.getRangeType().toString() +
 				dmgText + "\n" +
+				"Version:  " + (this.isTargeted()? "Targeted" : "AOE") +
+				"Hittable: " + this.canHit + "\n" + 
 				"Missable: " + this.canMiss + "\n" +
 				critText + "\n" +
 				"Armor:    " + (this.ignoresArmor? "Ignored" : "Applies") + "\n" +
@@ -193,25 +216,31 @@ public class Attack {
 				"Attached Attacks:" + attachedAtkText;
 	}
 	
-	// Function to apply and unapply the single-use (for this attack) conditions
+	// Function to add, apply, and unapply the single-use (for this attack) conditions [add included publicly so characters can add Conditions in their PreAttackEffects]
+	public void addAttackerCondition(Condition added) {
+		this.attackerConditions.add(added);
+	}
+	public void addDefenderCondition(Condition added) {
+		this.defenderConditions.add(added);
+	}
 	private void applyAttackerConditions() {
 		for (Condition c : this.getAttackerConditions()) {
-			this.attacker.apply(c);
+			this.attacker.apply(c, this.defender);
 		}
 	}
 	private void applyDefenderConditions() {
 		for (Condition c : this.getDefenderConditions()) {
-			this.defender.apply(c);
+			this.defender.apply(c, this.attacker);
 		}
 	}
 	private void unapplyAttackerConditions() {
 		for (Condition c : this.getAttackerConditions()) {
-			this.attacker.unapply(c);
+			this.attacker.unapply(c, this.defender);
 		}
 	}
 	private void unapplyDefenderConditions() {
 		for (Condition c : this.getDefenderConditions()) {
-			this.defender.unapply(c);
+			this.defender.unapply(c, this.attacker);
 		}
 	}
 	
@@ -252,15 +281,24 @@ public class Attack {
 	
 	// Functions to execute the "attached" Attacks with the correct alterations
 	private void attachedExecute(AttackResultBuilder atkResBuilder) {
+		// First, make sure this attack has the same attacker and defender
+		AttackResult atkResSoFar = atkResBuilder.build();
+		this.attacker = atkResSoFar.getAttacker();
+		this.defender = atkResSoFar.getDefender();
+		
 		// If this attack has an alteration as an "attached" Attack
 		if (this.hasAlteration()) {
 			// Create a new attack (based on the specified alterations lambda function and the attack result so far) to execute the "attachedExecuteAttack" function
-			AttackResult atkResSoFar = atkResBuilder.build();
 			Attack atk = this.getAlteration().evaluate(atkResSoFar);
 			// If the default occured, or the attack simply is empty. Return and the "attached" Attack had no result
 			if (atk.equals(Attack.EMPTY)) {
 				return;
 			}
+			
+			// Make sure this attack has the same attacker and defender
+			atk.attacker = atkResSoFar.getAttacker();
+			atk.defender = atkResSoFar.getDefender();
+			
 			// Do the execution of the "attached" attack
 			atk.attachedExecuteAttack(atkResBuilder);
 			return;
@@ -274,8 +312,8 @@ public class Attack {
 		this.applyDefenderConditions();
 		
 		// Determine if the attack hits
-		boolean didHit = true;
-		if (this.canMiss()) {
+		boolean didHit = this.canHit();
+		if (didHit && this.canMiss()) {
 			didHit = this.landAttack();
 		}
 		
@@ -290,6 +328,8 @@ public class Attack {
 					.attacker(this.getAttacker())
 					.defender(this.getDefender())
 					.type(this.getDmgType())
+					.range(this.getRangeType())
+					.isTargeted(this.isTargeted())
 					.didHit(false)
 					.didCrit(false)
 					.damageDealt(0)
@@ -361,6 +401,8 @@ public class Attack {
 				.attacker(this.getAttacker())
 				.defender(this.getDefender())
 				.type(this.getDmgType())
+				.range(this.getRangeType())
+				.isTargeted(this.isTargeted())
 				.didHit(true)
 				.didCrit(didCrit)
 				.damageDealt(dmgTaken)
@@ -400,8 +442,8 @@ public class Attack {
 		this.applyDefenderConditions();
 		
 		// Determine if the attack hits
-		boolean didHit = true;
-		if (this.canMiss()) {
+		boolean didHit = this.canHit;
+		if (didHit && this.canMiss()) {
 			didHit = this.landAttack();
 		}
 		
@@ -412,6 +454,8 @@ public class Attack {
 					.attacker(this.getAttacker())
 					.defender(this.getDefender())
 					.type(this.getDmgType())
+					.range(this.getRangeType())
+					.isTargeted(this.isTargeted())
 					.didHit(false)
 					.didCrit(false)
 					.damageDealt(0);
@@ -501,6 +545,8 @@ public class Attack {
 				.attacker(this.getAttacker())
 				.defender(this.getDefender())
 				.type(this.getDmgType())
+				.range(this.getRangeType())
+				.isTargeted(this.isTargeted())
 				.didHit(true)
 				.didCrit(didCrit)
 				.damageDealt(dmgTaken);
@@ -537,10 +583,12 @@ class AttackBuilder {
 	private Character attacker;
 	private Character defender;
 	private Attack.DmgType type;
+	private Attack.RangeType range;
 	private boolean usesScaler;
 	private double scaler;
 	private int flatDamage;
 	private boolean isTargeted;
+	private boolean canHit;
 	private boolean canMiss;
 	private boolean canCrit;
 	private boolean guaranteedCrit;
@@ -561,10 +609,12 @@ class AttackBuilder {
 		this.attacker = base.getAttacker();
 		this.defender = base.getDefender();
 		this.type = base.getDmgType();
+		this.range = base.getRangeType();
 		this.usesScaler = base.usesScaler();
 		this.scaler = base.getScaler();
 		this.flatDamage = base.getFlatDamageAmount();
 		this.isTargeted = base.isTargeted();
+		this.canHit = base.canHit();
 		this.canMiss = base.canMiss();
 		this.canCrit = base.canCrit();
 		this.guaranteedCrit = base.guaranteedCrit();
@@ -581,6 +631,14 @@ class AttackBuilder {
 	public AttackBuilder() {
 		this(Attack.EMPTY);
 	}
+	public AttackBuilder(AttackResult prevResult) {
+		this();
+		this.attacker = prevResult.getAttacker();
+		this.defender = prevResult.getDefender();
+		this.type = prevResult.getDmgType();
+		this.range = prevResult.getRangeType();
+		this.isTargeted = prevResult.isTargeted();
+	}
 	
 	// Methods for build process
 	public AttackBuilder attacker(Character attacker) {
@@ -595,6 +653,11 @@ class AttackBuilder {
 	
 	public AttackBuilder type(Attack.DmgType aType) {
 		this.type = aType;
+		return this;
+	}
+	
+	public AttackBuilder range(Attack.RangeType range) {
+		this.range = range;
 		return this;
 	}
 	
@@ -637,8 +700,23 @@ class AttackBuilder {
 		return this.isTargeted(false);
 	}
 	
+	public AttackBuilder canHit(boolean canHit) {
+		this.canHit = canHit;
+		return this;
+	}
+	public AttackBuilder canHit() {
+		return this.canHit(true);
+	}
+	public AttackBuilder cannotHit() {
+		return this.canHit(false);
+	}
+	
 	public AttackBuilder canMiss(boolean canMiss) {
 		this.canMiss = canMiss;
+		// If the attack cannot miss, this changes canHit to True if previously false
+		if (!this.canMiss) {
+			this.canHit = true;
+		}
 		return this;
 	}
 	public AttackBuilder canMiss() {
@@ -692,7 +770,7 @@ class AttackBuilder {
 		this.attachedAttacks.add(atk);
 		return this;
 	}
-	public AttackBuilder asAttachedAlteration(AttachedAlteration alteration) {
+	public AttackBuilder attachedAlteration(AttachedAlteration alteration) {
 		this.hasAlteration = true;
 		this.alteration = alteration;
 		return this;
@@ -700,6 +778,6 @@ class AttackBuilder {
 	
 	// Build the attack
 	public Attack build() {
-		return new Attack(this.attacker, this.defender, this.type, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.attackerConditions, this.defenderConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
+		return new Attack(this.attacker, this.defender, this.type, this.range, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canHit, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.attackerConditions, this.defenderConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
 	}
 }

@@ -101,7 +101,7 @@ public class StatusEffect {
 		if (this.seType != Type.BASIC) {
 			ret += " " + this.seType.toString();
 		}
-		ret += " " + this.getAlteredStat().toString();
+		ret += " " + this.getAlteredStat().toString() + (this.affectsSelf? "" : " (applied to other)");
 		return ret;
 	}
 	@Override

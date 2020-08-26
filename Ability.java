@@ -1,13 +1,17 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 public class Ability {
-	// Variables, only the turnCount can be accessed outside the Ability itself
+	// Variables, the cooldown, scaler, and duration can be set when making the Ability
 	private String name;
 	private Character owner;
 	private int rank;
 	protected int cooldown;
 	private int turnsRemaining;
 	protected double scaler;
+	private int duration;
+	private int activeTurnsRemaining;
+	private boolean activeFinalTurn;
+	private boolean inFinalTurn;
 	
 	// Constructors
 	public Ability(String name, Character owner, int rank) {
@@ -17,9 +21,16 @@ public class Ability {
 		this.cooldown = 0;
 		this.turnsRemaining = 0;
 		this.scaler = 1.0;
+		this.duration = 0;
+		this.activeTurnsRemaining = 0;
+		this.activeFinalTurn = false;
+		this.inFinalTurn = false;
 	}
 	
 	// Get methods
+	public String getName() {
+		return this.name;
+	}
 	public Character getOwner() {
 		return this.owner;
 	}
@@ -35,11 +46,11 @@ public class Ability {
 	public double getScaler() {
 		return this.scaler;
 	}
-	
-	// Methods to deal with Cooldowns
-	public void decrementTurnsRemaining() {
-		this.setTurnsRemaining(this.turnsRemaining - 1);
+	public int getDuration() {
+		return this.duration;
 	}
+	
+	// Functions to deal with Cooldowns
 	public void setTurnsRemaining(int turns) {
 		if (turns < 0) {
 			turns = 0;
@@ -60,7 +71,61 @@ public class Ability {
 		return this.turnsRemaining > 0 && this.cooldown > 0;
 	}
 	
-	// Use functions to be overridden by each class (there can be multiple versions, int specifies version)
+	// Functions to deal with activatable Abilities with durations.
+	protected void makeActiveAbility(int duration, boolean actFinalTurn) {
+		this.duration = duration;
+		this.activeFinalTurn = actFinalTurn;
+	}
+	protected void makeActiveAbility(int duration) {
+		this.makeActiveAbility(duration, false);
+	}
+	public void activate() {
+		// If somehow, the Ability activates while active, it first deactivates, then reactivates
+		if (this.isActive()) {
+			this.deactivate();
+		}
+		this.activeTurnsRemaining = this.duration;
+	}
+	public void deactivate() {
+		this.activeTurnsRemaining = 0;
+	}
+	public void setActiveTurnsRemaining(int turns) {
+		if (turns < 0) {
+			turns = 0;
+		}
+		boolean prevZero = this.activeTurnsRemaining == 0;
+		this.activeTurnsRemaining = turns;
+		if (this.activeTurnsRemaining == 0 && !prevZero) {
+			this.inFinalTurn = true;
+			if (!this.activeFinalTurn) {
+				this.deactivate();
+			}
+		}
+	}
+	public boolean isActive() {
+		return this.activeTurnsRemaining > 0 || (this.activeFinalTurn && this.inFinalTurn);
+	}
+	
+	// Functions that should be called at the beginning, end, and during turns.
+	// Beginning turns: Decrements the turns remaining for Cooldowns and Durations
+	public void decrementTurnsRemaining() {
+		if (this.onCooldown()) {
+			this.setTurnsRemaining(this.turnsRemaining - 1);
+		}
+		if (this.isActive()) {
+			this.setActiveTurnsRemaining(this.activeTurnsRemaining - 1);
+		}
+	}
+	
+	// Ending turns: Allows for Abilities to have additional effects at the end of a Character's turn. By default, the ending of an active ability during the final turn
+	public void endTurnEffects() {
+		if (this.inFinalTurn && this.activeFinalTurn) {
+			this.deactivate();
+		}
+		this.inFinalTurn = false;
+	}
+	
+	// During turns: Use functions to be overridden by each class (there can be multiple versions, int specifies version)
 	public void use(int version) {
 		// To also show the basic format of the use function, start by putting the Ability on Cooldown
 		this.setOnCooldown();
@@ -83,24 +148,30 @@ public class Ability {
 	// Used to print the Ability's name for reference
 	@Override
 	public String toString() {
+		String activeInd = "";
+		if (this.isActive()) {
+			activeInd = "\n\t- ACTIVE: " + (this.activeTurnsRemaining == 0 ? this.activeTurnsRemaining + " Turn(s) Remaining!" : "Final Turn!");
+		}
 		String cdInd = "";
 		if (this.onCooldown()) {
-			cdInd = " - CD: " + this.turnsRemaining + " Turn(s) Remaining!";
+			cdInd = "\n\t- CD: " + this.turnsRemaining + " Turn(s) Remaining!";
 		}
-		return this.name + cdInd;
+		return this.name + activeInd + cdInd;
 	}
 }
 
 
 class UltimateAbility extends Ability {
 	private String name;
-	private int charges;
+	private int chargesRemaining;
+	private int maxCharges;
 	
 	// Constructors
 	public UltimateAbility(String name, Character owner, int rank, int charges) {
 		super(name, owner, rank);
 		this.name = name;
-		this.charges = charges;
+		this.maxCharges = charges;
+		this.chargesRemaining = charges;
 	}
 	public UltimateAbility(String name, Character owner, int rank) {
 		this(name, owner, rank, 1);
@@ -108,9 +179,9 @@ class UltimateAbility extends Ability {
 	
 	// Slightly Different Cooldown Functions since it can only be used once by default
 	public void useCharges(int numCharges) {
-		this.charges -= numCharges;
-		if (this.charges < 0) {
-			this.charges = 0;
+		this.chargesRemaining -= numCharges;
+		if (this.chargesRemaining < 0) {
+			this.chargesRemaining = 0;
 		}
 	}
 	
@@ -120,12 +191,17 @@ class UltimateAbility extends Ability {
 	}
 	
 	@Override
+	public void setOffCooldown() {
+		this.chargesRemaining = this.maxCharges;
+	}
+	
+	@Override
 	public boolean onCooldown() {
-		return this.charges <= 0;
+		return this.chargesRemaining <= 0;
 	}
 	
 	@Override
 	public String toString() {
-		return this.name + " - CD: " + this.charges + " Charge(s) Remaining!";
+		return this.name + " - CD: " + this.chargesRemaining + " Charge(s) Remaining!";
 	}
 }

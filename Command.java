@@ -63,10 +63,13 @@ class BasicAttackCommand extends Command {
 		this.singleAttack = singleAttack;
 		this.attack = atk;
 	}
+	public BasicAttackCommand(Character owner, Attack atk) {
+		this(owner, true, atk);
+	}
 	// Constructor for default basic attacks
-	public BasicAttackCommand(Character owner, Attack.DmgType aType) {
+	public BasicAttackCommand(Character owner, Attack.DmgType aType, Attack.RangeType rType) {
 		// By default, a basic attack is a single attack (will all default values and) with the specified attack type
-		this(owner, true, new AttackBuilder().attacker(owner).type(aType).build());
+		this(owner, true, new AttackBuilder().attacker(owner).type(aType).range(rType).build());
 	}
 	
 	// Overrides the abstract display function to show the text: "Basic Attack" when choosing

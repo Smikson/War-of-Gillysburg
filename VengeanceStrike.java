@@ -10,10 +10,6 @@ public class VengeanceStrike extends Ability {
 	public HashMap<Character,Integer> counter;
 	
 	private Condition enemyDamageReduction;
-	private Condition selfPreAttackDmgBonus;
-	
-	// Additional variable to hold the target of Vengeance Strike so that Flip Strike doesn't have to prompt
-	private Character target;
 	
 	// Constructor
 	public VengeanceStrike(SteelLegionWarrior source, int rank) {
@@ -27,7 +23,6 @@ public class VengeanceStrike extends Ability {
 		
 		// Calculate the additional Staus Effects
 		this.setEnemyDamageReduction();
-		this.setSelfPreAttackDmgBonus();
 	}
 	
 	// Calculates the basic values for this Ability
@@ -74,23 +69,6 @@ public class VengeanceStrike extends Ability {
 		this.enemyDamageReduction.addStatusEffect(dmgRed);
 	}
 	
-	private void setSelfPreAttackDmgBonus() {
-		// Only occurs at 30% at rank 5
-		int amount = 0;
-		if (this.rank() >= 5) {
-			amount = 30;
-		}
-		
-		// Create the Status Effect
-		StatusEffect dmgBuff = new StatusEffect(Stat.Version.DAMAGE, amount, StatusEffect.Type.OUTGOING);
-		dmgBuff.makePercentage();
-		
-		// Create the Condition that contains this effect (duration of 0 since immediately unapplied)
-		this.selfPreAttackDmgBonus = new Condition("Vengeance Strike: Pre Attack Bonus", 0);
-		this.selfPreAttackDmgBonus.setSource(this.owner);
-		this.selfPreAttackDmgBonus.addStatusEffect(dmgBuff);
-	}
-	
 	// Get methods for additional effects
 	@Override
 	public SteelLegionWarrior getOwner() {
@@ -101,18 +79,9 @@ public class VengeanceStrike extends Ability {
 		return this.enemyDamageReduction;
 	}
 	
-	public Condition getSelfPreAttackDmgBonus() {
-		return this.selfPreAttackDmgBonus;
-	}
-	
 	// Clears the counter map (should occur at the beginning of each turn for ranks 1 and 2)
 	public void clearCounterMap() {
 		this.counter.clear();
-	}
-	
-	// Function to return the target of the current Vengeance Strike (only used for Flip Strike's version)
-	public Character getTarget() {
-		return this.target;
 	}
 	
 	// Creates an execute function to make the Vengeance Strike attack, applying the correct Conditions
@@ -128,6 +97,7 @@ public class VengeanceStrike extends Ability {
 		if (this.rank() == 2 && this.counter.get(enemy) != 1) {
 			shouldAttack = false;
 		}
+		// At rank 3, the attack has no limitations except Ranged enemies out of range.
 		
 		// Tell the user if the attack should(n't) occur, and prompt for usage
 		String negation = shouldAttack? "" : "NOT";
@@ -137,11 +107,9 @@ public class VengeanceStrike extends Ability {
 		}
 		
 		// At this point the attack occurs.
-		// First, store the target in case it needs to be used by Flip Strike
-		this.target = enemy;
 		// If the rank is 4 or 5, the Ability uses a version of Flip Strike for the attack (accessible by use(2))
 		if (this.rank() >= 4) {
-			this.getOwner().useAbility(SteelLegionWarrior.AbilityNames.FlipStrike, 2);
+			this.getOwner().useVengeanceFlipStrike(enemy);
 		}
 		// Otherwise, do the normal Vengeance Strike attack
 		else {

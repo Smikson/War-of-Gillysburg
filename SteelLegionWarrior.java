@@ -64,7 +64,8 @@ public class SteelLegionWarrior extends Character {
 	}
 	
 	
-	// Functions to use an Ability or affect its Cooldown
+	// Functions for interaction between Abilities:
+	// Functions to use an Ability
 	public void useAbility(SteelLegionWarrior.AbilityNames name, int version) {
 		Ability chosen = this.abilities.get(name);
 		chosen.use(version);
@@ -85,14 +86,26 @@ public class SteelLegionWarrior extends Character {
 		return chosen.rank();
 	}
 	
+	// Function to get the duration of an Ability
+	public int getAbilityDuration(SteelLegionWarrior.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.getDuration();
+	}
+	
+	// Function to get whether or not an Ability is active
+	public boolean isAbilityActive(SteelLegionWarrior.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.isActive();
+	}
+	
 	
 	// DO NOT FORGET THE STUN FROM WARRIOR'S MIGHT
-	// Deals the Damage from the "Vengeance Strike" Passive Ability
+	// Executes "Vengeance Strike" Passive Ability on target enemy
 	public void useVengeanceStrike(Character enemy) {
 		//this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 	}
-	// Used for when "Deflection" is active
-	public void useDeflectionVengeanceStrike(Character enemy) {
+	// Executes "Flip Strike" when used via Vengeance Strike
+	public void useVengeanceFlipStrike(Character enemy) {
 		this.attackDeflection(enemy, 1.2); // Deflection Attack, Targeted, 1.2x Damage
 	}
 	

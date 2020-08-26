@@ -1618,7 +1618,8 @@ public class SteelLegionTank extends Character {
 	}
 	
 	
-	// Functions to use an Ability or affect its Cooldown
+	// Functions for interaction between Abilities:
+	// Functions to use an Ability
 	public void useAbility(SteelLegionTank.AbilityNames name, int version) {
 		Ability chosen = this.abilities.get(name);
 		chosen.use(version);
@@ -1638,6 +1639,19 @@ public class SteelLegionTank extends Character {
 		Ability chosen = this.abilities.get(name);
 		return chosen.rank();
 	}
+	
+	// Function to get the duration of an Ability
+	public int getAbilityDuration(SteelLegionTank.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.getDuration();
+	}
+	
+	// Function to get whether or not an Ability is active
+	public boolean isAbilityActive(SteelLegionTank.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.isActive();
+	}
+	
 	
 	// Overrides the prompt to give class conditions
 	@Override
@@ -1682,9 +1696,7 @@ public class SteelLegionTank extends Character {
 		
 		// Reduces the Cooldown of all Abilities that need it.
 		for (Ability a : abilities.values()) {
-			if (a.onCooldown()) {
-				a.decrementTurnsRemaining();
-			}
+			a.decrementTurnsRemaining();
 		}
 	}
 	
@@ -1705,6 +1717,11 @@ public class SteelLegionTank extends Character {
 		// Normal Setup
 		super.endTurnSetup();
 		
+		// Ability Effects
+		for (Ability a : abilities.values()) {
+			a.endTurnEffects();
+		}
+		
 		// If not dead, use Enchanted Armor Healing (end of turn effect)
 		if (!this.isDead()) {
 			this.EnchantedArmor.use();
@@ -1722,7 +1739,7 @@ public class SteelLegionTank extends Character {
 	}
 }
 
-// Builds a Steel Legion Warrior
+// Builds a Steel Legion Tank
 class SteelLegionTankBuilder extends CharacterBuilder {
 	// Creates all the Ability fields
 	private int HoldItRightThereRank;

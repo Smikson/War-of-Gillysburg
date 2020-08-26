@@ -5,7 +5,7 @@ import java.util.*;
 public class Character {
 	// Lists Types that can be added to a Character
 	public static enum Type {
-		NONE, PLAYER, FIRE, ICE, HAIRY, VERMIN, DRAGON
+		NONE, PLAYER, FIRE, ICE, HAIRY, VERMIN, DRAGON, ARMORED
 	}
 	
 	// Static Characters to aid with Character building and leveling up from a base level.
@@ -49,6 +49,7 @@ public class Character {
 	private int Shields;
 	
 	private Attack.DmgType baseDmgType;
+	private Attack.RangeType baseRangeType;
 	private HashMap<Attack.DmgType,Double> resistances;
 	private HashMap<Attack.DmgType,Double> vulnerabilities;
 	
@@ -90,6 +91,7 @@ public class Character {
 		this.Shields = 0;
 		
 		this.baseDmgType = dmgType;
+		this.baseRangeType = range == 1? Attack.RangeType.MELEE : Attack.RangeType.RANGED;
 		this.resistances = resis;
 		this.vulnerabilities = vuls;
 		
@@ -120,7 +122,7 @@ public class Character {
 		
 		// Initializes the possible commands for a basic Character
 		this.commands = new LinkedList<>();
-		this.commands.add(new BasicAttackCommand(this, this.baseDmgType));
+		this.commands.add(new BasicAttackCommand(this, this.baseDmgType, this.baseRangeType));
 		this.commands.add(new AlterCharacterCommand(this));
 		this.commands.add(new EndTurnCommand(this));
 	}
@@ -181,6 +183,9 @@ public class Character {
 	
 	public Attack.DmgType getBaseDmgType() {
 		return this.baseDmgType;
+	}
+	public Attack.RangeType getRangeType() {
+		return this.baseRangeType;
 	}
 	public HashMap<Attack.DmgType,Double> getResistances() {
 		// Copies the list so alterations do not occur on the Character itself
@@ -250,6 +255,18 @@ public class Character {
 	
 	// To add conditions to this Character
 	protected void addCondition(Condition c) {
+		if (this.conditions.contains(c)) {
+			System.out.println(this.getName() + " already has " + c.getName() + ", and it was added to them. Proceed?");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return;
+			}
+			System.out.println("Replace existing Condition(s)?");
+			if (BattleSimulator.getInstance().askYorN()) {
+				while (this.conditions.contains(c)) {
+					this.conditions.remove(c);
+				}
+			}
+		}
 		this.conditions.add(c);
 	}
 	
@@ -407,12 +424,22 @@ public class Character {
 			}
 		}
 	}
-	protected void apply(Condition c) {
+	protected void apply(Condition c, Character other) {
 		// Automated Apply of Conditions that applies all its Status Effects using "applySE" assuming they all directly affect the current Character
 		// Make a note that each time this function is called, "unapply" should be called for the same condition when finished.
 		for (StatusEffect se : c.getStatusEffects()) {
-			this.applySE(se);
+			if (se.getApplyRequirement().evaluate(this) && se.getApplyDualRequirement().evaluate(this, other)) {
+				if (se.affectsSelf() || other.equals(Character.EMPTY)) {
+					this.applySE(se);
+				}
+				else {
+					other.applySE(se);
+				}
+			}
 		}
+	}
+	protected void apply(Condition c) {
+		this.apply(c, Character.EMPTY);
 	}
 	// For Unapplying
 	protected void unapplySE(StatusEffect se) {
@@ -454,19 +481,36 @@ public class Character {
 			}
 		}
 	}
-	protected void unapply(Condition c) {
+	protected void unapply(Condition c, Character other) {
 		// Automated Unapply of Conditions that unapplies all its Status Effects using "applySE" assuming they all directly affect the current Character
 		for (StatusEffect se : c.getStatusEffects()) {
-			this.unapplySE(se);
+			if (se.affectsSelf()) {
+				this.unapplySE(se);
+			}
+			else {
+				if (other.equals(Character.EMPTY)) {
+					return;
+				}
+				other.unapplySE(se);
+			}
 		}
 	}
-	
+	protected void unapply(Condition c) {
+		this.unapply(c, Character.EMPTY);
+	}
 	
 	// Methods for a Character's basic turn (beginning-end)
 	// For list of commands:
 	protected void addCommand(Command added) {
 		// Added commands are added to the end of the list, but before the last two commands (Alter Character and End Turn)
 		this.commands.add(this.commands.size() - 2, added);
+	}
+	protected void alterBasicAttack(BasicAttackCommand altered) {
+		this.commands.remove(0);
+		this.commands.add(0, altered);
+	}
+	protected void restoreBasicAttack() {
+		this.alterBasicAttack(new BasicAttackCommand(this, this.baseDmgType, this.baseRangeType));
 	}
 	
 	// Prompts for altering a Character

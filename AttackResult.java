@@ -11,17 +11,21 @@ public class AttackResult {
 	private Character attacker;
 	private Character defender;
 	private Attack.DmgType type;
+	private Attack.RangeType range;
+	private boolean isTargeted;
 	private boolean didHit;
 	private boolean didCrit;
-	private double damageDealt;
+	private int damageDealt;
 	private boolean didKill;
 	private LinkedList<AttackResult> attachedAttackResults;
 	
 	// Constructors
-	public AttackResult(Character attacker, Character defender, Attack.DmgType atkType, boolean didHit, boolean didCrit, double damageDealt, boolean didKill, LinkedList<AttackResult> attachedAttackResults) {
+	public AttackResult(Character attacker, Character defender, Attack.DmgType atkType, Attack.RangeType range, boolean isTargeted, boolean didHit, boolean didCrit, int damageDealt, boolean didKill, LinkedList<AttackResult> attachedAttackResults) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = atkType;
+		this.range = range;
+		this.isTargeted = isTargeted;
 		this.didHit = didHit;
 		this.didCrit = didCrit;
 		this.damageDealt = damageDealt;
@@ -32,6 +36,8 @@ public class AttackResult {
 		this.attacker = Character.EMPTY;
 		this.defender = Character.EMPTY;
 		this.type = Attack.DmgType.TRUE;
+		this.range = Attack.RangeType.OTHER;
+		this.isTargeted = true;
 		this.didHit = false;
 		this.didCrit = false;
 		this.damageDealt = 0;
@@ -49,13 +55,22 @@ public class AttackResult {
 	public Attack.DmgType getDmgType() {
 		return this.type;
 	}
+	public Attack.RangeType getRangeType() {
+		return this.range;
+	}
+	public boolean isTargeted() {
+		return this.isTargeted;
+	}
+	public boolean isAOE() {
+		return !this.isTargeted();
+	}
 	public boolean didHit() {
 		return this.didHit;
 	}
 	public boolean didCrit() {
 		return this.didCrit;
 	}
-	public double getDamageDealt() {
+	public int getDamageDealt() {
 		return this.damageDealt;
 	}
 	public boolean didKill() {
@@ -98,11 +113,17 @@ public class AttackResult {
 		ret += this.getAttacker().getName();
 		if (!this.didHit()) {
 			ret += " missed " + this.getDefender().getName() + "!";
+			
+			// Add each piece of each attached attack result
+			for (AttackResult attached : this.getAttachedAttackResults()) {
+				ret += "\n" + attached.attachedToString();
+			}
+			
 			return ret;
 		}
 		
 		if (this.didCrit()) {
-			ret += " scored a CRITICAL HIT against" + this.getDefender().getName();
+			ret += " scored a CRITICAL HIT against " + this.getDefender().getName();
 		}
 		else {
 			ret += " hit " + this.getDefender().getName();
@@ -187,9 +208,11 @@ class AttackResultBuilder {
 	private Character attacker;
 	private Character defender;
 	private Attack.DmgType type;
+	private Attack.RangeType range;
+	private boolean isTargeted;
 	private boolean didHit;
 	private boolean didCrit;
-	private double damageDealt;
+	private int damageDealt;
 	private boolean didKill;
 	private LinkedList<AttackResult> attachedAttackResults;
 	
@@ -198,6 +221,8 @@ class AttackResultBuilder {
 		this.attacker = atk.getAttacker();
 		this.defender = atk.getDefender();
 		this.type = atk.getDmgType();
+		this.range = atk.getRangeType();
+		this.isTargeted = atk.isTargeted();
 		this.didHit = atk.didHit();
 		this.didCrit = atk.didCrit();
 		this.damageDealt = atk.getDamageDealt();
@@ -225,6 +250,22 @@ class AttackResultBuilder {
 		return this;
 	}
 	
+	public AttackResultBuilder range(Attack.RangeType range) {
+		this.range = range;
+		return this;
+	}
+	
+	public AttackResultBuilder isTargeted(boolean isTargeted) {
+		this.isTargeted = isTargeted;
+		return this;
+	}
+	public AttackResultBuilder isTargeted() {
+		return this.isTargeted(true);
+	}
+	public AttackResultBuilder isAOE() {
+		return this.isTargeted(false);
+	}
+	
 	public AttackResultBuilder didHit(boolean didHit) {
 		this.didHit = didHit;
 		return this;
@@ -235,7 +276,7 @@ class AttackResultBuilder {
 		return this;
 	}
 	
-	public AttackResultBuilder damageDealt(double damageDealt) {
+	public AttackResultBuilder damageDealt(int damageDealt) {
 		this.damageDealt = damageDealt;
 		return this;
 	}
@@ -251,6 +292,6 @@ class AttackResultBuilder {
 	}
 	
 	public AttackResult build() {
-		return new AttackResult(this.attacker, this.defender, this.type, this.didHit, this.didCrit, this.damageDealt, this.didKill, this.attachedAttackResults);
+		return new AttackResult(this.attacker, this.defender, this.type, this.range, this.isTargeted, this.didHit, this.didCrit, this.damageDealt, this.didKill, this.attachedAttackResults);
 	}
 }

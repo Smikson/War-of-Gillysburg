@@ -254,7 +254,7 @@ public class CharacterBuilder {
 			this.addResistance(Attack.DmgType.FIRE, value);
 			this.addResistance(Attack.DmgType.ICE, value);
 			this.addResistance(Attack.DmgType.LIGHT, value);
-			this.addResistance(Attack.DmgType.LIGHTNING, value);
+			this.addResistance(Attack.DmgType.ELECTRIC, value);
 			this.addResistance(Attack.DmgType.NECROMANTIC, value);
 		}
 		
@@ -271,7 +271,7 @@ public class CharacterBuilder {
 			this.addVulnerability(Attack.DmgType.FIRE, value);
 			this.addVulnerability(Attack.DmgType.ICE, value);
 			this.addVulnerability(Attack.DmgType.LIGHT, value);
-			this.addVulnerability(Attack.DmgType.LIGHTNING, value);
+			this.addVulnerability(Attack.DmgType.ELECTRIC, value);
 			this.addVulnerability(Attack.DmgType.NECROMANTIC, value);
 		}
 		
