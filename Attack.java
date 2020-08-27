@@ -43,6 +43,7 @@ public class Attack {
 	private boolean hasDeviation;	// Determines if the attack uses STDup and STDdown to deviate the attack
 	
 	// Additional variables for single-use (this attack only) Conditions to apply
+	private double lifesteal;
 	private LinkedList<Condition> attackerConditions;
 	private LinkedList<Condition> defenderConditions;
 	
@@ -52,7 +53,7 @@ public class Attack {
 	private AttachedAlteration alteration;
 	
 	// Constructors
-	public Attack(Character attacker, Character defender, Attack.DmgType type, Attack.RangeType range, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canHit, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
+	public Attack(Character attacker, Character defender, Attack.DmgType type, Attack.RangeType range, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canHit, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, double lifesteal, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = type;
@@ -68,6 +69,7 @@ public class Attack {
 		this.ignoresArmor = ignoresArmor;
 		this.hasDeviation = hasDeviation;
 		
+		this.lifesteal = lifesteal;
 		this.attackerConditions = atkCons;
 		this.defenderConditions = defCons;
 		
@@ -91,6 +93,7 @@ public class Attack {
 		this.ignoresArmor = false;
 		this.hasDeviation = true;
 		
+		this.lifesteal = 0;
 		this.attackerConditions = new LinkedList<>();
 		this.defenderConditions = new LinkedList<>();
 		
@@ -146,6 +149,9 @@ public class Attack {
 		return this.hasDeviation;
 	}
 	
+	public double getLifeStealPercentage() {
+		return this.lifesteal;
+	}
 	public LinkedList<Condition> getAttackerConditions() {
 		return this.attackerConditions;
 	}
@@ -179,12 +185,12 @@ public class Attack {
 		
 		String dmgText = "";
 		if (this.usesScaler()) {
-			dmgText = "Scaler:   " + this.getScaler();
+			dmgText = "Scaler:    " + this.getScaler();
 		}
 		else {
-			dmgText = "Damage:   " + this.getFlatDamageAmount();
+			dmgText = "Damage:    " + this.getFlatDamageAmount();
 		}
-		String critText = "Crit:     ";
+		String critText = "Crit:      ";
 		if (this.guaranteedCrit) {
 			critText += "Guaranteed";
 		}
@@ -200,23 +206,31 @@ public class Attack {
 			attachedAtkText += "\nAttached Attack #" + (i+1) + this.getAttachedAttacks().get(i).toString();
 		}
 		// Returns the String formatted together
-		return  "Attacker: " + this.getAttacker().getName() + "\n" +
+		return  "Attacker:  " + this.getAttacker().getName() + "\n" +
 				"\t" + "Extra Conditions:" + atkConText +
-				"Defender: " + this.getDefender().getName() + "\n" +
+				"Defender:  " + this.getDefender().getName() + "\n" +
 				"\t" + "Extra Conditions:" + defConText +
-				"DmgType:  " + this.getDmgType() + "\n" +
-				"Range:    " + this.getRangeType().toString() +
+				"DmgType:   " + this.getDmgType() + "\n" +
+				"Range:     " + this.getRangeType().toString() +
 				dmgText + "\n" +
-				"Version:  " + (this.isTargeted()? "Targeted" : "AOE") +
-				"Hittable: " + this.canHit + "\n" + 
-				"Missable: " + this.canMiss + "\n" +
+				"Version:   " + (this.isTargeted()? "Targeted" : "AOE") +
+				"Hittable:  " + this.canHit + "\n" + 
+				"Missable:  " + this.canMiss + "\n" +
 				critText + "\n" +
-				"Armor:    " + (this.ignoresArmor? "Ignored" : "Applies") + "\n" +
-				"Deviates: " + this.hasDeviation() + "\n" + 
+				"Armor:     " + (this.ignoresArmor? "Ignored" : "Applies") + "\n" +
+				"Deviates:  " + this.hasDeviation() + "\n" + 
+				(this.lifesteal > 0? "Lifesteal: " + this.getLifeStealPercentage() + "%\n" : "") +
 				"Attached Attacks:" + attachedAtkText;
 	}
 	
 	// Function to add, apply, and unapply the single-use (for this attack) conditions [add included publicly so characters can add Conditions in their PreAttackEffects]
+	private void applyLifeSteal(int damageDealt) {
+		if (this.getLifeStealPercentage() <= 0) {
+			return;
+		}
+		
+		this.getAttacker().restoreHealth((int)Math.round(damageDealt * this.getLifeStealPercentage() / 100.0));
+	}
 	public void addAttackerCondition(Condition added) {
 		this.attackerConditions.add(added);
 	}
@@ -243,6 +257,7 @@ public class Attack {
 			this.defender.unapply(c, this.attacker);
 		}
 	}
+	
 	
 	// Functions to help execute the attack held in the variables of the class
 	// landAttack: Calculates the chance for the attack to land
@@ -392,7 +407,8 @@ public class Attack {
 		// The defender takes the damage
 		dmgTaken = this.getDefender().takeDamage(dmgTaken, this.getDmgType());
 		
-		// Unapply the single attack (this attack only) Conditions
+		// Apply lifesteal and Unapply the single attack (this attack only) Conditions
+		this.applyLifeSteal(dmgTaken);
 		this.unapplyAttackerConditions();
 		this.unapplyDefenderConditions();
 		
@@ -552,7 +568,8 @@ public class Attack {
 				.damageDealt(dmgTaken);
 		
 		
-		// Unapply the single attack (this attack only) Conditions
+		// Apply lifesteal and Unapply the single attack (this attack only) Conditions
+		this.applyLifeSteal(dmgTaken);
 		this.unapplyAttackerConditions();
 		this.unapplyDefenderConditions();
 		
@@ -596,6 +613,7 @@ class AttackBuilder {
 	private boolean hasDeviation;
 	
 	// Additional Variables for single-use (this attack only) Conditions to apply
+	private double lifesteal;
 	private LinkedList<Condition> attackerConditions;
 	private LinkedList<Condition> defenderConditions;
 	
@@ -621,6 +639,7 @@ class AttackBuilder {
 		this.ignoresArmor = base.ignoresArmor();
 		this.hasDeviation = base.hasDeviation();
 		
+		this.lifesteal = base.getLifeStealPercentage();
 		this.attackerConditions = base.getAttackerConditions();
 		this.defenderConditions = base.getDefenderConditions();
 		
@@ -757,6 +776,10 @@ class AttackBuilder {
 		return this;
 	}
 	
+	public AttackBuilder lifestealPercentage(double lifesteal) {
+		this.lifesteal = lifesteal;
+		return this;
+	}
 	public AttackBuilder addAttackerCondition(Condition added) {
 		this.attackerConditions.add(added);
 		return this;
@@ -778,6 +801,6 @@ class AttackBuilder {
 	
 	// Build the attack
 	public Attack build() {
-		return new Attack(this.attacker, this.defender, this.type, this.range, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canHit, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.attackerConditions, this.defenderConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
+		return new Attack(this.attacker, this.defender, this.type, this.range, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canHit, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.lifesteal, this.attackerConditions, this.defenderConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
 	}
 }

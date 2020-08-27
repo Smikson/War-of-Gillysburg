@@ -66,6 +66,7 @@ public class VengeanceStrike extends Ability {
 		// Create the Condition that contains this effect for only 1 turn (ends end of turn)
 		this.enemyDamageReduction = new Condition("Vengeance Strike: Damage Reduction", 1);
 		this.enemyDamageReduction.setSource(this.owner);
+		this.enemyDamageReduction.makeEndOfTurn();
 		this.enemyDamageReduction.addStatusEffect(dmgRed);
 	}
 	
@@ -107,21 +108,21 @@ public class VengeanceStrike extends Ability {
 		}
 		
 		// At this point the attack occurs.
+		// Build the attack
+		Attack VenStr = new AttackBuilder()
+				.attacker(this.getOwner())
+				.defender(enemy)
+				.type(Attack.DmgType.SLASHING)
+				.isTargeted()
+				.scaler(this.scaler)
+				//.lifestealPercentage(30)
+				.build();
+		VenStr.execute();
+		
 		// If the rank is 4 or 5, the Ability uses a version of Flip Strike for the attack (accessible by use(2))
 		if (this.rank() >= 4) {
-			this.getOwner().useVengeanceFlipStrike(enemy);
+			this.getOwner().useVengeanceFlipStrike(VenStr);
 		}
-		// Otherwise, do the normal Vengeance Strike attack
-		else {
-			// Build the attack
-			Attack VenStr = new AttackBuilder()
-					.attacker(this.getOwner())
-					.defender(enemy)
-					.type(Attack.DmgType.SLASHING)
-					.isTargeted()
-					.scaler(this.scaler)
-					.build();
-			VenStr.execute();
-		}
+		
 	}
 }

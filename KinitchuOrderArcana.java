@@ -62,15 +62,14 @@ public class KinitchuOrderArcana extends Character{
 	}
 	
 	// Deals with the Healing from the "Raw, Magical Power" Passive Ability when an enemy is defeated
-	public String useRawMagicalPowerDefeatHealing(Character enemyDefeated) {
+	public void useRawMagicalPowerDefeatHealing(Character enemyDefeated) {
 		// If Enemy is Normal or Advanced
 		if (enemyDefeated.getLevel() == 5) {
 			// Calculates the amount of healing based on Maximum Health
 			int healing = (int) Math.round(.05 * this.getHealth());
 			
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-			healing = this.restoreHealth(healing);
-			return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
+			this.restoreHealth(healing);
 		}
 		// If Enemy is Elite
 		else if (enemyDefeated.getLevel() == 3) {
@@ -78,8 +77,7 @@ public class KinitchuOrderArcana extends Character{
 			int healing = (int) Math.round(.1 * this.getHealth());
 			
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-			healing = this.restoreHealth(healing);
-			return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
+			this.restoreHealth(healing);
 		}
 		// Enemy is Boss
 		else {
@@ -87,8 +85,7 @@ public class KinitchuOrderArcana extends Character{
 			int healing = (int) Math.round(.2 * this.getHealth());
 			
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-			healing = this.restoreHealth(healing);
-			return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
+			this.restoreHealth(healing);
 		}
 	}
 	// Returns a new character with improved stats based on the "Raw, Magical Power" Passive Ability for purposes of calculation only.
@@ -107,13 +104,12 @@ public class KinitchuOrderArcana extends Character{
 		}
 	}
 	// Deals with the Healing from the "Raw, Magical Power" Passive Ability when the amount of Damage is equal to at least double the Damage stat.
-	public String useRawMagicalPowerDouble() {
+	public void useRawMagicalPowerDouble() {
 		// Calculates the amount of healing based on Maximum Health
 		int healing = (int) Math.round(.05 * this.getHealth());
 		
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.restoreHealth(healing);
-		return this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth();
+		this.restoreHealth(healing);
 	}
 	// Deals the Damage from the "Raw, Magical Power" Passive Ability upon death. Big explosion.
 	public void useRawMagicalPowerExplosion(List<Character> enemies) {

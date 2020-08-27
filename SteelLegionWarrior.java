@@ -105,8 +105,8 @@ public class SteelLegionWarrior extends Character {
 		//this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
 	}
 	// Executes "Flip Strike" when used via Vengeance Strike
-	public void useVengeanceFlipStrike(Character enemy) {
-		this.attackDeflection(enemy, 1.2); // Deflection Attack, Targeted, 1.2x Damage
+	public void useVengeanceFlipStrike(Attack oriVenAtk) {
+		//this.attackDeflection(enemy, 1.2); // Deflection Attack, Targeted, 1.2x Damage
 	}
 	
 	/*
@@ -135,8 +135,7 @@ public class SteelLegionWarrior extends Character {
 		}
 		
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.restoreHealth(healing);
-		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
+		this.restoreHealth(healing);
 	}
 	
 	// Deals the Damage from the "Sweep" Ability (Ability 1) to multiple enemies

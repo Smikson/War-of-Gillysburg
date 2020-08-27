@@ -22,8 +22,7 @@ public class KinitchuOrderLuminescentWizard extends Character{
 		ally.setCurrentHealth(0);
 		
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.restoreHealth(healing);
-		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
+		this.restoreHealth(healing);
 	}
 	
 	// Deals the damage from the "Searing Light" (Ability 2)
@@ -61,8 +60,7 @@ public class KinitchuOrderLuminescentWizard extends Character{
 		}
 		*/
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.restoreHealth(healing);
-		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
+		this.restoreHealth(healing);
 	}
 	// "Luminescent Amplification" AOE version of Ability
 	public void useLuminescentRestoration(List<Character> allies) {

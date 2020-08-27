@@ -293,7 +293,8 @@ public class Deflection extends UltimateAbility {
 		// Use Intimidating Shout Version 2
 		this.getOwner().useAbility(SteelLegionWarrior.AbilityNames.IntimidatingShout, 2);
 		
-		// Override deactivate function when over or something? Attack attack and the healing thing also restore basic attack command
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
 	}
 	
 	// Override the deactivate function to also restore the basic attack to normal and apply end-of-ability effects

@@ -88,6 +88,7 @@ public class Ability {
 	}
 	public void deactivate() {
 		this.activeTurnsRemaining = 0;
+		this.inFinalTurn = false;
 	}
 	public void setActiveTurnsRemaining(int turns) {
 		if (turns < 0) {

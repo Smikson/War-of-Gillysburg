@@ -82,16 +82,14 @@ public class KinitchuOrderThaumraturge extends Character{
 			int healing = (int) Math.round(.05 * 2 * this.getDamage());
 			
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-			healing = this.restoreHealth(healing);
-			System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
+			this.restoreHealth(healing);
 		}
 		else {
 			// Calculates the amount of healing based on Damage
 			int healing = (int) Math.round(.05 * ally.getDamage());
 			
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-			healing = ally.restoreHealth(healing);
-			System.out.println(ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth());
+			ally.restoreHealth(healing);
 		}
 	}
 	// Returns a new Character with improved stats based on the "Blizzard" Ability (Ability 4) for purposes of Calculation only.

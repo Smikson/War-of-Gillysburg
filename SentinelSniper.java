@@ -30,8 +30,7 @@ public class SentinelSniper extends Character {
 		int healing = (int) Math.round(.1 * (this.getHealth() - this.getCurrentHealth()));
 		
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.restoreHealth(healing);
-		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
+		this.restoreHealth(healing);
 	}
 	// Returns a new Character with improved stats based on the "Keeping It Cool" Passive Ability for purposes of Calculation only.
 	public SentinelSniper useKeepingItCoolEnhancement() {

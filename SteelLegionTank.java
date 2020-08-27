@@ -237,8 +237,7 @@ class EnchantedArmor extends Ability {
 		int healing = (int) Math.round(this.getScaler() * this.owner.getHealth());
 		
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.owner.restoreHealth(healing);
-		System.out.println(this.owner.getName() + " healed for " + healing + " Health for a new total of " + this.owner.getCurrentHealth());
+		this.owner.restoreHealth(healing);
 	}
 }
 
@@ -305,11 +304,7 @@ class ShieldSkills extends Ability {
 		}
 		
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.owner.restoreHealth(healing);
-		if (healing == 0) {
-			return;
-		}
-		System.out.println(this.owner.getName() + " healed for " + healing + " Health for a new total of " + this.owner.getCurrentHealth());
+		this.owner.restoreHealth(healing);
 	}
 }
 
@@ -1363,8 +1358,7 @@ class LeaderStrike extends Ability {
 			// Calculates the healing amount for the ally in the list
 			int healing = (int)Math.round(ally.getHealth() * this.getHealingScaler());
 			
-			healing = ally.restoreHealth(healing);
-			System.out.println(ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth());
+			ally.restoreHealth(healing);
 			
 			// Applies the damage boost to each ally affected
 			ally.addCondition(this.getAllyDamageBonus());
@@ -1496,8 +1490,7 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 		
 		// Heal to full Health
 		int healing = this.owner.getHealth() - this.owner.getCurrentHealth();
-		healing = this.owner.restoreHealth(healing);
-		System.out.println(this.owner.getName() + " healed for " + healing + " Health for a new total of " + this.owner.getCurrentHealth());
+		this.owner.restoreHealth(healing);
 		
 		// Apply Additional Conditions
 		this.owner.addCondition(this.getSelfArmorBonus());
@@ -1522,8 +1515,7 @@ class HaHaHaYouCantKillMe extends UltimateAbility {
 					// Calculates the healing amount for the ally in the list
 					int healing = (int)Math.round(ally.getHealth() * .25);
 					
-					healing = ally.restoreHealth(healing);
-					System.out.println(ally.getName() + " healed for " + healing + " Health for a new total of " + ally.getCurrentHealth());
+					ally.restoreHealth(healing);
 					
 					// Gives each ally the Damage buff and Invincibility for 1 turn
 					ally.addCondition(this.getAllyDamageBonus());

@@ -824,14 +824,18 @@ public class Character {
 	
 	// Direct combat methods (attacking, healing, dealing damage...)
 	// Restores the health of the target by a certain amount, then returns the amount actually healed (if someone tried to heal above the maximum)
-	protected int restoreHealth(int amount) {
+	protected void restoreHealth(int amount) {
 		int healingReceived = amount;
 		this.CurrentHealth += amount;
 		if (this.CurrentHealth > this.getHealth()) {
 			healingReceived = amount - (this.CurrentHealth - this.getHealth());
 			this.CurrentHealth = this.getHealth();
 		}
-		return healingReceived;
+		if (healingReceived == 0) {
+			System.out.println(this.getName() + " healed at maximum health.");
+			return;
+		}
+		System.out.println(this.getName() + " healed for " + healingReceived + " Health for a new total of " + this.getCurrentHealth());
 	}
 	// Takes damage by numerical amount
 	protected int takeDamage(int damageDealt, Attack.DmgType aType) {

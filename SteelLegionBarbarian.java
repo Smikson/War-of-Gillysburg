@@ -48,14 +48,12 @@ public class SteelLegionBarbarian extends Character {
 			// Calculates the healing based on Missing Health (includes the double by multiplying by 2)
 			int healing = (int)Math.round(.15 * 2 *(this.getHealth() - this.getCurrentHealth()));
 			// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-			healing = this.restoreHealth(healing);
-			System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
+			this.restoreHealth(healing);
 		}
 		
 		// Calculates the healing based on Missing Health
 		int healing = (int)Math.round(.15 *(this.getHealth() - this.getCurrentHealth()));
 		// Restores the health to this character (and stores correct healing amount if over), then returns the effects.
-		healing = this.restoreHealth(healing);
-		System.out.println(this.getName() + " healed for " + healing + " Health for a new total of " + this.getCurrentHealth());
+		this.restoreHealth(healing);
 	}
 }
