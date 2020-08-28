@@ -87,42 +87,69 @@ public class VengeanceStrike extends Ability {
 	
 	// Creates an execute function to make the Vengeance Strike attack, applying the correct Conditions
 	public void execute(Character enemy) {
-		// Keep track of wether or not the attack should occur (can be overridden by user)
-		boolean shouldAttack = true;
-		
-		// At rank 1, the attack can only be used once per turn (and shouldn't be used unless the counter map is empty)
-		if (this.rank() == 1 && !this.counter.isEmpty()) {
-			shouldAttack = false;
-		}
-		// At rank 2, the attack can only be used once per enemy
-		if (this.rank() == 2 && this.counter.get(enemy) != 1) {
-			shouldAttack = false;
-		}
-		// At rank 3, the attack has no limitations except Ranged enemies out of range.
-		
-		// Tell the user if the attack should(n't) occur, and prompt for usage
-		String negation = shouldAttack? "" : "NOT";
-		System.out.println(this.getOwner().getName() + " should " + negation + " use Vengeance Strike. Proceed with attack?");
-		if (!BattleSimulator.getInstance().askYorN()) {
-			return;
-		}
-		
-		// At this point the attack occurs.
 		// Build the attack
 		Attack VenStr = new AttackBuilder()
 				.attacker(this.getOwner())
 				.defender(enemy)
 				.type(Attack.DmgType.SLASHING)
+				.range(Attack.RangeType.MELEE)
 				.isTargeted()
-				.scaler(this.scaler)
-				//.lifestealPercentage(30)
+				.scaler(this.getScaler())
+				.addSuccessCondition(this.getEnemyDamageReduction())
 				.build();
-		VenStr.execute();
 		
 		// If the rank is 4 or 5, the Ability uses a version of Flip Strike for the attack (accessible by use(2))
 		if (this.rank() >= 4) {
 			this.getOwner().useVengeanceFlipStrike(VenStr);
 		}
+		else {
+			if (this.getOwner().isAbilityActive(SteelLegionWarrior.AbilityNames.Deflection)) {
+				VenStr = this.getOwner().getDeflectionVersion(VenStr);
+			}
+			VenStr.execute();
+		}
 		
+		// Then, add the enemy to the counter map
+		if (this.counter.containsKey(enemy)) {
+			this.counter.put(enemy, this.counter.get(enemy) + 1);
+		}
+		else {
+			this.counter.put(enemy, 1);
+		}
+	}
+	
+	// Applies the post attack effects of this Ability
+	@Override
+	public void applyPostAttackEffects(AttackResult atkRes) {
+		// When the owner is defending, the ability can automatically occur:
+		if (this.getOwner().equals(atkRes.getAttacker())) {
+			// The attack cannot occur if it is the owner's turn, nor if the attack missed
+			if (this.getOwner().inTurn() || !atkRes.didHit()) {
+				return;
+			}
+			
+			// Keep track of whether or not the attack should occur (as can be overridden by user)
+			boolean shouldAttack = true;
+			
+			// At rank 1, the attack must be melee, and it can only be used once per turn (and shouldn't be used unless the counter map is empty)
+			if (this.rank() == 1 && !atkRes.getRangeType().equals(Attack.RangeType.MELEE) && !this.counter.isEmpty()) {
+				shouldAttack = false;
+			}
+			// At rank 2, the attack must be melee, and it can only be used once per enemy
+			if (this.rank() == 2 && !atkRes.getRangeType().equals(Attack.RangeType.MELEE) && this.counter.get(atkRes.getAttacker()) != 1) {
+				shouldAttack = false;
+			}
+			// At rank 3, the attack has no limitations except Ranged enemies out of range.
+			
+			// Tell the user if the attack should(n't) occur, and prompt for usage
+			String negation = shouldAttack? "" : "NOT";
+			System.out.println(this.getOwner().getName() + " should " + negation + " use Vengeance Strike. Proceed with attack?");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return;
+			}
+			
+			// At this point the attack occurs.
+			this.execute(atkRes.getAttacker());
+		}
 	}
 }

@@ -109,6 +109,14 @@ public class SteelLegionWarrior extends Character {
 		//this.attackDeflection(enemy, 1.2); // Deflection Attack, Targeted, 1.2x Damage
 	}
 	
+	public Attack getDeflectionVersion(Attack original) {
+		return this.Deflection.getDeflectionVersion(original);
+	}
+	
+	
+	
+	
+	
 	/*
 	// Returns a new Character with improved stats based on the "Swordplay Prowess" Passive Ability for purposes of Calculation only.
 	public SteelLegionWarrior useSwordplayProwessEnhancement() {

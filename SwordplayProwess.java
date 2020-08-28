@@ -11,6 +11,7 @@ class BleedDOT extends DamageOverTime {
 				.attacker(source)
 				.defender(affected)
 				.type(Attack.DmgType.BLEED)
+				.range(Attack.RangeType.OTHER)
 				.isAOE()
 				.ignoresArmor()
 				.usesFlatDamage()
@@ -37,7 +38,7 @@ public class SwordplayProwess extends Ability {
 	
 	// Additional variables
 	private int bonusDamageStat;
-	private int bonusArmorPenetrationStat;
+	private int bonusArmorPiercingStat;
 	private Condition empoweredEffect;
 	
 	// Constructor
@@ -91,28 +92,28 @@ public class SwordplayProwess extends Ability {
 	private void setStatBonuses() {
 		// Each stat starts at 0, but increases every rank (starting at Rank 1)
 		this.bonusDamageStat = 0;
-		this.bonusArmorPenetrationStat = 0;
+		this.bonusArmorPiercingStat = 0;
 		
 		for (int walker = 1; walker <= this.rank(); walker++) {
 			// Ranks 1-5 grant +15 Damage and +3 Armor Piercing per rank
 			if (walker <= 5) {
 				this.bonusDamageStat += 15;
-				this.bonusArmorPenetrationStat += 3;
+				this.bonusArmorPiercingStat += 3;
 			}
 			// Ranks 6-10 grant +32 Damage and +5 Armor Piercing per rank
 			else if (walker <= 10) {
 				this.bonusDamageStat += 32;
-				this.bonusArmorPenetrationStat += 5;
+				this.bonusArmorPiercingStat += 5;
 			}
 			// Ranks 11-14 grant +60 Damage and +10 Armor Piercing per rank
 			else if (walker <= 14) {
 				this.bonusDamageStat += 60;
-				this.bonusArmorPenetrationStat += 10;
+				this.bonusArmorPiercingStat += 10;
 			}
 			// Rank 15 grants +175 Damage and +25 Armor Piercing
 			else if (walker == 15) {
 				this.bonusDamageStat += 175;
-				this.bonusArmorPenetrationStat += 25;
+				this.bonusArmorPiercingStat += 25;
 			}
 		}
 	}
@@ -180,10 +181,12 @@ public class SwordplayProwess extends Ability {
 	}
 	
 	public int getArmorPiercingBonus() {
-		return this.bonusArmorPenetrationStat;
+		return this.bonusArmorPiercingStat;
 	}
 	
 	public Condition getEmpoweredCondition() {
 		return this.empoweredEffect;
 	}
+	
+	// Post Attack Effects, add Bleed
 }

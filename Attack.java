@@ -42,10 +42,12 @@ public class Attack {
 	private boolean ignoresArmor;	// Determines if the attack "ignores all armor"
 	private boolean hasDeviation;	// Determines if the attack uses STDup and STDdown to deviate the attack
 	
-	// Additional variables for single-use (this attack only) Conditions to apply
+	// Additional variables for single-use (this attack only) Conditions to apply and Conditions to apply to the defender after an attack
 	private double lifesteal;
 	private LinkedList<Condition> attackerConditions;
 	private LinkedList<Condition> defenderConditions;
+	private LinkedList<Condition> successAttackConditions;
+	private LinkedList<Condition> failAttackConditions;
 	
 	// Additional variables for attacks "attached" to this Attack and, if this Attack is the attached, for any necessary alterations
 	private LinkedList<Attack> attachedAttacks;
@@ -53,7 +55,7 @@ public class Attack {
 	private AttachedAlteration alteration;
 	
 	// Constructors
-	public Attack(Character attacker, Character defender, Attack.DmgType type, Attack.RangeType range, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canHit, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, double lifesteal, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
+	public Attack(Character attacker, Character defender, Attack.DmgType type, Attack.RangeType range, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canHit, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, double lifesteal, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Condition> sucAtkCons, LinkedList<Condition> failAtkCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = type;
@@ -72,6 +74,8 @@ public class Attack {
 		this.lifesteal = lifesteal;
 		this.attackerConditions = atkCons;
 		this.defenderConditions = defCons;
+		this.successAttackConditions = sucAtkCons;
+		this.failAttackConditions = failAtkCons;
 		
 		this.attachedAttacks = attached;
 		this.hasAlteration = hasAlteration;
@@ -96,6 +100,8 @@ public class Attack {
 		this.lifesteal = 0;
 		this.attackerConditions = new LinkedList<>();
 		this.defenderConditions = new LinkedList<>();
+		this.successAttackConditions = new LinkedList<>();
+		this.failAttackConditions = new LinkedList<>();
 		
 		this.attachedAttacks = new LinkedList<>();
 		this.hasAlteration = false;
@@ -157,6 +163,12 @@ public class Attack {
 	}
 	public LinkedList<Condition> getDefenderConditions() {
 		return this.defenderConditions;
+	}
+	public LinkedList<Condition> getSuccessAttackConditions() {
+		return this.successAttackConditions;
+	}
+	public LinkedList<Condition> getFailAttackConditions() {
+		return this.failAttackConditions;
 	}
 	
 	public LinkedList<Attack> getAttachedAttacks() {
@@ -258,6 +270,18 @@ public class Attack {
 		}
 	}
 	
+	// Function to add all the success/fail attack Conditions to the defender
+	private void addSuccessConditions() {
+		for (Condition c : this.getSuccessAttackConditions()) {
+			this.getDefender().addCondition(c);
+		}
+	}
+	private void addFailConditions() {
+		for (Condition c : this.getFailAttackConditions()) {
+			this.getDefender().addCondition(c);
+		}
+	}
+	
 	
 	// Functions to help execute the attack held in the variables of the class
 	// landAttack: Calculates the chance for the attack to land
@@ -338,6 +362,9 @@ public class Attack {
 			this.unapplyAttackerConditions();
 			this.unapplyDefenderConditions();
 			
+			// Add any attack fail Conditions to the Defender
+			this.addFailConditions();
+			
 			// Add the Attached Attack Result to the current overall Attack Result Builder
 			AttackResult attachedAtkResult = new AttackResultBuilder()
 					.attacker(this.getAttacker())
@@ -412,6 +439,9 @@ public class Attack {
 		this.unapplyAttackerConditions();
 		this.unapplyDefenderConditions();
 		
+		// Add any attack success Conditions to the Defender
+		this.addSuccessConditions();
+		
 		// Add the Attached Attack Result to the current overall Attack Result Builder
 		AttackResult attachedAtkResult = new AttackResultBuilder()
 				.attacker(this.getAttacker())
@@ -439,6 +469,22 @@ public class Attack {
 		}
 		if (this.getDefender().isDead()) {
 			System.out.println(this.getDefender().getName() + " is already dead. The attack would have no effect.");
+			System.out.println("Continue with attack anyway?");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return;
+			}
+		}
+		
+		// Make sure the attacker can attack and the defender is targetable
+		if (!this.getAttacker().canAttack()) {
+			System.out.println(this.getAttacker().getName() + " cannot attack due to crowd control.");
+			System.out.println("Continue with attack anyway?");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return;
+			}
+		}
+		if (!this.getDefender().isTargetable()) {
+			System.out.println(this.getDefender().getName() + " cannot be attacked due to crowd control.");
 			System.out.println("Continue with attack anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				return;
@@ -495,6 +541,9 @@ public class Attack {
 			// Unapply Attack Conditions
 			this.getDefender().unapplyAttackConditions(atkResult);
 			this.getAttacker().unapplyAttackConditions(atkResult);
+			
+			// Add any attack fail Conditions to the Defender
+			this.addFailConditions();
 			
 			// Apply Post-Attack Effects
 			this.getDefender().applyPostAttackEffects(atkResult);
@@ -588,6 +637,9 @@ public class Attack {
 		this.getDefender().unapplyAttackConditions(atkResult);
 		this.getAttacker().unapplyAttackConditions(atkResult);
 		
+		// Add any attack success Conditions to the Defender
+		this.addSuccessConditions();
+		
 		// Apply Post-Attack Effects
 		this.getDefender().applyPostAttackEffects(atkResult);
 		this.getAttacker().applyPostAttackEffects(atkResult);
@@ -612,10 +664,12 @@ class AttackBuilder {
 	private boolean ignoresArmor;
 	private boolean hasDeviation;
 	
-	// Additional Variables for single-use (this attack only) Conditions to apply
+	// Additional Variables for single-use (this attack only) Conditions to apply and Conditions to apply to the defender after an attack
 	private double lifesteal;
 	private LinkedList<Condition> attackerConditions;
 	private LinkedList<Condition> defenderConditions;
+	private LinkedList<Condition> successAttackConditions;
+	private LinkedList<Condition> failAttackConditions;
 	
 	// Additional variables for attacks "attached" to this Attack and, if this Attack is the attached, for any necessary alterations
 	private LinkedList<Attack> attachedAttacks;
@@ -642,6 +696,8 @@ class AttackBuilder {
 		this.lifesteal = base.getLifeStealPercentage();
 		this.attackerConditions = base.getAttackerConditions();
 		this.defenderConditions = base.getDefenderConditions();
+		this.successAttackConditions = base.getSuccessAttackConditions();
+		this.failAttackConditions = base.getFailAttackConditions();
 		
 		this.attachedAttacks = base.getAttachedAttacks();
 		this.hasAlteration = base.hasAlteration();
@@ -788,6 +844,14 @@ class AttackBuilder {
 		this.defenderConditions.add(added);
 		return this;
 	}
+	public AttackBuilder addSuccessCondition(Condition added) {
+		this.successAttackConditions.add(added);
+		return this;
+	}
+	public AttackBuilder addFailCondition(Condition added) {
+		this.failAttackConditions.add(added);
+		return this;
+	}
 	
 	public AttackBuilder addAttachedAttack(Attack atk) {
 		this.attachedAttacks.add(atk);
@@ -801,6 +865,6 @@ class AttackBuilder {
 	
 	// Build the attack
 	public Attack build() {
-		return new Attack(this.attacker, this.defender, this.type, this.range, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canHit, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.lifesteal, this.attackerConditions, this.defenderConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
+		return new Attack(this.attacker, this.defender, this.type, this.range, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canHit, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.lifesteal, this.attackerConditions, this.defenderConditions, this.successAttackConditions, this.failAttackConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
 	}
 }

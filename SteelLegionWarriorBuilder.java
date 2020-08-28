@@ -143,7 +143,6 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 	
 	
 	// Sets the ranks of each Ability (then defines the base Cooldown and Scaler based on that)
-	
 	// Vengeance Strike (Passive Ability)
 	public SteelLegionWarriorBuilder setVengeanceStrikeRank(int newRank) {
 		this.VengeanceStrikeRank = newRank;
@@ -192,8 +191,8 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 	}
 	
 	
-	// Finishes the build by returning a SteelLegionWarrior Character
-	public SteelLegionWarrior build() {
+	// Calculates the base stats based on level and stat-increasing passive abilities
+	private void setBaseStats() {
 		// Each stat is already set to its level 1 base value
 		// Note: below only occurs if the specified a level, since the base level is 0.
 		// "Level Up" each stat: (Multiply by the given multiplier for each level up to the current level)
@@ -255,38 +254,26 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 		}
 		
 		// Calculate the bonus stats given by certain Abilities [DO THIS]
-		
+		if (this.SwordplayProwessRank > 0) {
+			SwordplayProwess sp = new SwordplayProwess(this.SwordplayProwessRank);
+			this.bDamage += sp.getDamageBonus();
+			this.bArmorPiercing += sp.getArmorPiercingBonus();
+		}
+		if (this.WarriorsMightRank > 0) {
+			WarriorsMight wm = new WarriorsMight(this.WarriorsMightRank);
+			this.bHealth += wm.getHealthBonus();
+			this.bArmor += wm.getArmorBonus();
+			this.bThreat += wm.getThreatBonus();
+			this.bDamage += wm.getDamageBonus();
+		}
+	}
+	
+	// Finishes the build by returning a SteelLegionWarrior Character
+	public SteelLegionWarrior build() {
+		// Set the base stats for the level and ability ranks
+		this.setBaseStats();
 		
 		// Return the Steel Legion Warrior
-		return new SteelLegionWarrior(this.name, 
-				   					  this.Level,
-				   					  this.Health + this.bHealth,
-				   					  this.Damage + this.bDamage,
-				   					  this.Armor + this.bArmor,
-				   					  this.ArmorPiercing + this.bArmorPiercing,
-				   					  this.Accuracy + this.bAccuracy,
-				   					  this.Dodge + this.bDodge,
-				   					  this.Block + this.bBlock,
-				   					  this.CriticalChance + this.bCriticalChance,
-				   					  this.Speed + this.bSpeed,
-				   					  this.AttackSpeed + this.bAttackSpeed,
-				   					  this.Range + this.bRange,
-				   					  this.Threat + this.bThreat,
-				   					  this.TacticalThreat + this.bTacticalThreat,
-				   					  this.STDdown,
-				   					  this.STDup,
-				   					  this.baseDmgType,
-				   					  this.resistances,
-				   					  this.vulnerabilities,
-				   					  this.Type,
-				   					  this.VengeanceStrikeRank,
-				   					  this.SwordplayProwessRank,
-				   					  this.WarriorsMightRank,
-				   					  this.AgileFighterRank,
-				   					  this.SweepRank,
-				   					  this.ChargeRank,
-				   					  this.FlipStrikeRank,
-				   					  this.IntimidatingShoutRank,
-				   					  this.DeflectionRank);
+		return new SteelLegionWarrior(super.build(), this.VengeanceStrikeRank, this.SwordplayProwessRank, this.WarriorsMightRank, this.AgileFighterRank, this.SweepRank, this.ChargeRank, this.FlipStrikeRank, this.IntimidatingShoutRank, this.DeflectionRank);
 	}
 }

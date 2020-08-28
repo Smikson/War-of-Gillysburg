@@ -67,6 +67,9 @@ public class Character {
 	protected LinkedList<AttackResult> AttacksMade;
 	protected LinkedList<AttackResult> AttacksDefended;
 	
+	// Boolean to keep track of when its this Character's turn
+	private boolean inTurn;
+	
 	// Constructor (sets each stat variable)
 	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
 		this.name = nam;
@@ -125,6 +128,9 @@ public class Character {
 		this.commands.add(new BasicAttackCommand(this, this.baseDmgType, this.baseRangeType));
 		this.commands.add(new AlterCharacterCommand(this));
 		this.commands.add(new EndTurnCommand(this));
+		
+		// Initializes in turn to false
+		this.inTurn = false;
 	}
 	public Character(Character copy) {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
@@ -230,8 +236,29 @@ public class Character {
 			this.CurrentHealth = this.getHealth();
 		}
 	}
+	
+	// Functions that show the status of the Character
+	public boolean inTurn() {
+		return this.inTurn;
+	}
 	public boolean isDead() {
 		return this.getCurrentHealth() <= 0;
+	}
+	public boolean canAttack() {
+		for (Condition c : this.getAllConditions()) {
+			if (c instanceof Stun || c instanceof Blind || c instanceof Stasis) {
+				return false;
+			}
+		}
+		return true;
+	}
+	public boolean isTargetable() {
+		for (Condition c : this.getAllConditions()) {
+			if (c instanceof Stasis || c instanceof Invulnerable) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	
@@ -660,6 +687,9 @@ public class Character {
 	
 	// Start of turn
 	protected void beginTurnSetup() {
+		// Designate the Character is in its turn
+		this.inTurn = true;
+		
 		// Make turn actions available
 		this.turnActionsSpent = false;
 		
@@ -749,6 +779,9 @@ public class Character {
 	}
 	// End of turn
 	protected void endTurnSetup() {
+		// Designate this Character's turn is over
+		this.inTurn = false;
+		
 		// Increment all non-source-incrementing, non-permanent, end-of-turn conditions for this Character and remove respective expired conditions
 		LinkedList<Condition> toRemove = new LinkedList<>();
 		for (Condition con : this.getActiveConditions()) {
@@ -797,21 +830,6 @@ public class Character {
 		System.out.println("\n-----------------------------------------------------------------------------");
 	}
 	
-	/*
-	// Methods used to store attacks made/defended (used in subclasses for interactions)
-	protected void hitAttack(AttackResult atk) {
-		this.AttacksMade.add(atk);
-	}
-	protected void missAttack(AttackResult atk) {
-		this.AttacksMade.add(atk);
-	}
-	protected void receivedAttack(AttackResult atk) {
-		this.AttacksDefended.add(atk);
-	}
-	protected void avoidAttack(AttackResult atk) {
-		this.AttacksDefended.add(atk);
-	}
-	*/
 	
 	// Get method for previous attack made (for convenience)
 	protected AttackResult previousAttack() {
@@ -825,6 +843,10 @@ public class Character {
 	// Direct combat methods (attacking, healing, dealing damage...)
 	// Restores the health of the target by a certain amount, then returns the amount actually healed (if someone tried to heal above the maximum)
 	protected void restoreHealth(int amount) {
+		if (amount <= 0) {
+			return;
+		}
+		
 		int healingReceived = amount;
 		this.CurrentHealth += amount;
 		if (this.CurrentHealth > this.getHealth()) {
@@ -869,135 +891,6 @@ public class Character {
 		return damageDealt;
 	}
 	
-	/*
-	
-	// Calculates the chance for the attack to land (is public so checks for "Advantage" can be done)
-	public boolean landAttack(Character enemy, int bonusAvoidance) {
-		Dice toHit = new Dice(this.getAccuracy());                           // Denominator or largest possible value for the random generator to decide
-		boolean didHit = toHit.roll() > enemy.getDodge() + enemy.getBlock() + bonusAvoidance; // If what is rolled is Greater Than the enemy's Dodge/Block, the attack hits
-		return didHit;
-	}
-	public boolean landAttack(Character enemy) {
-		return landAttack(enemy, 0);
-	}
-	
-	// Calculates the percentage in which the Armor/Armor Piercing affects the overall Damage scaler when attacking
-	protected double calcArmorEffect(Character enemy, int bonusArmor, boolean armorApplies) {
-		
-		double armorEffect;
-		
-		// If the attack is classified as "ignoring Armor" (armor does not apply) the minimum armorEffect is 1, and the bonus (amount above 1) is increased by 50%.
-		if (!armorApplies) {
-			if (enemy.getArmor() + bonusArmor > this.getArmorPiercing()) {
-				armorEffect = 1;
-			}
-			else {
-				armorEffect = this.getArmorPiercing()*1d / (enemy.getArmor() + bonusArmor);
-				armorEffect = (armorEffect - 1) * 1.5 + 1;
-			}
-		}
-		// Otherwise, just normal ArmorPiercing/Armor.
-		else {
-			armorEffect = this.getArmorPiercing()*1d / (enemy.getArmor() + bonusArmor);
-		}
-		
-		return armorEffect;
-	}
-	protected double calcArmorEffect(Character enemy) {
-		return this.calcArmorEffect(enemy, 0, true);
-	}
-	protected double calcArmorEffect(Character enemy, boolean armorApplies) {
-		return this.calcArmorEffect(enemy, 0, armorApplies);
-	}
-	
-	// Calculates whether an attack would be a Critical Strike
-	protected boolean landCrit(Character enemy) {
-		Dice percent = new Dice(100);
-		return percent.roll() <= this.getCriticalChance();
-	}
-	
-	// Calculates the deviated Damage done using the ranges from STDup and STDdown
-	protected int calcDeviatedDamage(Character enemy, int finalDamageStat, double finalScaler, boolean didCrit) {
-		// Calculate the totalDamage before STD is applied
-		int totalDamage = (int)Math.round(finalDamageStat*finalScaler);
-		
-		// Calculates the minimum and maximum Damage possible due to Standard Deviation (minimum is removed if you didCrit)
-		int minDamage;
-		int maxDamage = (int)(1.0 * totalDamage * this.getSTDup() / 100);
-		
-		if (didCrit) {
-			minDamage = totalDamage;
-		}
-		else {
-			minDamage = (int)(1.0 * totalDamage * this.getSTDdown() / 100);
-		}
-		
-		// Determines where on the Damage spectrum created the Ability landed, and calculates the final Damage done
-		Dice vary = new Dice(maxDamage-minDamage+1);
-		return minDamage + vary.roll() -1;
-	}
-	
-	// Deals a flat amount of damage to another Character and returns the output string based on damage and stating if they died.
-	protected int dealDamage(Character enemy, int damageDealt, AttackType aType, boolean didCrit) {
-		
-		damageDealt = enemy.takeDamage(damageDealt, aType);
-		
-		// Attack output
-		if (didCrit) {
-			System.out.println(this.getName() + " scored a CRITCAL HIT against " + enemy.getName() + " for a total of " + damageDealt + " " + aType.toString() + " damage!");
-		}
-		else {
-			System.out.println(this.getName() + " hit " + enemy.getName() + " for a total of " + damageDealt + " " + aType.toString() + " damage!");
-		}
-		
-		if (enemy.isDead()) {
-			Dice funDie = new Dice(6);
-			String funWord = "";
-			
-			switch(funDie.roll()) {
-				case 1: {
-					funWord = "utterly annihilated ";
-					break;
-				}
-				case 2: {
-					funWord = "defeated ";
-					break;
-				}
-				case 3: {
-					funWord = "obliterated ";
-					break;
-				}
-				case 4: {
-					funWord = "purged the universe of ";
-					break;
-				}
-				case 5: {
-					funWord = "destroyed ";
-					break;
-				}
-				case 6: {
-					funWord = "slew ";
-					break;
-				}
-			}
-			
-			System.out.println(this.getName() + " has " + funWord + enemy.getName() + "!");
-		}
-		else {
-			System.out.println(enemy.getName() + " has " + enemy.getCurrentHealth() + " Health remaining.");
-		}
-		
-		return damageDealt;
-	}
-	protected int dealDamage(Character enemy, int damageDealt, AttackType aType) {
-		return this.dealDamage(enemy, damageDealt, aType, false);
-	}
-	protected int dealDamage(Character enemy, int damageDealt) {
-		return this.dealDamage(enemy, damageDealt, AttackType.TRUE);
-	}
-	
-	*/
-	
 	// Stores the information from an AttackResult
 	protected void storeAttack(AttackResult atkRes) {
 		// If this character was the attacker, store in attacks made
@@ -1036,166 +929,7 @@ public class Character {
 	protected void applyPreAttackEffects(Attack atk) {}
 	protected void applyPostAttackEffects(AttackResult atkRes) {}
 	
-	/*
 	
-	public void attack(Character enemy, double scaler, AttackType aType, boolean isTargeted, boolean canMiss, boolean armorApplies) {
-		// Add: Check for being attacked conditions (Steel Legion Tank: Hold It Right There)
-		
-		// Make sure neither target is dead.
-		if (this.isDead()) {
-			System.out.println(this.getName() + " is dead. Thus, " + this.getName() + " is incapable of attacking.");
-		}
-		if (enemy.isDead()) {
-			System.out.println(enemy.getName() + " is already dead. The attack had no effect.");
-		}
-		
-		// Apply Incoming/Outgoing Status Effects
-		enemy.applyIncomingStatusEffects(this);
-		this.applyOutgoingStatusEffects(enemy);
-		
-		// Attack always hits unless it is a Targeted attack and can miss (some targeted attacks cannot miss)
-		boolean didHit = true;
-		
-		if (isTargeted && canMiss) {
-			// Finds if the attack landed
-			didHit = this.landAttack(enemy);
-		}
-		
-		// If the attack missed
-		if (!didHit) {
-			// Unapply the Incoming/Outgoing Status Effects
-			enemy.unapplyIncomingStatusEffects(this);
-			this.unapplyOutgoingStatusEffects(enemy);
-			
-			// Store the attack attempt, then return
-			AttackResult atk = new AttackResultBuilder()
-					.attacker(this)
-					.defender(enemy)
-					.type(aType)
-					.didHit(false)
-					.didCrit(false)
-					.damageDealt(0)
-					.didKill(false)
-					.build();
-			this.missAttack(atk);
-			enemy.avoidAttack(atk);
-			
-			// Print the result
-			System.out.println(this.getName() + " missed " + enemy.getName() + "!");
-		}
-		// If the attack hits, now calculate Damage
-		else {
-			// Calculates the percentage in which the Armor/Armor Piercing affects the overall Damage scaler, then multiplies it in
-			double armorEffect;
-			armorEffect = this.calcArmorEffect(enemy, armorApplies);
-			scaler*=armorEffect;
-			
-			// Only Targeted attacks can critically hit
-			boolean didCrit = false;
-			if (isTargeted) {
-				// Calculates whether the attack was a Critical Strike
-				didCrit = landCrit(enemy);
-			}
-			
-			if (didCrit) {
-				scaler *= 2;
-				if (this.getCriticalChance()>100) {
-					scaler += (this.getCriticalChance() - 100)/100; // This was changed to divide by 100
-				}
-			}
-			
-			// Calculates the damage dealt over the deviation range
-			int damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
-			
-			// Damages the enemy and determines whether enemy died (Storing of attacks that hit occur in the "dealDamage" function)
-			damageDealt = this.dealDamage(enemy, damageDealt, aType, didCrit);
-			
-			// Unapply the Incoming/Outgoing Status Effects
-			enemy.unapplyIncomingStatusEffects(this);
-			this.unapplyOutgoingStatusEffects(enemy);
-			
-			// Store the attack made
-			AttackResult atk = new AttackResultBuilder()
-					.attacker(this)
-					.defender(enemy)
-					.type(aType)
-					.didHit(true)
-					.didCrit(didCrit)
-					.damageDealt(damageDealt)
-					.didKill(enemy.isDead())
-					.build();
-			this.hitAttack(atk);
-			enemy.receivedAttack(atk);
-		}
-	}
-	// Normal Attack Abbreviations
-	public void attack(Character enemy, double scaler, AttackType aType, boolean armorApplies) {
-		this.attack(enemy, scaler, aType, true, true, armorApplies);
-	}
-	public void attack(Character enemy, double scaler, AttackType aType) {
-		this.attack(enemy, scaler, aType, true);
-	}
-	public void attack(Character enemy, double scaler, boolean armorApplies) {
-		this.attack(enemy, scaler, AttackType.TRUE, armorApplies);
-	}
-	public void attack(Character enemy, AttackType aType, boolean armorApplies) {
-		this.attack(enemy, 1, aType, armorApplies);
-	}
-	public void attack(Character enemy, double scaler) {
-		this.attack(enemy, scaler, true);
-	}
-	public void attack(Character enemy, AttackType aType) {
-		this.attack(enemy, aType, true);
-	}
-	public void attack(Character enemy) {
-		this.attack(enemy, 1);
-	}
-	// AOE Attack Abbreviations (when isTargeted is false)
-	public void attackAOE(Character enemy, double scaler, AttackType aType, boolean armorApplies) {
-		this.attack(enemy, scaler, aType, false, false, armorApplies);
-	}
-	public void attackAOE(Character enemy, double scaler, AttackType aType) {
-		this.attackAOE(enemy, scaler, aType, true);
-	}
-	public void attackAOE(Character enemy, double scaler, boolean armorApplies) {
-		this.attackAOE(enemy, scaler, AttackType.TRUE, armorApplies);
-	}
-	public void attackAOE(Character enemy, AttackType aType, boolean armorApplies) {
-		this.attackAOE(enemy, 1, aType, armorApplies);
-	}
-	public void attackAOE(Character enemy, double scaler) {
-		this.attackAOE(enemy, scaler, true);
-	}
-	public void attackAOE(Character enemy, AttackType aType) {
-		this.attackAOE(enemy, aType, true);
-	}
-	public void attackAOE(Character enemy) {
-		this.attackAOE(enemy, 1);
-	}
-	// Cannot Miss Attack Abbreviations (when canMiss is false, but isTargeted is true)
-	public void attackNoMiss(Character enemy, double scaler, AttackType aType, boolean armorApplies) {
-		this.attack(enemy, scaler, aType, true, false, armorApplies);
-	}
-	public void attackNoMiss(Character enemy, double scaler, AttackType aType) {
-		this.attackNoMiss(enemy, scaler, aType, true);
-	}
-	public void attackNoMiss(Character enemy, double scaler, boolean armorApplies) {
-		this.attackNoMiss(enemy, scaler, AttackType.TRUE, armorApplies);
-	}
-	public void attackNoMiss(Character enemy, AttackType aType, boolean armorApplies) {
-		this.attackNoMiss(enemy, 1, aType, armorApplies);
-	}
-	public void attackNoMiss(Character enemy, double scaler) {
-		this.attackNoMiss(enemy, scaler, true);
-	}
-	public void attackNoMiss(Character enemy, AttackType aType) {
-		this.attackNoMiss(enemy, aType, true);
-	}
-	public void attackNoMiss(Character enemy) {
-		this.attackNoMiss(enemy, 1);
-	}
-	
-	*/
 	
 	// Damages a player knocked into an object or another Character
 	public String knockBackDamage(Character enemy, Obstacle obj, int extraSpaces) {

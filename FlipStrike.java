@@ -117,4 +117,10 @@ public class FlipStrike extends Ability {
 	public Condition getPreAttackBonus() {
 		return this.preAttackBonus;
 	}
+	
+	public void useVengeanceStrike(Attack original) {
+		// Check for Deflection version
+		// rank 4 of VS is just normal
+		// rank 5 of VS applies scaler (should be 1.5) and 30% lifesteal
+	}
 }

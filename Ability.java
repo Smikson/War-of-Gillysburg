@@ -23,7 +23,7 @@ public class Ability {
 		this.scaler = 1.0;
 		this.duration = 0;
 		this.activeTurnsRemaining = 0;
-		this.activeFinalTurn = false;
+		this.activeFinalTurn = true;
 		this.inFinalTurn = false;
 	}
 	
@@ -85,6 +85,11 @@ public class Ability {
 			this.deactivate();
 		}
 		this.activeTurnsRemaining = this.duration;
+		
+		// If the ability has a duration of 0 (a default ability), place it in the final turn -- will deactivate at end of turn
+		if (this.duration == 0) {
+			this.inFinalTurn = true;
+		}
 	}
 	public void deactivate() {
 		this.activeTurnsRemaining = 0;
@@ -106,6 +111,10 @@ public class Ability {
 	public boolean isActive() {
 		return this.activeTurnsRemaining > 0 || (this.activeFinalTurn && this.inFinalTurn);
 	}
+	
+	// Abilities can generally have effects before and after attacks, but by default do nothing
+	public void applyPreAttackEffects(Attack atk) {}
+	public void applyPostAttackEffects(AttackResult atkRes) {}
 	
 	// Functions that should be called at the beginning, end, and during turns.
 	// Beginning turns: Decrements the turns remaining for Cooldowns and Durations

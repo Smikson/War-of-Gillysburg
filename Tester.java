@@ -5,10 +5,10 @@ import java.util.*;
 public class Tester {
 	public static void main(String args[]) throws IOException {
 		// Creates lists for the allies and enemies
-		List<Character> allies = new LinkedList<>();
+		//List<Character> allies = new LinkedList<>();
 		List<Enemy> enemies = new LinkedList<>();
 		
-		
+		/*
 		// Creates Players with respective classes and adds them to the allies list
 		SteelLegionWarrior Ian = PlayerDataBase.IAN;
 		SentinelArcArcher Tyler = PlayerDataBase.TYLER;
@@ -25,6 +25,7 @@ public class Tester {
 		allies.add(Stellov);
 		allies.add(Leya);
 		allies.add(Prince);
+		*/
 		
 		// Creates Enemies with respective Data and adds them to the enemies list
 		Enemy spi1 = new EnemyBuilder(EnemyDataBase.GIANT_SPIDER).Name("Giant Spider 1").build();

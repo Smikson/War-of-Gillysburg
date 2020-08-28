@@ -1924,6 +1924,7 @@ class SteelLegionTankBuilder extends CharacterBuilder {
 		return this;
 	}
 	
+	// Calculates the base stats based on level and stat-increasing passive abilities
 	private void setBaseStats() {
 		// Each stat is already set to its level 1 base value
 		// Note: below only occurs if they specified a level, since the base level is 0.

@@ -122,6 +122,19 @@ public class Deflection extends UltimateAbility {
 				.ignoresArmor()
 				.addAttackerCondition(this.getVsArmoredCondition());
 		
+		// Applies stun by chance to the defender struck (0%/10%/25% chance by rank)
+		int stunChance = 0;
+		if (this.rank() == 2) {
+			stunChance = 10;
+		}
+		if (this.rank() == 3) {
+			stunChance = 25;
+		}
+		Dice percent = new Dice(100);
+		if (stunChance >= percent.roll()) {
+			eAtkBuilder.addSuccessCondition(this.getStun());
+		}
+		
 		// Return the result
 		return eAtkBuilder;
 	}
@@ -148,7 +161,13 @@ public class Deflection extends UltimateAbility {
 		return ret.build();
 	}
 	// Applies pre attack effects of this Ability with the proper attacker accuracy reductions to guarantee a miss
-	public void applyDeflectionPreAttackEffects(Attack atk) {
+	@Override
+	public void applyPreAttackEffects(Attack atk) {
+		// First, do nothing if inactive.
+		if (!this.isActive()) {
+			return;
+		}
+		
 		// The pre attack effect only occurs when defending
 		if (!atk.getDefender().equals(this.getOwner())) {
 			return;
@@ -179,7 +198,13 @@ public class Deflection extends UltimateAbility {
 		}
 	}
 	// Applies post attack effects of this Ability with the proper electric attacks
-	public void applyDeflectionPostAttackEffects(AttackResult atkRes) {
+	@Override
+	public void applyPostAttackEffects(AttackResult atkRes) {
+		// First, do nothing if inactive.
+		if (!this.isActive()) {
+			return;
+		}
+		
 		// When attacking there are stun effects, and at rank 3, electric attacks bounce, allowing additional attacks to get performed
 		if (this.getOwner().equals(atkRes.getAttacker()) ) {
 			// Checks to see if any electric attacks occurred
@@ -188,19 +213,6 @@ public class Deflection extends UltimateAbility {
 				if (attached.getDmgType().equals(Attack.DmgType.ELECTRIC) && attached.didHit()) {
 					prevElectric = true;
 				}
-			}
-			
-			// Applies stun by chance to the defender struck (0%/10%/25% chance by rank)
-			int stunChance = 0;
-			if (this.rank() == 2) {
-				stunChance = 10;
-			}
-			if (this.rank() == 3) {
-				stunChance = 25;
-			}
-			Dice percent = new Dice(100);
-			if (stunChance >= percent.roll()) {
-				atkRes.getDefender().addCondition(this.getStun());
 			}
 			
 			// At rank 3, electric attacks bounce, allowing additional attacks to get performed
@@ -286,7 +298,7 @@ public class Deflection extends UltimateAbility {
 		this.setOnCooldown();
 		
 		// Alter basic attack
-		Attack basicAtk = new AttackBuilder().attacker(owner).type(this.getOwner().getBaseDmgType()).range(this.getOwner().getRangeType()).build();
+		Attack basicAtk = new AttackBuilder().attacker(this.getOwner()).type(this.getOwner().getBaseDmgType()).range(this.getOwner().getRangeType()).build();
 		BasicAttackCommand altered = new BasicAttackCommand(this.getOwner(), this.getDeflectionVersion(basicAtk));
 		this.getOwner().alterBasicAttack(altered);
 		
