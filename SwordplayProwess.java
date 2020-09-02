@@ -37,9 +37,17 @@ public class SwordplayProwess extends Ability {
 	private SteelLegionWarrior owner;
 	
 	// Additional variables
+	private int bleedDuration;
 	private int bonusDamageStat;
 	private int bonusArmorPiercingStat;
 	private Condition empoweredEffect;
+	private Condition empoweredText;
+	
+	// Helper variables to determine when an empowered effect occurs
+	private int numAttacks;
+	private boolean attackedInTurn;
+	private boolean usingEmpowered;
+	private boolean countedAOE;
 	
 	// Constructor
 	public SwordplayProwess(SteelLegionWarrior source, int rank) {
@@ -50,11 +58,23 @@ public class SwordplayProwess extends Ability {
 		// Set the Bleed Scaler
 		this.setScaler();
 		
+		// Sets the Duration of the bleed (always 3 unless rank 15, then 4)
+		this.bleedDuration = 3;
+		if (this.rank() >= 15) {
+			this.bleedDuration = 10;
+		}
+		
 		// Set the flat bonus stats from the Ability
 		this.setStatBonuses();
 		
 		// Set the empowered condition of the ability
-		this.setEmpoweredCondition();
+		this.setEmpoweredConditions();
+		
+		// Set helper variables to initial values
+		this.numAttacks = 0;
+		this.attackedInTurn = false;
+		this.usingEmpowered = false;
+		this.countedAOE = false;
 	}
 	// An additional constructor used to only calculate the bonus stats before a SteelLegionWarrior is created
 	public SwordplayProwess(int rank) {
@@ -95,15 +115,30 @@ public class SwordplayProwess extends Ability {
 		this.bonusArmorPiercingStat = 0;
 		
 		for (int walker = 1; walker <= this.rank(); walker++) {
-			// Ranks 1-5 grant +15 Damage and +3 Armor Piercing per rank
-			if (walker <= 5) {
+			// Rank 1 grants +15 Damage and +2 Armor Piercing per rank
+			if (walker == 1) {
 				this.bonusDamageStat += 15;
+				this.bonusArmorPiercingStat += 2;
+			}
+			// Ranks 2-4 grant +18 Damage and +3 Armor Piercing per rank
+			else if (walker <= 4) {
+				this.bonusDamageStat += 18;
 				this.bonusArmorPiercingStat += 3;
 			}
-			// Ranks 6-10 grant +32 Damage and +5 Armor Piercing per rank
-			else if (walker <= 10) {
+			// Rank 5 grants +25 Damage and +4 Armor Piercing per rank
+			else if (walker == 5) {
+				this.bonusDamageStat += 25;
+				this.bonusArmorPiercingStat += 4;
+			}
+			// Ranks 6-9 grant +32 Damage and +5 Armor Piercing per rank
+			else if (walker <= 9) {
 				this.bonusDamageStat += 32;
 				this.bonusArmorPiercingStat += 5;
+			}
+			// Rank 10 grants +50 Damage and +8 Armor Piercing per rank
+			else if (walker == 10) {
+				this.bonusDamageStat += 50;
+				this.bonusArmorPiercingStat += 8;
 			}
 			// Ranks 11-14 grant +60 Damage and +10 Armor Piercing per rank
 			else if (walker <= 14) {
@@ -119,7 +154,7 @@ public class SwordplayProwess extends Ability {
 	}
 	
 	// Calculates the amounts and creates the condition for the empowered effect
-	private void setEmpoweredCondition() {
+	private void setEmpoweredConditions() {
 		// Declare each stat's starting amount (at rank 0, each stat technically starts at 10%.
 		int damageAmount = 10;
 		int accuracyAmount = 10;
@@ -162,18 +197,26 @@ public class SwordplayProwess extends Ability {
 		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, critAmount, StatusEffect.Type.OUTGOING);
 		critBonus.makeFlat();
 		
-		// Create the Condition that contains this effect permanently (-1) since it is consumed once used (implemented in Steel Legion Warrior Class)
-		this.empoweredEffect = new Condition("Swordplay Prowess: Empowered", -1);
+		// Create the Condition that contains this effect permanently (-1) since it is consumed once used
+		this.empoweredEffect = new Condition("Swordplay Prowess: Empowered Effect", -1);
 		this.empoweredEffect.setSource(this.owner);
 		this.empoweredEffect.addStatusEffect(dmgBonus);
 		this.empoweredEffect.addStatusEffect(accBonus);
 		this.empoweredEffect.addStatusEffect(critBonus);
+		
+		// Creates the text Condition that attaches to the Character and removes itself after a turn
+		this.empoweredText = new Condition("Swordplay Prowess: Empowered", 1);
+		this.empoweredText.setSource(this.getOwner());
 	}
 	
 	// Get methods for additional effects
 	@Override
 	public SteelLegionWarrior getOwner() {
 		return this.owner;
+	}
+	
+	public int getBleedDuration() {
+		return this.bleedDuration;
 	}
 	
 	public int getDamageBonus() {
@@ -188,5 +231,94 @@ public class SwordplayProwess extends Ability {
 		return this.empoweredEffect;
 	}
 	
-	// Post Attack Effects, add Bleed
+	public Condition getEmpoweredTextCondition() {
+		return this.empoweredText;
+	}
+	
+	public void incrementAttacks() {
+		this.numAttacks++;
+		if (this.numAttacks > 3) {
+			this.numAttacks = 3;
+		}
+	}
+	
+	public void resetAttacks() {
+		this.numAttacks = 0;
+	}
+	
+	public boolean isEmpowered() {
+		return this.numAttacks >= 3;
+	}
+	
+	// Overrides decrementTurnsRemaining to apply beginning of turn effects to check on the Empowered status.
+	@Override
+	public void decrementTurnsRemaining() {
+		// Do the normal version of the function as needed
+		super.decrementTurnsRemaining();
+		
+		// If the owner did not succeed in an attack after a complete turn, reset the total to zero
+		if (!this.attackedInTurn) {
+			this.resetAttacks();
+		}
+		
+		// Reset helper booleans (except usingEmpowered) to initial states
+		this.attackedInTurn = false;
+		this.countedAOE = false;
+		
+		// If Empowered, gain the Empowered Condition (just display text) until the beginning of the next turn, so the Character know they are empowered on their turn.
+		if (this.isEmpowered()) {
+			this.getOwner().addCondition(this.getEmpoweredTextCondition());
+		}
+	}
+	
+	// Pre Attack Effects, sets empowered stuff, checks for empowered
+	@Override
+	public void applyPreAttackEffects(Attack atk) {
+		// If the owner is the attacker:
+		if (this.getOwner().equals(atk.getAttacker())) {
+			// To create an empowered attack, the attack must be Targeted and the Empowered Effect should be ready
+			if (atk.isTargeted() && this.isEmpowered()) {
+				// Add the Empowered effect to the attack
+				atk.addAttackerCondition(this.empoweredEffect);
+				
+				// Set the boolean for usingEmpowered to true
+				this.usingEmpowered = true;
+			}
+		}
+	}
+	
+	// Post Attack Effects, empowered add Bleed
+	@Override
+	public void applyPostAttackEffects(AttackResult atkRes) {
+		// If the owner is the attacker:
+		if (this.getOwner().equals(atkRes.getAttacker())) {
+			// First, check to see if this was an Empowered attack
+			if (this.usingEmpowered) {
+				// First, future attacks are no longer using the Empowered Effect
+				this.usingEmpowered = false;
+				
+				// If the attack hit, the ability has been used, the Condition can be removed and the total attacks are reset to zero
+				if (atkRes.didHit()) {
+					this.resetAttacks();
+					this.getOwner().removeCondition(this.empoweredText);
+				}
+				return;
+			}
+			
+			// If the attack was AOE and the ability is below rank 5, each AOE attack in a single turn only counts as one total (so do nothing if these are met)
+			if (this.rank() < 5 && atkRes.isAOE() && this.countedAOE) {
+				return;
+			}
+			
+			// If the attack hit, increment the numAttacks and set the attackedInTurn to true
+			if (atkRes.didHit()) {
+				this.incrementAttacks();
+				this.attackedInTurn = true;
+				
+				if (atkRes.isAOE()) {
+					this.countedAOE = true;
+				}
+			}
+		}
+	}
 }

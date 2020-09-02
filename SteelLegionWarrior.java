@@ -55,6 +55,9 @@ public class SteelLegionWarrior extends Character {
 		this.addCommand(new AbilityCommand(this.FlipStrike));
 		this.addCommand(new AbilityCommand(this.IntimidatingShout));
 		this.addCommand(new AbilityCommand(this.Deflection));
+		
+		// Finish creating the Deflection Ability (needed Intimidating Shout to be created)
+		this.Deflection.setDuration();
 	}
 	public SteelLegionWarrior(Character copy, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), vsRank, spRank, wmRank, afRank, sweepRank, chargeRank, fsRank, isRank, deflectRank);

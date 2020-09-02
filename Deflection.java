@@ -28,16 +28,18 @@ public class Deflection extends UltimateAbility {
 		this.setStun();
 		this.setVsArmoredCondition();
 		
-		// Make this an active ability
+		// Initialize Helper Variables
+		this.hasBounced = false;
+		this.damageTaken = 0;
+	}
+	// Additional function that must be called once Intimidating Shout has been declared and initialized in the Steel Legion Warrior constructor
+	public void setDuration() {
+		// Make this an active ability with duration based on the duration of intimidating shout and active its final turn
 		int duration = this.owner.getAbilityDuration(SteelLegionWarrior.AbilityNames.IntimidatingShout) + 1;
 		if (this.rank() >= 3) {
 			duration += 1;
 		}
 		this.makeActiveAbility(duration, true);
-		
-		// Initialize Helper Variables
-		this.hasBounced = false;
-		this.damageTaken = 0;
 	}
 	
 	// Calculates the damage scaler
