@@ -87,16 +87,28 @@ public class VengeanceStrike extends Ability {
 	
 	// Creates an execute function to make the Vengeance Strike attack, applying the correct Conditions
 	public void execute(Character enemy) {
-		// Build the attack
-		Attack VenStr = new AttackBuilder()
+		// Start the build of the attack
+		AttackBuilder VenStrBuilder = new AttackBuilder()
 				.attacker(this.getOwner())
 				.defender(enemy)
 				.type(Attack.DmgType.SLASHING)
 				.range(Attack.RangeType.MELEE)
 				.isTargeted()
 				.scaler(this.getScaler())
-				.addSuccessCondition(this.getEnemyDamageReduction())
-				.build();
+				.addSuccessCondition(this.getEnemyDamageReduction());
+		
+		// 30% Chance to add a stun successCondition if Warrior's Might is at least rank 15
+		if (this.getOwner().getAbilityRank(SteelLegionWarrior.AbilityNames.WarriorsMight) >= 15) {
+			Dice percent = new Dice(100);
+			if (percent.roll() <= 30) {
+				Stun stunEffect = new Stun("Warrior's Might (Vengeance Strike): Stun", 1);
+				stunEffect.makeEndOfTurn();
+				VenStrBuilder.addSuccessCondition(stunEffect);
+			}
+		}
+		
+		// Build the attack
+		Attack VenStr = VenStrBuilder.build();
 		
 		// If the rank is 4 or 5, the Ability uses a version of Flip Strike for the attack (accessible by use(2))
 		if (this.rank() >= 4) {

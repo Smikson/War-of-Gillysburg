@@ -5,9 +5,9 @@ class BleedDOT extends DamageOverTime {
 	private Attack bleedAtk;
 	
 	// Constructor
-	public BleedDOT(SteelLegionWarrior source, Character affected, int duration, int damage) {
+	public BleedDOT(SteelLegionWarrior source, Character affected, int duration, int damage, boolean isCrit, int vorpalChance, double vorpalMultiplier) {
 		super(source, "Swordplay Prowess: Bleed Effect", duration);
-		this.bleedAtk = new AttackBuilder()
+		AttackBuilder bld = new AttackBuilder()
 				.attacker(source)
 				.defender(affected)
 				.type(Attack.DmgType.BLEED)
@@ -15,8 +15,12 @@ class BleedDOT extends DamageOverTime {
 				.isAOE()
 				.ignoresArmor()
 				.usesFlatDamage()
-				.flatDamage(damage)
-				.build();
+				.flatDamage(damage);
+		if (isCrit) {
+			bld.guaranteedCrit().vorpal(vorpalChance, vorpalMultiplier);
+		}
+		
+		this.bleedAtk = bld.build();
 	}
 	
 	// For the bleed effect, activating executes the attack
@@ -28,7 +32,7 @@ class BleedDOT extends DamageOverTime {
 	// Returns the display line (without the tabs) of the Bleed DOT effect in the Condition
 	@Override
 	public String getDOTString() {
-		return "Bleeding: Deals ~" + this.bleedAtk.getFlatDamageAmount() + " damage at the beginning of each round.";
+		return "Bleeding: Deals ~" + this.bleedAtk.getFlatDamageAmount() + " damage at the beginning of each turn.";
 	}
 }
 
@@ -38,6 +42,8 @@ public class SwordplayProwess extends Ability {
 	
 	// Additional variables
 	private int bleedDuration;
+	private int bleedVorpalChance;
+	private double bleedVorpalMultiplier;
 	private int bonusDamageStat;
 	private int bonusArmorPiercingStat;
 	private Condition empoweredEffect;
@@ -59,10 +65,7 @@ public class SwordplayProwess extends Ability {
 		this.setScaler();
 		
 		// Sets the Duration of the bleed (always 3 unless rank 15, then 4)
-		this.bleedDuration = 3;
-		if (this.rank() >= 15) {
-			this.bleedDuration = 10;
-		}
+		this.setBleedComponents();
 		
 		// Set the flat bonus stats from the Ability
 		this.setStatBonuses();
@@ -105,6 +108,26 @@ public class SwordplayProwess extends Ability {
 			else if (walker == 15) {
 				this.scaler += .6;
 			}
+		}
+	}
+	
+	// Calculates the duration and vorpal effects of the bleed effect
+	private void setBleedComponents() {
+		// Initial values for the Duration and Vorpal effects of the bleed
+		this.bleedDuration = 3;
+		this.bleedVorpalChance = 0;
+		this.bleedVorpalMultiplier = 1.0;
+		
+		// At rank 10, the vorpal effect is 50% chance to triple
+		if (this.rank() >= 10) {
+			this.bleedVorpalChance = 50;
+			this.bleedVorpalMultiplier = 3.0;
+		}
+		// At rank 15, the duration increases to 4, and the vorpal effect is 75% chance to quadruple.
+		if (this.rank() >= 15) {
+			this.bleedDuration = 4;
+			this.bleedVorpalChance = 75;
+			this.bleedVorpalMultiplier = 4.0;
 		}
 	}
 	
@@ -219,6 +242,14 @@ public class SwordplayProwess extends Ability {
 		return this.bleedDuration;
 	}
 	
+	public int getBleedVorpalChance() {
+		return this.bleedVorpalChance;
+	}
+	
+	public double getBleedVorpalMultiplier() {
+		return this.bleedVorpalMultiplier;
+	}
+	
 	public int getDamageBonus() {
 		return this.bonusDamageStat;
 	}
@@ -297,8 +328,19 @@ public class SwordplayProwess extends Ability {
 				// First, future attacks are no longer using the Empowered Effect
 				this.usingEmpowered = false;
 				
-				// If the attack hit, the ability has been used, the Condition can be removed and the total attacks are reset to zero
+				// If the attack hit, apply Bleed effect, and since the ability has been used, the Condition can be removed and the total attacks are reset to zero
 				if (atkRes.didHit()) {
+					// Apply Bleed with extra effects if the Empowered attack critically struck
+					if (atkRes.didCrit()) {
+						BleedDOT critBleed = new BleedDOT(this.getOwner(), atkRes.getDefender(), this.getBleedDuration(), (int)Math.round(atkRes.getDamageDealt() * this.getScaler()), true, this.getBleedVorpalChance(), this.getBleedVorpalMultiplier());
+						atkRes.getDefender().addCondition(critBleed);
+					}
+					else {
+						BleedDOT normBleed = new BleedDOT(this.getOwner(), atkRes.getDefender(), this.getBleedDuration(), (int)Math.round(atkRes.getDamageDealt() * this.getScaler()), false, 0, 1.0);
+						atkRes.getDefender().addCondition(normBleed);
+					}
+					
+					// Reset total attacks to zero and remove the display condition
 					this.resetAttacks();
 					this.getOwner().removeCondition(this.empoweredText);
 				}
@@ -317,6 +359,12 @@ public class SwordplayProwess extends Ability {
 				
 				if (atkRes.isAOE()) {
 					this.countedAOE = true;
+				}
+				
+				// If the attack is Targeted, and it Critically Hit, apply a normal use of the Bleed effect
+				if (atkRes.isTargeted() && atkRes.didCrit()) {
+					BleedDOT normBleed = new BleedDOT(this.getOwner(), atkRes.getDefender(), this.getBleedDuration(), (int)Math.round(atkRes.getDamageDealt() * this.getScaler()), false, 0, 1.0);
+					atkRes.getDefender().addCondition(normBleed);
 				}
 			}
 		}

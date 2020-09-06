@@ -15,12 +15,13 @@ public class AttackResult {
 	private boolean isTargeted;
 	private boolean didHit;
 	private boolean didCrit;
+	private boolean didVorp;
 	private int damageDealt;
 	private boolean didKill;
 	private LinkedList<AttackResult> attachedAttackResults;
 	
 	// Constructors
-	public AttackResult(Character attacker, Character defender, Attack.DmgType atkType, Attack.RangeType range, boolean isTargeted, boolean didHit, boolean didCrit, int damageDealt, boolean didKill, LinkedList<AttackResult> attachedAttackResults) {
+	public AttackResult(Character attacker, Character defender, Attack.DmgType atkType, Attack.RangeType range, boolean isTargeted, boolean didHit, boolean didCrit, boolean didVorp, int damageDealt, boolean didKill, LinkedList<AttackResult> attachedAttackResults) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = atkType;
@@ -28,6 +29,7 @@ public class AttackResult {
 		this.isTargeted = isTargeted;
 		this.didHit = didHit;
 		this.didCrit = didCrit;
+		this.didVorp = didVorp;
 		this.damageDealt = damageDealt;
 		this.didKill = didKill;
 		this.attachedAttackResults = attachedAttackResults;
@@ -40,6 +42,7 @@ public class AttackResult {
 		this.isTargeted = true;
 		this.didHit = false;
 		this.didCrit = false;
+		this.didVorp = false;
 		this.damageDealt = 0;
 		this.didKill = false;
 		this.attachedAttackResults = new LinkedList<>();
@@ -70,6 +73,9 @@ public class AttackResult {
 	public boolean didCrit() {
 		return this.didCrit;
 	}
+	public boolean didVorp() {
+		return this.didVorp;
+	}
 	public int getDamageDealt() {
 		return this.damageDealt;
 	}
@@ -89,7 +95,8 @@ public class AttackResult {
 		ret += this.getAttacker().getName() + "\'s attached attack ";
 		if (this.didHit()) {
 			if (this.didCrit()) {
-				ret += "CRITICALLY HIT " + this.getDefender().getName();
+				String critWord = this.didVorp()? "VORPALLY" : "CRITICALLY";
+				ret += critWord + " HIT " + this.getDefender().getName();
 			}
 			else {
 				ret += "hit " + this.getDefender().getName();
@@ -123,7 +130,8 @@ public class AttackResult {
 		}
 		
 		if (this.didCrit()) {
-			ret += " scored a CRITICAL HIT against " + this.getDefender().getName();
+			String critWord = this.didVorp()? "VORPAL" : "CRITICAL";
+			ret += " scored a " + critWord + " HIT against " + this.getDefender().getName();
 		}
 		else {
 			ret += " hit " + this.getDefender().getName();
@@ -212,6 +220,7 @@ class AttackResultBuilder {
 	private boolean isTargeted;
 	private boolean didHit;
 	private boolean didCrit;
+	private boolean didVorp;
 	private int damageDealt;
 	private boolean didKill;
 	private LinkedList<AttackResult> attachedAttackResults;
@@ -225,6 +234,7 @@ class AttackResultBuilder {
 		this.isTargeted = atk.isTargeted();
 		this.didHit = atk.didHit();
 		this.didCrit = atk.didCrit();
+		this.didVorp = atk.didVorp();
 		this.damageDealt = atk.getDamageDealt();
 		this.didKill = atk.didKill();
 		this.attachedAttackResults = atk.getAttachedAttackResults();
@@ -276,6 +286,11 @@ class AttackResultBuilder {
 		return this;
 	}
 	
+	public AttackResultBuilder didVorp(boolean didVorp) {
+		this.didVorp = didVorp;
+		return this;
+	}
+	
 	public AttackResultBuilder damageDealt(int damageDealt) {
 		this.damageDealt = damageDealt;
 		return this;
@@ -292,6 +307,6 @@ class AttackResultBuilder {
 	}
 	
 	public AttackResult build() {
-		return new AttackResult(this.attacker, this.defender, this.type, this.range, this.isTargeted, this.didHit, this.didCrit, this.damageDealt, this.didKill, this.attachedAttackResults);
+		return new AttackResult(this.attacker, this.defender, this.type, this.range, this.isTargeted, this.didHit, this.didCrit, this.didVorp, this.damageDealt, this.didKill, this.attachedAttackResults);
 	}
 }

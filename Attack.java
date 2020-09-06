@@ -43,6 +43,8 @@ public class Attack {
 	private boolean hasDeviation;	// Determines if the attack uses STDup and STDdown to deviate the attack
 	
 	// Additional variables for single-use (this attack only) Conditions to apply and Conditions to apply to the defender after an attack
+	private int vorpalChance;
+	private double vorpalMultiplier;
 	private double lifesteal;
 	private LinkedList<Condition> attackerConditions;
 	private LinkedList<Condition> defenderConditions;
@@ -54,8 +56,11 @@ public class Attack {
 	private boolean hasAlteration;
 	private AttachedAlteration alteration;
 	
+	// Helper variable for vorpal hits
+	private boolean isVorpal;
+	
 	// Constructors
-	public Attack(Character attacker, Character defender, Attack.DmgType type, Attack.RangeType range, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canHit, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, double lifesteal, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Condition> sucAtkCons, LinkedList<Condition> failAtkCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
+	public Attack(Character attacker, Character defender, Attack.DmgType type, Attack.RangeType range, boolean usesScaler, double scaler, int flatDamage, boolean isTargeted, boolean canHit, boolean canMiss, boolean canCrit, boolean guaranteedCrit, boolean ignoresArmor, boolean hasDeviation, int vChance, double vDmg, double lifesteal, LinkedList<Condition> atkCons, LinkedList<Condition> defCons, LinkedList<Condition> sucAtkCons, LinkedList<Condition> failAtkCons, LinkedList<Attack> attached, boolean hasAlteration, AttachedAlteration alteration) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.type = type;
@@ -71,6 +76,8 @@ public class Attack {
 		this.ignoresArmor = ignoresArmor;
 		this.hasDeviation = hasDeviation;
 		
+		this.vorpalChance = vChance;
+		this.vorpalMultiplier = vDmg;
 		this.lifesteal = lifesteal;
 		this.attackerConditions = atkCons;
 		this.defenderConditions = defCons;
@@ -80,6 +87,8 @@ public class Attack {
 		this.attachedAttacks = attached;
 		this.hasAlteration = hasAlteration;
 		this.alteration = alteration;
+		
+		this.isVorpal = false;
 	}
 	public Attack() {
 		this.attacker = Character.EMPTY;
@@ -97,6 +106,8 @@ public class Attack {
 		this.ignoresArmor = false;
 		this.hasDeviation = true;
 		
+		this.vorpalChance = 0;
+		this.vorpalMultiplier = 1.0;
 		this.lifesteal = 0;
 		this.attackerConditions = new LinkedList<>();
 		this.defenderConditions = new LinkedList<>();
@@ -106,6 +117,8 @@ public class Attack {
 		this.attachedAttacks = new LinkedList<>();
 		this.hasAlteration = false;
 		this.alteration = (AttackResult atkRes) -> {return Attack.EMPTY;};
+		
+		this.isVorpal = false;
 	}
 	
 	// Get methods for each element
@@ -155,6 +168,12 @@ public class Attack {
 		return this.hasDeviation;
 	}
 	
+	public int getVorpalChance() {
+		return this.vorpalChance;
+	}
+	public double getVorpalMultiplier() {
+		return this.vorpalMultiplier;
+	}
 	public double getLifeStealPercentage() {
 		return this.lifesteal;
 	}
@@ -231,7 +250,8 @@ public class Attack {
 				critText + "\n" +
 				"Armor:     " + (this.ignoresArmor? "Ignored" : "Applies") + "\n" +
 				"Deviates:  " + this.hasDeviation() + "\n" + 
-				(this.lifesteal > 0? "Lifesteal: " + this.getLifeStealPercentage() + "%\n" : "") +
+				(this.getVorpalChance() > 0? "Vorpal: " + this.getVorpalChance() + "% to strike with " + this.getVorpalMultiplier() + "x damage.\n" : "") +
+				(this.getLifeStealPercentage() > 0? "Lifesteal: " + this.getLifeStealPercentage() + "%\n" : "") +
 				"Attached Attacks:" + attachedAtkText;
 	}
 	
@@ -308,7 +328,28 @@ public class Attack {
 		
 		// If it did, adjust the effect accordingly
 		if (didCrit && this.canCrit()) {
-			ret *= 2;
+			// Initialize usual critical damage
+			double critDamage = 2.0;
+			
+			// Check for vorpal effect
+			if (this.getVorpalChance() > 0) {
+				boolean isVorpal = percent.roll() <= this.getVorpalChance();
+				if (isVorpal) {
+					critDamage = this.getVorpalMultiplier();
+					this.isVorpal = true;
+				}
+				else {
+					this.isVorpal = false;
+				}
+			}
+			else {
+				this.isVorpal = false;
+			}
+			
+			// Apply critical damage to the returned number
+			ret *= critDamage;
+			
+			// Always add extra critical chance as critical damage
 			if (this.getAttacker().getCriticalChance()>100) {
 				ret += (this.getAttacker().getCriticalChance() - 100)/100; // This was changed to divide by 100
 			}
@@ -451,6 +492,7 @@ public class Attack {
 				.isTargeted(this.isTargeted())
 				.didHit(true)
 				.didCrit(didCrit)
+				.didVorp(this.isVorpal)
 				.damageDealt(dmgTaken)
 				.build();
 		
@@ -614,6 +656,7 @@ public class Attack {
 				.isTargeted(this.isTargeted())
 				.didHit(true)
 				.didCrit(didCrit)
+				.didVorp(this.isVorpal)
 				.damageDealt(dmgTaken);
 		
 		
@@ -665,6 +708,8 @@ class AttackBuilder {
 	private boolean hasDeviation;
 	
 	// Additional Variables for single-use (this attack only) Conditions to apply and Conditions to apply to the defender after an attack
+	private int vorpalChance;
+	private double vorpalMultiplier;
 	private double lifesteal;
 	private LinkedList<Condition> attackerConditions;
 	private LinkedList<Condition> defenderConditions;
@@ -693,6 +738,8 @@ class AttackBuilder {
 		this.ignoresArmor = base.ignoresArmor();
 		this.hasDeviation = base.hasDeviation();
 		
+		this.vorpalChance = base.getVorpalChance();
+		this.vorpalMultiplier = base.getVorpalMultiplier();
 		this.lifesteal = base.getLifeStealPercentage();
 		this.attackerConditions = base.getAttackerConditions();
 		this.defenderConditions = base.getDefenderConditions();
@@ -832,6 +879,14 @@ class AttackBuilder {
 		return this;
 	}
 	
+	public AttackBuilder vorpal(int chance, double multiplier) {
+		this.vorpalChance = chance;
+		this.vorpalMultiplier = multiplier;
+		return this;
+	}
+	public AttackBuilder vorpal(double multiplier) {
+		return this.vorpal(100, multiplier);
+	}
 	public AttackBuilder lifestealPercentage(double lifesteal) {
 		this.lifesteal = lifesteal;
 		return this;
@@ -865,6 +920,6 @@ class AttackBuilder {
 	
 	// Build the attack
 	public Attack build() {
-		return new Attack(this.attacker, this.defender, this.type, this.range, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canHit, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.lifesteal, this.attackerConditions, this.defenderConditions, this.successAttackConditions, this.failAttackConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
+		return new Attack(this.attacker, this.defender, this.type, this.range, this.usesScaler, this.scaler, this.flatDamage, this.isTargeted, this.canHit, this.canMiss, this.canCrit, this.guaranteedCrit, this.ignoresArmor, this.hasDeviation, this.vorpalChance, this.vorpalMultiplier, this.lifesteal, this.attackerConditions, this.defenderConditions, this.successAttackConditions, this.failAttackConditions, this.attachedAttacks, this.hasAlteration, this.alteration);
 	}
 }
