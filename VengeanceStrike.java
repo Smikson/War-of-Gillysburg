@@ -97,7 +97,12 @@ public class VengeanceStrike extends Ability {
 				.scaler(this.getScaler())
 				.addSuccessCondition(this.getEnemyDamageReduction());
 		
-		// 30% Chance to add a stun successCondition if Warrior's Might is at least rank 15
+		// At rank 5, Vengeance Strike has 30% lifesteal DE maybe just do in Flip Version?
+		if (this.rank() >= 5) {
+			VenStrBuilder.lifestealPercentage(30);
+		}
+		
+		// 30% Chance to add a stun success Condition if Warrior's Might is at least rank 15
 		if (this.getOwner().getAbilityRank(SteelLegionWarrior.AbilityNames.WarriorsMight) >= 15) {
 			Dice percent = new Dice(100);
 			if (percent.roll() <= 30) {
@@ -110,7 +115,7 @@ public class VengeanceStrike extends Ability {
 		// Build the attack
 		Attack VenStr = VenStrBuilder.build();
 		
-		// If the rank is 4 or 5, the Ability uses a version of Flip Strike for the attack (accessible by use(2))
+		// If the rank is 4 or 5, the Ability uses a version of Flip Strike for the attack
 		if (this.rank() >= 4) {
 			this.getOwner().useVengeanceFlipStrike(VenStr);
 		}

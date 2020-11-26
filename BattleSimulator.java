@@ -1,5 +1,8 @@
 package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
+
+import WyattWitemeyer.WarOfGillysburg.Attack.DmgType;
+
 import java.io.*;
 
 // Singleton class for running a battle -- Also contains helpful info for some class Abilities
@@ -559,4 +562,123 @@ public class BattleSimulator {
 		}
 	}
 	
+	public void playDemo(Character player) throws IOException {
+		// Add an ally and two enemies
+		Character ally = new CharacterBuilder()
+				.Name("Ally")
+				.Level(player.getLevel())
+				.Health((int)Math.round(350 * Math.pow(1.03, player.getLevel())))
+				.Damage((int)Math.round(80 * Math.pow(1.03, player.getLevel())))
+				.Armor((int)Math.round(100 * Math.pow(1.05, player.getLevel() / 5)))
+				.ArmorPiercing((int)Math.round(100 * Math.pow(1.05, player.getLevel() / 5)))
+				.Accuracy((int)Math.round(110 * Math.pow(1.05, player.getLevel() / 5)))
+				.Dodge((int)Math.round(25 * Math.pow(1.05, player.getLevel() / 5)))
+				.CriticalChance(10)
+				.Speed(6)
+				.AttackSpeed(5)
+				.Threat(10)
+				.TacticalThreat(10)
+				.build();
+		
+		Enemy normEnemy = new EnemyBuilder()
+				.Name("Enemy")
+				.Level(player.getLevel())
+				.Health((int)Math.round(350 * Math.pow(1.03, player.getLevel())))
+				.Damage((int)Math.round(80 * Math.pow(1.03, player.getLevel())))
+				.Armor((int)Math.round(100 * Math.pow(1.05, player.getLevel() / 5)))
+				.ArmorPiercing((int)Math.round(100 * Math.pow(1.05, player.getLevel() / 5)))
+				.Accuracy((int)Math.round(110 * Math.pow(1.05, player.getLevel() / 5)))
+				.Dodge((int)Math.round(25 * Math.pow(1.05, player.getLevel() / 5)))
+				.CriticalChance(10)
+				.Speed(6)
+				.AttackSpeed(5)
+				.UseThreat(true)
+				.build();
+		
+		Enemy lightVulEnemy = new EnemyBuilder(normEnemy)
+				.Name("Tactical Light Vulnerable Enemy")
+				.UseThreat(false)
+				.addVulnerability(DmgType.LIGHT, 30)
+				.build();
+		
+		// Add the ally and enemies to the combat
+		this.addAlly(ally);
+		this.addEnemy(normEnemy);
+		this.addEnemy(lightVulEnemy);
+		
+		// Display that combat has begun
+		System.out.println();
+		System.out.println("When combat is first initiated, the program first determines the turn order of the combatants via bias random based on the Attack Speed stat (as seen below).");
+		System.out.println("Here, as is done elsewhere, the program makes sure the outcome is desired by the Game Master, prompting for any changes before continuing.");
+		System.out.println();
+		
+		// First, set the turn order
+		this.setOrder();
+		
+		// Display the turn order
+		System.out.println("Turn order for combat:");
+		for (int x = 0; x < this.combatantList.size(); x++) {
+			System.out.println("" + (x+1) + ". " + this.combatantList.get(x).getName());
+		}
+		
+		// Prompt for any adjustments
+		this.promptAdjustTurnOrder();
+		
+		// Continue descriptions, talking now about Threat and Tactical Threat
+		System.out.println();
+		System.out.println("Once turn order has been established, the program then decides for the enemies which of the allies they find to be most threating.");
+		System.out.println("This also occurs via bias random on the Threat stat for basic enemies and on the Tactical Threat stat for more advanced enemies.");
+		System.out.println("This happens in the background and is written in a file that can be used for the Game Master's reference.");
+		System.out.println("Additionally, on an enemy\'s turn, the Game Master and view the listing created by selecting the \"Display Threat Order\" command.");
+		
+		// Set the Threat and TacticalThreat for each Enemy
+		for (int x = 0; x<this.enemyList.size(); x++) {
+			// Set the Threat Order:
+			this.enemyList.get(x).setThreatOrder(this.allyList);
+		}
+		
+		// Write the now set Enemy information to the EnemyInfo.txt file for reference when playing.
+		this.writeEnemyInfoFile();
+		
+		// Describe 1 final time before initiating combat
+		System.out.println();
+		System.out.println("With all the prep work done, combat is started allowing each combatant to be able to take turns making actions until one side is defeated.");
+		System.out.println("The program is designed to keep track of as much as possible without having to execute multiple programs or keep track of a ton of things on paper.");
+		System.out.println("Even though the program keeps track of things such as limiting conditions and cooldowns, it will always allow the Game Master to make a decision (that could be based on the mission being played) that overrides the norm.");
+		System.out.println("Feel free to try out the systems in place! Press enter to start the combat.");
+		this.getPrompter().nextLine();
+		
+		// Begin loop, counting up in the number of rounds
+		boolean bothAlive = true;
+		while (bothAlive) {
+			// Output the round number in a big way
+			System.out.println();
+			System.out.println("-----------------------------------------------------------------------------");
+			System.out.println("-----------------------------------------------------------------------------");
+			System.out.println("Round: " + this.round);
+			System.out.println("-----------------------------------------------------------------------------");
+			System.out.println("-----------------------------------------------------------------------------");
+			System.out.println();
+			// For each Character in combatants, begin turn
+			for (Character c : this.combatantList) {
+				c.beginTurn();
+				// If All Allies are dead, all enemies are dead, break out of both loops
+				if (this.allAlliesDead() || this.allEnemiesDead()) {
+					bothAlive = false;
+					break;
+				}
+			}
+			this.round++;
+		}
+		// Output result of battle.
+		if (this.allAlliesDead() && !this.allEnemiesDead()) {
+			System.out.println("\nDEFEAT!");
+		}
+		else if (this.allEnemiesDead() && !this.allAlliesDead()) {
+			System.out.println("\nVICTORY!!!");
+		}
+		else {
+			System.out.println("A... DRAW?!?");
+		}
+	}
 }
