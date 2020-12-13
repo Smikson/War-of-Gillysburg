@@ -10,12 +10,41 @@ public class PlayerDataBase {
 			.setHoldItRightThereRank(3)
 			.setEnchantedArmorRank(15)
 			.setShieldSkillsRank(15)
+			.setProfessionalLaughterRank(3)
 			.setShieldBashRank(10)
 			.setShieldReflectionRank(10)
 			.setTauntingAttackRank(10)
 			.setLeaderStrikeRank(10)
 			.setHaHaHaYouCantKillMeRank(3)
 			.build();
+	public static final SteelLegionWarrior JD = new SteelLegionWarriorBuilder()
+			.Name("J.D.")
+			.Level(10)
+			.setVengeanceStrikeRank(1)
+			.setSwordplayProwessRank(1)
+			.setWarriorsMightRank(2)
+			.setAgileFighterRank(2)
+			.setSweepRank(3)
+			.setChargeRank(2)
+			.setFlipStrikeRank(2)
+			.setIntimidatingShoutRank(2)
+			.setDeflectionRank(1)
+			.build();
+	public static final SteelLegionWarrior IAN = new SteelLegionWarriorBuilder()
+			.Name("Ian")
+			.Level(20)
+			.setVengeanceStrikeRank(2)
+			.setSwordplayProwessRank(2)
+			.setWarriorsMightRank(3)
+			.setAgileFighterRank(4)
+			.setSweepRank(4)
+			.setChargeRank(3)
+			.setFlipStrikeRank(3)
+			.setIntimidatingShoutRank(3)
+			.setDeflectionRank(2)
+			.build();
+	
+	
 	public static final SilentDeathShadow JAIME = new CharacterBuilder()
 			.Name("Jaime")
 			.Level(1)
@@ -48,15 +77,7 @@ public class PlayerDataBase {
 			.TacticalThreat(7)
 			.buildKOT();
 	
-	public static final SteelLegionWarrior JD = new SteelLegionWarriorBuilder()
-			.Name("J.D.")
-			.Level(1)
-			.build();
 	
-	public static final SteelLegionWarrior IAN = new SteelLegionWarriorBuilder()
-			.Name("Ian")
-			.Level(1)
-			.build();
 	
 	public static final SentinelArcArcher TYLER = new CharacterBuilder()
 			.Name("Tyler")

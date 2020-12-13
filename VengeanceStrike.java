@@ -86,7 +86,7 @@ public class VengeanceStrike extends Ability {
 	}
 	
 	// Creates an execute function to make the Vengeance Strike attack, applying the correct Conditions
-	public void execute(Character enemy) {
+	public void execute(Enemy enemy) {
 		// Start the build of the attack
 		AttackBuilder VenStrBuilder = new AttackBuilder()
 				.attacker(this.getOwner())
@@ -139,9 +139,9 @@ public class VengeanceStrike extends Ability {
 	@Override
 	public void applyPostAttackEffects(AttackResult atkRes) {
 		// When the owner is defending, the ability can automatically occur:
-		if (this.getOwner().equals(atkRes.getAttacker())) {
-			// The attack cannot occur if it is the owner's turn, nor if the attack missed
-			if (this.getOwner().inTurn() || !atkRes.didHit()) {
+		if (this.getOwner().equals(atkRes.getDefender())) {
+			// The attack cannot occur if it is the owner's turn, if the attack missed, nor if the person that attacked was not an enemy
+			if (this.getOwner().inTurn() || !atkRes.didHit() || !(atkRes.getAttacker() instanceof Enemy)) {
 				return;
 			}
 			
@@ -153,20 +153,20 @@ public class VengeanceStrike extends Ability {
 				shouldAttack = false;
 			}
 			// At rank 2, the attack must be melee, and it can only be used once per enemy
-			if (this.rank() == 2 && !atkRes.getRangeType().equals(Attack.RangeType.MELEE) && this.counter.get(atkRes.getAttacker()) != 1) {
+			if (this.rank() == 2 && !atkRes.getRangeType().equals(Attack.RangeType.MELEE) && this.counter.containsKey(atkRes.getAttacker()) && this.counter.get(atkRes.getAttacker()) != 1) {
 				shouldAttack = false;
 			}
 			// At rank 3, the attack has no limitations except Ranged enemies out of range.
 			
 			// Tell the user if the attack should(n't) occur, and prompt for usage
-			String negation = shouldAttack? "" : "NOT";
-			System.out.println(this.getOwner().getName() + " should " + negation + " use Vengeance Strike. Proceed with attack?");
+			String negation = shouldAttack? "" : "NOT ";
+			System.out.println(this.getOwner().getName() + " should " + negation + "use Vengeance Strike. Proceed with attack?");
 			if (!BattleSimulator.getInstance().askYorN()) {
 				return;
 			}
 			
 			// At this point the attack occurs.
-			this.execute(atkRes.getAttacker());
+			this.execute((Enemy)atkRes.getAttacker());
 		}
 	}
 }

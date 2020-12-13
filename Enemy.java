@@ -8,6 +8,10 @@ public class Enemy extends Character {
 		NORMAL, ADVANCED, ELITE, BOSS;
 	}
 	
+	// Static empty Enemy to be used as a default where needed
+	public static final Enemy EMPTY = new Enemy(Character.EMPTY, true, Enemy.Difficulty.NORMAL);
+	
+	// Other class variables
 	private LinkedList<Character> ThreatOrder;
 	private boolean UseThreat;
 	private Enemy.Difficulty difficulty;

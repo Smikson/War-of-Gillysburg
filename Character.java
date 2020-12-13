@@ -95,8 +95,12 @@ public class Character {
 		
 		this.baseDmgType = dmgType;
 		this.baseRangeType = range == 1? Attack.RangeType.MELEE : Attack.RangeType.RANGED;
-		this.resistances = resis;
-		this.vulnerabilities = vuls;
+		
+		this.resistances = new HashMap<>();
+		this.vulnerabilities = new HashMap<>();
+		
+		this.resistances.putAll(resis);
+		this.vulnerabilities.putAll(vuls);
 		
 		this.CharacterType = type;
 		
@@ -195,12 +199,14 @@ public class Character {
 	}
 	public HashMap<Attack.DmgType,Double> getResistances() {
 		// Copies the list so alterations do not occur on the Character itself
-		HashMap<Attack.DmgType,Double> copy = this.resistances;
+		HashMap<Attack.DmgType,Double> copy = new HashMap<>();
+		copy.putAll(this.resistances);
 		return copy;
 	}
 	public HashMap<Attack.DmgType,Double> getVulnerabilities() {
 		// Copies the list so alterations do not occur on the Character itself
-		HashMap<Attack.DmgType,Double> copy =  this.vulnerabilities;
+		HashMap<Attack.DmgType,Double> copy = new HashMap<>();
+		copy.putAll(this.vulnerabilities);
 		return copy;
 	}
 	
@@ -224,6 +230,9 @@ public class Character {
 	
 	public int getCurrentHealth() {
 		return this.CurrentHealth;
+	}
+	public int getMissingHealth() {
+		return this.getHealth() - this.getCurrentHealth();
 	}
 	public int getShields() {
 		return this.Shields;
@@ -661,7 +670,12 @@ public class Character {
 	            		if (BattleSimulator.getInstance().getPrompter().hasNextInt()) {
 		    				int amount = BattleSimulator.getInstance().getPrompter().nextInt();
 		    				BattleSimulator.getInstance().getPrompter().nextLine();
-		    				this.restoreHealth(amount);
+		    				if (amount < 0) {
+		    					this.setCurrentHealth(this.getCurrentHealth() + amount);
+		    				}
+		    				else {
+		    					this.restoreHealth(amount);
+		    				}
 		    				System.out.println(this.getName() + "'s new Current Health: " + this.getCurrentHealth());
 		    				return;
 		    			}

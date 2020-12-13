@@ -207,6 +207,28 @@ public class BattleSimulator {
 			return this.getCombatants().get(choice-1);
 		}
 	}
+	public Enemy targetSingleEnemy() {
+		// Create a list of strings for each enemy's name.
+		LinkedList<String> nameList = new LinkedList<>();
+		for (Enemy enemy : this.getEnemies()) {
+			String deadInd = "";
+			if (enemy.isDead()) {
+				deadInd = " - Dead";
+			}
+			nameList.add(enemy.getName() + deadInd);
+		}
+		
+		// Prompt the user for a choice from those names
+		int choice = this.promptSelect(nameList);
+		
+		// Return the result
+		if (choice == 0) {
+			return Enemy.EMPTY;
+		}
+		else {
+			return this.getEnemies().get(choice-1);
+		}
+	}
 	
 	// Return a list of chosen Characters in combatants (by convention, an empty list implies the user wants to "cancel" and select a different command)
 	public LinkedList<Character> targetMultiple() {
@@ -309,6 +331,63 @@ public class BattleSimulator {
 				System.out.print("Choice? ");
 			}
 		}
+	}
+	
+	// Other prompt methods to get numeric values
+	// Returns an integer value as prompted
+	public int promptInt(int minValue, int maxValue) {
+		int choice;
+		while (true) {
+			if (this.getPrompter().hasNextInt()) {
+				choice = this.getPrompter().nextInt();
+				this.getPrompter().nextLine();
+				if (choice < minValue) {
+					System.out.print("Please enter an integer above " + minValue + ": ");
+				}
+				else if (choice > maxValue) {
+					System.out.print("Please enter an integer below " + maxValue + ": ");
+				}
+				else {
+					break;
+				}
+			}
+			else {
+				this.getPrompter().nextLine();
+				System.out.print("Please enter an integer as a response: ");
+			}
+		}
+		return choice;
+	}
+	public int promptInt() {
+		return this.promptInt(0, Integer.MAX_VALUE);
+	}
+	
+	// Returns a double value as prompted
+	public double promptDouble(double minValue, double maxValue) {
+		double choice;
+		while (true) {
+			if (this.getPrompter().hasNextDouble()) {
+				choice = this.getPrompter().nextDouble();
+				this.getPrompter().nextLine();
+				if (choice < minValue) {
+					System.out.print("Please enter a value above " + minValue + ": ");
+				}
+				else if (choice > maxValue) {
+					System.out.print("Please enter a value below " + maxValue + ": ");
+				}
+				else {
+					break;
+				}
+			}
+			else {
+				this.getPrompter().nextLine();
+				System.out.print("Please enter a value as a response: ");
+			}
+		}
+		return choice;
+	}
+	public double promptDouble() {
+		return this.promptDouble(0, Double.MAX_VALUE);
 	}
 	
 	

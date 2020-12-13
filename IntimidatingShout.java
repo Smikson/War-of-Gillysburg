@@ -1,5 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.LinkedList;
+
 public class IntimidatingShout extends Ability {
 	// Holds the owner of the Ability as a Steel Legion Warrior
 	private SteelLegionWarrior owner;
@@ -164,52 +166,44 @@ public class IntimidatingShout extends Ability {
 		// Normal
 		this.tauntNormal = new Condition("Intimidating Shout: TAUNT - Damage Reduced", duration);
 		this.tauntNormal.setSource(this.owner);
-		this.tauntNormal.makeSourceIncrementing();
 		this.tauntNormal.makeEndOfTurn();
 		this.tauntNormal.addStatusEffect(normalBaseDmgReduction);
 		
 		this.tauntNormalExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", duration + 1);
 		this.tauntNormalExtraDuration.setSource(this.owner);
-		this.tauntNormalExtraDuration.makeSourceIncrementing();
 		this.tauntNormalExtraDuration.makeEndOfTurn();
 		this.tauntNormalExtraDuration.addStatusEffect(normalBaseDmgReduction);
 		
 		// Advanced
 		this.tauntAdvanced = new Condition("Intimidating Shout: TAUNT - Damage Reduced", duration);
 		this.tauntAdvanced.setSource(this.owner);
-		this.tauntAdvanced.makeSourceIncrementing();
 		this.tauntAdvanced.makeEndOfTurn();
 		this.tauntAdvanced.addStatusEffect(advancedBaseDmgReduction);
 		
 		this.tauntAdvancedExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", duration + 1);
 		this.tauntAdvancedExtraDuration.setSource(this.owner);
-		this.tauntAdvancedExtraDuration.makeSourceIncrementing();
 		this.tauntAdvancedExtraDuration.makeEndOfTurn();
 		this.tauntAdvancedExtraDuration.addStatusEffect(advancedBaseDmgReduction);
 		
 		// Elite
 		this.tauntElite = new Condition("Intimidating Shout: TAUNT - Damage Reduced", duration);
 		this.tauntElite.setSource(this.owner);
-		this.tauntElite.makeSourceIncrementing();
 		this.tauntElite.makeEndOfTurn();
 		this.tauntElite.addStatusEffect(eliteBaseDmgReduction);
 		
 		this.tauntEliteExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", duration + 1);
 		this.tauntEliteExtraDuration.setSource(this.owner);
-		this.tauntEliteExtraDuration.makeSourceIncrementing();
 		this.tauntEliteExtraDuration.makeEndOfTurn();
 		this.tauntEliteExtraDuration.addStatusEffect(eliteBaseDmgReduction);
 		
 		// Boss
 		this.tauntBoss = new Condition("Intimidating Shout: TAUNT - Damage Reduced", duration);
 		this.tauntBoss.setSource(this.owner);
-		this.tauntBoss.makeSourceIncrementing();
 		this.tauntBoss.makeEndOfTurn();
 		this.tauntBoss.addStatusEffect(bossBaseDmgReduction);
 		
 		this.tauntBossExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", duration + 1);
 		this.tauntBossExtraDuration.setSource(this.owner);
-		this.tauntBossExtraDuration.makeSourceIncrementing();
 		this.tauntBossExtraDuration.makeEndOfTurn();
 		this.tauntBossExtraDuration.addStatusEffect(bossBaseDmgReduction);
 		
@@ -229,28 +223,24 @@ public class IntimidatingShout extends Ability {
 		// Normal
 		this.tauntNormalReducedValue = new Condition("Intimidating Shout: TAUNT - Damage Reduced", 1, actReq);
 		this.tauntNormalReducedValue.setSource(this.owner);
-		this.tauntNormalReducedValue.makeSourceIncrementing();
 		this.tauntNormalReducedValue.makeEndOfTurn();
 		this.tauntNormalReducedValue.addStatusEffect(normalReducedDmgReduction);
 		
 		// Advanced
 		this.tauntAdvancedReducedValue = new Condition("Intimidating Shout: TAUNT - Damage Reduced", 1, actReq);
 		this.tauntAdvancedReducedValue.setSource(this.owner);
-		this.tauntAdvancedReducedValue.makeSourceIncrementing();
 		this.tauntAdvancedReducedValue.makeEndOfTurn();
 		this.tauntAdvancedReducedValue.addStatusEffect(advancedReducedDmgReduction);
 		
 		// Elite
 		this.tauntEliteReducedValue = new Condition("Intimidating Shout: TAUNT - Damage Reduced", 1, actReq);
 		this.tauntEliteReducedValue.setSource(this.owner);
-		this.tauntEliteReducedValue.makeSourceIncrementing();
 		this.tauntEliteReducedValue.makeEndOfTurn();
 		this.tauntEliteReducedValue.addStatusEffect(eliteReducedDmgReduction);
 		
 		// Boss
 		this.tauntBossReducedValue = new Condition("Intimidating Shout: TAUNT - Damage Reduced", 1, actReq);
 		this.tauntBossReducedValue.setSource(this.owner);
-		this.tauntBossReducedValue.makeSourceIncrementing();
 		this.tauntBossReducedValue.makeEndOfTurn();
 		this.tauntBossReducedValue.addStatusEffect(bossReducedDmgReduction);
 	}
@@ -390,5 +380,157 @@ public class IntimidatingShout extends Ability {
 	}
 	public Condition getSelfDefenseBonusDeflection() {
 		return this.selfDefenseBonusExtraDuration;
+	}
+	
+	
+	// Default version of Ability
+	public void use() {
+		// Select enemies affected
+		System.out.println("Choose enemies affected:");
+    	LinkedList<Character> targets = BattleSimulator.getInstance().targetMultiple();
+    	LinkedList<Enemy> enemies = new LinkedList<>();
+        if (targets.isEmpty()) {
+        	return;
+        }
+        if (targets.contains(Character.EMPTY)) {
+        	targets.clear();
+        }
+        for (Character target : targets) {
+        	if (!(target instanceof Enemy)) {
+        		System.out.println("Cannot use Intimidating Shout against non-enemies. Select again.");
+        		return;
+        	}
+        	enemies.add((Enemy)target);
+        }
+		
+		// First, place Intimidating Shout "on cooldown"
+		this.setOnCooldown();
+		
+		// Apply all basic taunt conditions to respective enemies
+		for (Enemy enemy : enemies) {
+			// Normal enemies
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.NORMAL)) {
+				enemy.addCondition(this.getTauntNormal());
+			}
+			// Advanced enemies
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.ADVANCED)) {
+				enemy.addCondition(this.getTauntAdvanced());
+			}
+			// Elite enemies
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.ELITE)) {
+				enemy.addCondition(this.getTauntElite());
+			}
+			// Boss enemies
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.BOSS)) {
+				enemy.addCondition(this.getTauntBoss());
+			}
+			
+			// The reduced effects are also added to each only if above rank 7
+			if (this.rank() >= 7) {
+				// Normal enemies
+				if (enemy.getDifficulty().equals(Enemy.Difficulty.NORMAL)) {
+					enemy.addCondition(this.getTauntNormalReducedValue());
+				}
+				// Advanced enemies
+				if (enemy.getDifficulty().equals(Enemy.Difficulty.ADVANCED)) {
+					enemy.addCondition(this.getTauntAdvancedReducedValue());
+				}
+				// Elite enemies
+				if (enemy.getDifficulty().equals(Enemy.Difficulty.ELITE)) {
+					enemy.addCondition(this.getTauntEliteReducedValue());
+				}
+				// Boss enemies
+				if (enemy.getDifficulty().equals(Enemy.Difficulty.BOSS)) {
+					enemy.addCondition(this.getTauntBossReducedValue());
+				}
+			}
+		}
+		
+		// Apply the self block bonus
+		this.owner.addCondition(this.getSelfDefenseBonus());
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
+	}
+	
+	public void useDeflectionVersion() {
+		// Select enemies affected
+		System.out.println("Choose enemies affected by Intimidating Shout:");
+    	LinkedList<Character> targets = BattleSimulator.getInstance().targetMultiple();
+    	LinkedList<Enemy> enemies = new LinkedList<>();
+        if (targets.isEmpty()) {
+        	return;
+        }
+        if (targets.contains(Character.EMPTY)) {
+        	targets.clear();
+        }
+        for (Character target : targets) {
+        	if (!(target instanceof Enemy)) {
+        		System.out.println("Cannot use Intimidating Shout against non-enemies. Select again.");
+        		return;
+        	}
+        	enemies.add((Enemy)target);
+        }
+		
+		// Apply all basic taunt conditions to respective enemies
+		for (Enemy enemy : enemies) {
+			// Normal enemies
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.NORMAL)) {
+				enemy.addCondition(this.getTauntNormalDeflection());
+			}
+			// Advanced enemies
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.ADVANCED)) {
+				enemy.addCondition(this.getTauntAdvancedDeflection());
+			}
+			// Elite enemies
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.ELITE)) {
+				enemy.addCondition(this.getTauntEliteDeflection());
+			}
+			// Boss enemies
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.BOSS)) {
+				enemy.addCondition(this.getTauntBossDeflection());
+			}
+			
+			// The reduced effects are also added to each only if above rank 7
+			if (this.rank() >= 7) {
+				// Normal enemies
+				if (enemy.getDifficulty().equals(Enemy.Difficulty.NORMAL)) {
+					enemy.addCondition(this.getTauntNormalReducedValue());
+				}
+				// Advanced enemies
+				if (enemy.getDifficulty().equals(Enemy.Difficulty.ADVANCED)) {
+					enemy.addCondition(this.getTauntAdvancedReducedValue());
+				}
+				// Elite enemies
+				if (enemy.getDifficulty().equals(Enemy.Difficulty.ELITE)) {
+					enemy.addCondition(this.getTauntEliteReducedValue());
+				}
+				// Boss enemies
+				if (enemy.getDifficulty().equals(Enemy.Difficulty.BOSS)) {
+					enemy.addCondition(this.getTauntBossReducedValue());
+				}
+			}
+		}
+		
+		// Apply the self block bonus
+		this.owner.addCondition(this.getSelfDefenseBonusDeflection());
+	}
+	
+	// Use function called either by default or in Deflection
+	public void use(int version) {
+		// Use the normal version by default
+		if (version == 1) {
+			this.use();
+			return;
+		}
+		
+		// If the version specified is 2, use the Deflection version
+		if (version == 2) {
+			this.useDeflectionVersion();
+			return;
+		}
+		
+		// Otherwise. print a warning if this function is ever actually directly called
+		System.out.println("Warning: The Ability, " + this.getName() + ", does not have a use(" + version + ") function defined, but it was called!");
 	}
 }

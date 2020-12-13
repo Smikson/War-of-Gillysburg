@@ -1,5 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.LinkedList;
+
 public class Sweep extends Ability {
 	// Holds the owner of the Ability as a Steel Legion Warrior
 	private SteelLegionWarrior owner;
@@ -92,6 +94,8 @@ public class Sweep extends Ability {
 		
 		// Create the slow effect
 		this.slow = new Slow("Sweep: Slow", duration, amount);
+		this.slow.setSource(this.owner);
+		this.slow.makeEndOfTurn();
 	}
 	
 	// Get method for the slow
@@ -101,5 +105,46 @@ public class Sweep extends Ability {
 	}
 	public Slow getSlow() {
 		return this.slow;
+	}
+	
+	
+	// Use function called when the action is chosen from the possible Commands
+	@Override
+	public void use() {
+		// Select enemies to attack
+		System.out.println("Choose enemies hit by attack:");
+    	LinkedList<Character> enemies = BattleSimulator.getInstance().targetMultiple();
+        if (enemies.isEmpty()) {
+        	return;
+        }
+        if (enemies.contains(Character.EMPTY)) {
+        	enemies.clear();
+        }
+		
+		// Before anything, put Sweep "on Cooldown"
+		this.setOnCooldown();
+		
+		// Make the attack and apply the slow against all enemies affected
+		for (Character enemy : enemies) {
+			// Applies the attack
+			Attack sweepAtk = new AttackBuilder()
+					.attacker(this.owner)
+					.defender(enemy)
+					.isAOE()
+					.scaler(this.getScaler())
+					.type(Attack.DmgType.SLASHING)
+					.range(Attack.RangeType.MELEE)
+					.build();
+			if (this.getOwner().isAbilityActive(SteelLegionWarrior.AbilityNames.Deflection)) {
+				sweepAtk = this.getOwner().getDeflectionVersion(sweepAtk);
+			}
+			sweepAtk.execute();
+			
+			// Applies the slow
+			enemy.addCondition(this.getSlow());
+		}
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
 	}
 }

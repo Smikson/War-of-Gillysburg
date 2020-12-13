@@ -1932,10 +1932,14 @@ class SteelLegionTankBuilder extends CharacterBuilder {
 		for (int counter = 2; counter <= this.Level; counter++) {
 			// Statically increasing stats (increases by same amount each level)
 			this.Damage = (int)Math.round(this.Damage * 1.03);
-			this.Armor = (int)Math.round(this.Armor * 1.05);
-			this.ArmorPiercing = (int)Math.round(this.ArmorPiercing * 1.05);
-			this.Accuracy = (int)Math.round(this.Accuracy * 1.05);
-			this.Block = (int)Math.round(this.Block * 1.05);
+			
+			// All these only increment at intervals of 5
+			if (counter % 5 == 0) {
+				this.Armor = (int)Math.round(this.Armor * 1.05);
+				this.ArmorPiercing = (int)Math.round(this.ArmorPiercing * 1.05);
+				this.Accuracy = (int)Math.round(this.Accuracy * 1.05);
+				this.Block = (int)Math.round(this.Block * 1.05);
+			}
 			
 			// Dynamically increasing stats
 			// Health changes at intervals of 5 and 10

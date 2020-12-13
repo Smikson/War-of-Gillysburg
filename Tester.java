@@ -39,11 +39,11 @@ public class Tester {
 		
 		// THE ACTION TAKES PLACE HERE
 		SteelLegionTank ally1 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 1").build();
-		SteelLegionTank ally2 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 2").build();
-		SteelLegionTank ally3 = new SteelLegionTankBuilder(PlayerDataBase.TEST).Name("Ally 3").build();
+		SteelLegionWarrior ian = new SteelLegionWarriorBuilder(PlayerDataBase.IAN).Name("Ian").build();
+		SteelLegionWarrior jd = new SteelLegionWarriorBuilder(PlayerDataBase.JD).Name("JD").build();
 		BattleSimulator.getInstance().addAlly(ally1);
-		BattleSimulator.getInstance().addAlly(ally2);
-		BattleSimulator.getInstance().addAlly(ally3);
+		BattleSimulator.getInstance().addAlly(ian);
+		BattleSimulator.getInstance().addAlly(jd);
 		BattleSimulator.getInstance().addEnemy(spi1);
 		BattleSimulator.getInstance().addEnemy(spi2);
 		BattleSimulator.getInstance().addEnemy(spi3);

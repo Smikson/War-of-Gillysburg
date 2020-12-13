@@ -79,12 +79,17 @@ public class Attack {
 		this.vorpalChance = vChance;
 		this.vorpalMultiplier = vDmg;
 		this.lifesteal = lifesteal;
-		this.attackerConditions = atkCons;
-		this.defenderConditions = defCons;
-		this.successAttackConditions = sucAtkCons;
-		this.failAttackConditions = failAtkCons;
+		this.attackerConditions = new LinkedList<>();
+		this.attackerConditions.addAll(atkCons);
+		this.defenderConditions = new LinkedList<>();
+		this.defenderConditions.addAll(defCons);
+		this.successAttackConditions = new LinkedList<>();
+		this.successAttackConditions.addAll(sucAtkCons);
+		this.failAttackConditions = new LinkedList<>();
+		this.failAttackConditions.addAll(failAtkCons);
 		
-		this.attachedAttacks = attached;
+		this.attachedAttacks = new LinkedList<>();
+		this.attachedAttacks.addAll(attached);
 		this.hasAlteration = hasAlteration;
 		this.alteration = alteration;
 		
@@ -741,12 +746,18 @@ class AttackBuilder {
 		this.vorpalChance = base.getVorpalChance();
 		this.vorpalMultiplier = base.getVorpalMultiplier();
 		this.lifesteal = base.getLifeStealPercentage();
-		this.attackerConditions = base.getAttackerConditions();
-		this.defenderConditions = base.getDefenderConditions();
-		this.successAttackConditions = base.getSuccessAttackConditions();
-		this.failAttackConditions = base.getFailAttackConditions();
 		
-		this.attachedAttacks = base.getAttachedAttacks();
+		this.attackerConditions = new LinkedList<>();
+		this.attackerConditions.addAll(base.getAttackerConditions());
+		this.defenderConditions = new LinkedList<>();
+		this.defenderConditions.addAll(base.getDefenderConditions());
+		this.successAttackConditions = new LinkedList<>();
+		this.successAttackConditions.addAll(base.getSuccessAttackConditions());
+		this.failAttackConditions = new LinkedList<>();
+		this.failAttackConditions.addAll(base.getFailAttackConditions());
+		
+		this.attachedAttacks = new LinkedList<>();
+		this.attachedAttacks.addAll(base.getAttachedAttacks());
 		this.hasAlteration = base.hasAlteration();
 		this.alteration = base.getAlteration();
 	}

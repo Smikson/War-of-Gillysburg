@@ -1,11 +1,13 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.*;
+
 public class FlipStrike extends Ability {
 	// Holds the owner of the Ability as a Steel Legion Warrior
 	private SteelLegionWarrior owner;
 	
 	// Additional Variables
-	private int noMissChance;
+	private double noMissChance;
 	private Condition preAttackBonus;
 	
 	// Constructor
@@ -81,21 +83,54 @@ public class FlipStrike extends Ability {
 		
 		// Rank 7 increases the chance to 15%
 		if (this.rank() >= 7) {
-			this.noMissChance = 15;
+			this.noMissChance = .15;
 		}
 		// Rank 9 increases the chance to 20%
 		if (this.rank() >= 9) {
-			this.noMissChance = 20;
+			this.noMissChance = .20;
 		}
 		// Rank 10 increases the chance to 25%
 		if (this.rank() == 10) {
-			this.noMissChance = 25;
+			this.noMissChance = .25;
 		}
 	}
 	
 	private void setPreAttackBonus() {
-		// Creates the StatusEffect (is always 15%)
-		StatusEffect apBonus = new StatusEffect(Stat.Version.ARMOR_PIERCING, 15, StatusEffect.Type.OUTGOING);
+		// Calculates the amount of increased Armor Piercing based on rank
+		int apAmount = 10;
+		switch(this.rank()) {
+			case 1:
+				apAmount = 10;
+				break;
+			case 3:
+			case 2:
+				apAmount = 12;
+				break;
+			case 4:
+				apAmount = 14;
+				break;
+			case 5:
+				apAmount = 15;
+				break;
+			case 6:
+				apAmount = 17;
+				break;
+			case 7:
+				apAmount = 18;
+				break;
+			case 8:
+				apAmount = 20;
+				break;
+			case 9:
+				apAmount = 22;
+				break;
+			case 10:
+				apAmount = 25;
+				break;
+		}
+		
+		// Creates the StatusEffect
+		StatusEffect apBonus = new StatusEffect(Stat.Version.ARMOR_PIERCING, apAmount, StatusEffect.Type.OUTGOING);
 		apBonus.makePercentage();
 		
 		// Creates the Condition
@@ -110,7 +145,7 @@ public class FlipStrike extends Ability {
 		return this.owner;
 	}
 	
-	public int getNoMissChance() {
+	public double getNoMissChance() {
 		return this.noMissChance;
 	}
 	
@@ -118,9 +153,98 @@ public class FlipStrike extends Ability {
 		return this.preAttackBonus;
 	}
 	
-	public void useVengeanceStrike(Attack original) {
-		// Check for Deflection version
-		// rank 4 of VS is just normal
-		// rank 5 of VS applies scaler (should be 1.5) and 30% lifesteal
+	
+	// Use function called when the action is chosen from the possible Commands
+	@Override
+	public void use() {
+        // Select the target enemy
+ 		Enemy enemy = BattleSimulator.getInstance().targetSingleEnemy();
+	    if (enemy.equals(Enemy.EMPTY)) {
+	    	return;
+	    }
+		
+		// Before anything, put Flip Strike "on Cooldown"
+		this.setOnCooldown();
+		
+		// Make the attack against the targeted enemy with the self-buff
+		Attack flipAtk = new AttackBuilder()
+				.attacker(this.owner)
+				.defender(enemy)
+				.isTargeted()
+				.scaler(this.getScaler())
+				.type(Attack.DmgType.SLASHING)
+				.range(Attack.RangeType.MELEE)
+				.addAttackerCondition(this.getPreAttackBonus())
+				.build();
+		if (this.getOwner().isAbilityActive(SteelLegionWarrior.AbilityNames.Deflection)) {
+			flipAtk = this.getOwner().getDeflectionVersion(flipAtk);
+		}
+		// Above rank 7, there is a chance the attack cannot miss
+		if (this.rank() >= 7) {
+			// Get the chance the attack cannot miss based on the enemy difficulty
+			double chance = this.getNoMissChance();
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.ELITE) && this.rank() < 10) {
+				chance /= 2.0;
+			}
+			else if (enemy.getDifficulty().equals(Enemy.Difficulty.BOSS) && this.rank() < 10) {
+				chance = 0;
+			}
+			
+			// Get a random probability
+			Random rd = new Random();
+			double prob = rd.nextDouble();
+			
+			// If the probability falls under the chance, it is a success
+			if (prob <= chance) {
+				flipAtk = new AttackBuilder(flipAtk).cannotMiss().build();
+			}
+		}
+		flipAtk.execute();
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
+	}
+	
+	public void useVengeanceStrikeVersion(Attack original) {
+		// Make the attack against the targeted enemy with the self-buff based on the original VengeanceStrike
+		Enemy enemy = (Enemy)original.getDefender(); // Guaranteed to be of type Enemy due to Vengeance Strike check
+		Attack flipAtk = new AttackBuilder()
+				.attacker(this.owner)
+				.defender(enemy)
+				.isTargeted()
+				.scaler(this.getScaler())
+				.type(Attack.DmgType.SLASHING)
+				.range(Attack.RangeType.MELEE)
+				.addAttackerCondition(this.getPreAttackBonus())
+				.build();
+		if (this.getOwner().isAbilityActive(SteelLegionWarrior.AbilityNames.Deflection)) {
+			flipAtk = this.getOwner().getDeflectionVersion(flipAtk);
+		}
+		
+		// Above rank 7, there is a chance the attack cannot miss
+		if (this.rank() >= 7) {
+			// Get the chance the attack cannot miss based on the enemy difficulty
+			double chance = this.getNoMissChance();
+			if (enemy.getDifficulty().equals(Enemy.Difficulty.ELITE) && this.rank() < 10) {
+				chance /= 2.0;
+			}
+			else if (enemy.getDifficulty().equals(Enemy.Difficulty.BOSS) && this.rank() < 10) {
+				chance = 0;
+			}
+			
+			// Get a random probability
+			Random rd = new Random();
+			double prob = rd.nextDouble();
+			
+			// If the probability falls under the chance, it is a success
+			if (prob <= chance) {
+				flipAtk = new AttackBuilder(flipAtk).cannotMiss().build();
+			}
+		}
+		// If Vengeance Strike is rank 5, the scaler is increased by 50% (based on Vengeance Strike scaler) and there is a bonus 30% lifesteal
+		if (this.getOwner().getAbilityRank(SteelLegionWarrior.AbilityNames.VengeanceStrike) == 5) {
+			flipAtk = new AttackBuilder(flipAtk).scaler(this.getScaler() * original.getScaler()).lifestealPercentage(30).build();
+		}
+		flipAtk.execute();
 	}
 }

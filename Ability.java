@@ -137,8 +137,6 @@ public class Ability {
 	
 	// During turns: Use functions to be overridden by each class (there can be multiple versions, int specifies version)
 	public void use(int version) {
-		// To also show the basic format of the use function, start by putting the Ability on Cooldown
-		this.setOnCooldown();
 		
 		// Then, for each possible version of the Ability, specify based on the number give (if only 1 use function is present, the check must be the version 1 by default)
 		if (version == 1) {

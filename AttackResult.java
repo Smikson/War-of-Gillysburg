@@ -32,7 +32,8 @@ public class AttackResult {
 		this.didVorp = didVorp;
 		this.damageDealt = damageDealt;
 		this.didKill = didKill;
-		this.attachedAttackResults = attachedAttackResults;
+		this.attachedAttackResults = new LinkedList<>();
+		this.attachedAttackResults.addAll(attachedAttackResults);
 	}
 	public AttackResult() {
 		this.attacker = Character.EMPTY;
@@ -237,7 +238,8 @@ class AttackResultBuilder {
 		this.didVorp = atk.didVorp();
 		this.damageDealt = atk.getDamageDealt();
 		this.didKill = atk.didKill();
-		this.attachedAttackResults = atk.getAttachedAttackResults();
+		this.attachedAttackResults = new LinkedList<>();
+		this.attachedAttackResults.addAll(atk.getAttachedAttackResults());
 	}
 	public AttackResultBuilder() {
 		this(AttackResult.EMPTY);

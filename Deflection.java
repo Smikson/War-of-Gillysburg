@@ -156,7 +156,8 @@ public class Deflection extends UltimateAbility {
 		};
 		
 		// Return the resulting new attack with the electric attack attached with the alteration, adding the fact that the attack ignores all armor at rank 2
-		AttackBuilder ret = new AttackBuilder(original).addAttachedAttack(electricAttached.attachedAlteration(hitAndCrit).build());
+		Attack attached = electricAttached.attachedAlteration(hitAndCrit).build();
+		AttackBuilder ret = new AttackBuilder(original).addAttachedAttack(attached);
 		if (this.rank() >= 2) {
 			ret.ignoresArmor();
 		}

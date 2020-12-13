@@ -197,11 +197,13 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 		// Note: below only occurs if the specified a level, since the base level is 0.
 		// "Level Up" each stat: (Multiply by the given multiplier for each level up to the current level)
 		for (int counter = 2; counter <= this.Level; counter++) {
-			// Statically increasing stats (increases by same amount each level)
-			this.Armor = (int)Math.round(this.Armor * 1.05);
-			this.ArmorPiercing = (int)Math.round(this.ArmorPiercing * 1.05);
-			this.Accuracy = (int)Math.round(this.Accuracy * 1.05);
-			this.Block = (int)Math.round(this.Block * 1.05);
+			// All these only increment at intervals of 5
+			if (counter % 5 == 0) {
+				this.Armor = (int)Math.round(this.Armor * 1.05);
+				this.ArmorPiercing = (int)Math.round(this.ArmorPiercing * 1.05);
+				this.Accuracy = (int)Math.round(this.Accuracy * 1.05);
+				this.Block = (int)Math.round(this.Block * 1.05);
+			}
 			
 			// Dynamically increasing stats
 			// Health and Damage have various changes at intervals of 5 and 10
@@ -253,7 +255,7 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 			}
 		}
 		
-		// Calculate the bonus stats given by certain Abilities [DO THIS]
+		// Calculate the bonus stats given by certain Abilities
 		if (this.SwordplayProwessRank > 0) {
 			SwordplayProwess sp = new SwordplayProwess(this.SwordplayProwessRank);
 			this.bDamage += sp.getDamageBonus();
@@ -265,6 +267,10 @@ public class SteelLegionWarriorBuilder extends CharacterBuilder {
 			this.bArmor += wm.getArmorBonus();
 			this.bThreat += wm.getThreatBonus();
 			this.bDamage += wm.getDamageBonus();
+		}
+		if (this.AgileFighterRank >= 5) {
+			AgileFighter af = new AgileFighter(this.AgileFighterRank);
+			this.bSpeed += af.getSpeedBonus();
 		}
 	}
 	

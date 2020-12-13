@@ -1,5 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.LinkedList;
+
 public class Charge extends Ability{
 	// Holds the owner of the Ability as a Steel Legion Warrior
 	private SteelLegionWarrior owner;
@@ -160,7 +162,7 @@ public class Charge extends Ability{
 		if (this.rank() >= 7) {
 			critAmount = 25;
 		}
-		// At Rank 10, the amount is "a guaranteed crit", so we take current crit from 100 to make 100% chance
+		// At Rank 10, the amount is "a guaranteed crit", so we take current crit from 100 to make 100% chance (though it should be directly accounted for in "use")
 		if (this.rank() == 10) {
 			critAmount = 100 - this.owner.getCriticalChance();
 		}
@@ -209,5 +211,68 @@ public class Charge extends Ability{
 	
 	public Condition getTargetedPreAttackBonus() {
 		return this.targetedPreAttackBonus;
+	}
+	
+	
+	// Use function called when the action is chosen from the possible Commands
+	@Override
+	public void use() {
+		// Select enemies to attack
+		System.out.println("Choose enemies hit by AOE attack:");
+    	LinkedList<Character> enemies = BattleSimulator.getInstance().targetMultiple();
+        if (enemies.isEmpty()) {
+        	return;
+        }
+        if (enemies.contains(Character.EMPTY)) {
+        	enemies.clear();
+        }
+        
+        // Select the target enemy
+ 		Character targeted = BattleSimulator.getInstance().targetSingle();
+         if (targeted.equals(Character.EMPTY)) {
+         	return;
+         }
+		
+		// Before anything, put CHARGE! "on Cooldown"
+		this.setOnCooldown();
+		
+		// Make the attack against all AOE enemies
+		for (Character enemy : enemies) {
+			// Applies the attack
+			Attack chargeAtk = new AttackBuilder()
+					.attacker(this.owner)
+					.defender(enemy)
+					.isAOE()
+					.scaler(this.getAOEScaler())
+					.type(Attack.DmgType.SLASHING)
+					.range(Attack.RangeType.MELEE)
+					.build();
+			if (this.getOwner().isAbilityActive(SteelLegionWarrior.AbilityNames.Deflection)) {
+				chargeAtk = this.getOwner().getDeflectionVersion(chargeAtk);
+			}
+			chargeAtk.execute();
+		}
+		
+		// Make the final attack against the targeted enemy with the self-buff
+		Attack targetedAtk = new AttackBuilder()
+				.attacker(this.owner)
+				.defender(targeted)
+				.isTargeted()
+				.scaler(this.getTargetedScaler())
+				.type(Attack.DmgType.PIERCING)
+				.range(Attack.RangeType.MELEE)
+				.addAttackerCondition(this.getTargetedPreAttackBonus())
+				.build();
+		if (this.getOwner().isAbilityActive(SteelLegionWarrior.AbilityNames.Deflection)) {
+			targetedAtk = this.getOwner().getDeflectionVersion(targetedAtk);
+		}
+		// At rank 10, it is a guaranteed crit
+		if (this.rank() == 10) {
+			targetedAtk = new AttackBuilder(targetedAtk).guaranteedCrit().build();
+		}
+		targetedAtk.execute();
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
 	}
 }
