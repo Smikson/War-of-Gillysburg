@@ -29,6 +29,7 @@ public class Condition {
 	private Character source;
 	private String name;
 	private int duration;
+	private boolean isStacking;
 	private boolean isSourceIncrementing;
 	private boolean isPermanent;
 	private boolean isEndOfTurn;
@@ -46,6 +47,7 @@ public class Condition {
 		this.source = Character.EMPTY;
 		this.name = name;
 		this.duration = duration;
+		this.isStacking = false;
 		this.isSourceIncrementing = false;
 		this.isPermanent = false;
 		this.isEndOfTurn = false;
@@ -55,6 +57,23 @@ public class Condition {
 		this.effects = new LinkedList<StatusEffect>();
 		this.activeRequirement = actReq;
 		this.linkedConditions = new HashSet<Condition>();
+	}
+	public Condition(Condition copy) {
+		this.source = copy.getSource();
+		this.name = copy.getName();
+		this.duration = copy.duration();
+		this.isStacking = copy.isStacking();
+		this.isSourceIncrementing = copy.isSourceIncrementing();
+		this.isPermanent = copy.isPermanent();
+		this.isEndOfTurn = copy.isEndOfTurn();
+		this.isActive = copy.isActive();
+		
+		this.turnCount = 0;
+		this.effects = new LinkedList<StatusEffect>();
+		this.effects.addAll(copy.getStatusEffects());
+		this.activeRequirement = copy.getActiveRequirement();
+		this.linkedConditions = new HashSet<Condition>();
+		this.linkedConditions.addAll(copy.getLinkedConditions());
 	}
 	public Condition(String name, int duration) {
 		this(name, duration, (Character withEffect) -> {return true;});
@@ -72,6 +91,9 @@ public class Condition {
 	}
 	public int duration() {
 		return this.duration;
+	}
+	public boolean isStacking() {
+		return this.isStacking;
 	}
 	public boolean isSourceIncrementing() {
 		return this.isSourceIncrementing;
@@ -104,6 +126,9 @@ public class Condition {
 	}
 	public void setSource(Character c) {
 		this.source = c;
+	}
+	public void makeStacking() {
+		this.isStacking = true;
 	}
 	public void makeSourceIncrementing() {
 		this.isSourceIncrementing = true;

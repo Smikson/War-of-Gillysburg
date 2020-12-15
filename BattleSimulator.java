@@ -138,12 +138,12 @@ public class BattleSimulator {
 	}
 	
 	// Returns a chosen number of a list of Strings (nth string chosen -- NOT INDEX)
-	public int promptSelect(String prompt, boolean noneOption, LinkedList<String> choices) {
+	public int promptSelect(String prompt, boolean noneOption, String noneText, LinkedList<String> choices) {
 		int choice = 0;
 		// Display options
 		System.out.println(prompt);
 		if (noneOption) {
-			System.out.println("0. None (Cancel)");
+			System.out.println("0. " + noneText);
 		}
 		for (int i = 0; i < choices.size(); i++) {
 			System.out.println("" + (i+1) + ". " + choices.get(i));
@@ -174,6 +174,9 @@ public class BattleSimulator {
 				System.out.print("Choice? ");
 			}
 		}
+	}
+	public int promptSelect(String prompt, boolean noneOption, LinkedList<String> choices) {
+		return this.promptSelect(prompt, noneOption, "None (Cancel)", choices);
 	}
 	public int promptSelect(String prompt, LinkedList<String> choices) {
 		// Default has a none Option if unspecified

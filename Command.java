@@ -37,11 +37,18 @@ public abstract class Command {
 			}
 		}
 		
-		// Prompt to select a command from the usable Commands and their displays (No none option)
-		int choice = BattleSimulator.getInstance().promptSelect("Possible Actions:", false, displays);
+		// Because the Basic Attack is always first followed by any "Ability 1" for characters, we want to start at 0
+		// So we remove Basic Attack from what we pass to BattleSimulator's prompt select, and choose to use a none option (that we then treat as the Basic Attack)
+		LinkedList<String> displayCopy = new LinkedList<>();
+		displayCopy.addAll(displays);
+		displayCopy.removeFirst();
 		
+		// Prompt to select a command from the usable Commands and their displays (With none as basic attack)
+		int choice = BattleSimulator.getInstance().promptSelect("Possible Actions:", true, "Basic Attack", displayCopy);
+		
+		// Since none option is included the response is the index of the correct command in the original list.
 		// Execute the command chosen
-		usableCommands.get(choice - 1).execute();
+		usableCommands.get(choice).execute();
 	}
 }
 

@@ -289,18 +289,22 @@ public class Character {
 		return requested.getTotal() + requested.bonus;
 	}
 	
+	// To see if a condition is contained by the Character
+	protected boolean containsCondition(Condition c) {
+		for (Condition con : this.conditions) {
+			if (con.getName().equals(c.getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	// To add conditions to this Character
 	protected void addCondition(Condition c) {
-		if (this.conditions.contains(c)) {
-			System.out.println(this.getName() + " already has " + c.getName() + ", and it was added to them. Proceed?");
-			if (!BattleSimulator.getInstance().askYorN()) {
-				return;
-			}
-			System.out.println("Replace existing Condition(s)?");
-			if (BattleSimulator.getInstance().askYorN()) {
-				while (this.conditions.contains(c)) {
-					this.conditions.remove(c);
-				}
+		// If the Condition is already present and the Condition is not "stacking", first remove any existing Conditions with the same name, then proceed
+		if (this.containsCondition(c) && !c.isStacking()) {
+			while (this.containsCondition(c)) {
+				this.removeCondition(c);
 			}
 		}
 		this.conditions.add(c);
@@ -309,18 +313,21 @@ public class Character {
 	// To remove conditions from this Character
 	protected void removeCondition(Condition removed) {
 		// If the Condition is already removed (or wasn't there in the first place), we are done.
-		if (!this.getAllConditions().contains(removed)) {
-			return;
+		Condition toRemove = new Condition();
+		for (Condition con : this.conditions) {
+			if (con.getName().equals(removed.getName())) {
+				toRemove = con;
+			}
 		}
 		
 		// Unapply condition if need be
-		this.unapply(removed);
+		this.unapply(toRemove);
 		
 		// Remove condition
-		this.conditions.remove(removed);
+		this.conditions.remove(toRemove);
 		
 		// Removes linked conditions
-		for (Condition c : removed.getLinkedConditions()) {
+		for (Condition c : toRemove.getLinkedConditions()) {
 			this.removeCondition(c);
 		}
 	}
@@ -757,6 +764,7 @@ public class Character {
 	protected void beginTurnDisplay() {
 		this.printTurnStats();
 		this.printActiveConditions();
+		//DE Active Abilities (override in other classes?)
 		Command.promptCommands(this.commands);
 	}
 	public void beginTurn() {

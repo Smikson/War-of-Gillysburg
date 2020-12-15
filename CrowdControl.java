@@ -24,6 +24,9 @@ public class CrowdControl extends Condition {
 	public CrowdControl(String name, int duration) {
 		super(name, duration);
 	}
+	public CrowdControl(CrowdControl copy) {
+		super(copy);
+	}
 	public CrowdControl() {
 		super();
 	}
@@ -93,6 +96,9 @@ class Blind extends CrowdControl {
 	public Blind(String name, int duration) {
 		this(name, duration, (Character withEffect) -> {return true;});
 	}
+	public Blind(Blind copy) {
+		super(copy);
+	}
 	public Blind() {
 		super();
 	}
@@ -112,6 +118,9 @@ class Invincible extends CrowdControl {
 	public Invincible(String name, int duration) {
 		super(name, duration);
 	}
+	public Invincible(Invincible copy) {
+		super(copy);
+	}
 	
 	@Override
 	public String toString() {
@@ -127,6 +136,9 @@ class Invulnerable extends CrowdControl {
 	}
 	public Invulnerable(String name, int duration) {
 		super(name, duration);
+	}
+	public Invulnerable(Invulnerable copy) {
+		super(copy);
 	}
 	
 	@Override
@@ -151,6 +163,10 @@ class Slow extends CrowdControl {
 	}
 	public Slow(String name, int duration, double val) {
 		this(name, duration, val, (Character withEffect) -> {return true;});
+	}
+	public Slow(Slow copy) {
+		super(copy);
+		this.value = copy.getValue();
 	}
 	public Slow() {
 		super();
@@ -180,6 +196,9 @@ class Snare extends CrowdControl {
 	public Snare(String name, int duration) {
 		this(name, duration, (Character withEffect) -> {return true;});
 	}
+	public Snare(Snare copy) {
+		super(copy);
+	}
 	
 	@Override
 	public String toString() {
@@ -195,6 +214,9 @@ class Stasis extends CrowdControl {
 	}
 	public Stasis(String name, int duration) {
 		super(name, duration);
+	}
+	public Stasis(Stasis copy) {
+		super(copy);
 	}
 	
 	@Override
@@ -216,6 +238,9 @@ class Stun extends CrowdControl {
 	}
 	public Stun(String name, int duration) {
 		this(name, duration, (Character withEffect) -> {return true;});
+	}
+	public Stun(Stun copy) {
+		super(copy);
 	}
 	
 	@Override

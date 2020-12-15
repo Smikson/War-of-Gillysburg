@@ -11,6 +11,9 @@ public abstract class DamageOverTime extends Condition {
 	public DamageOverTime(Character source, String name, int duration) {
 		this(source, name, duration, (Character withEffect) -> {return true;});
 	}
+	public DamageOverTime(DamageOverTime copy) {
+		super(copy);
+	}
 	
 	// Abstract function that will be called each time the DOT increments its turn
 	public abstract void executeDOT();

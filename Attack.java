@@ -95,6 +95,41 @@ public class Attack {
 		
 		this.isVorpal = false;
 	}
+	public Attack(Attack copy) {
+		this.attacker = copy.getAttacker();
+		this.defender = copy.getDefender();
+		this.type = copy.getDmgType();
+		this.range = copy.getRangeType();
+		this.usesScaler = copy.usesScaler();
+		this.scaler = copy.getScaler();
+		this.flatDamage = copy.getFlatDamageAmount();
+		this.isTargeted = copy.isTargeted();
+		this.canHit = copy.canHit();
+		this.canMiss = copy.canMiss();
+		this.canCrit = copy.canCrit();
+		this.guaranteedCrit = copy.guaranteedCrit();
+		this.ignoresArmor = copy.ignoresArmor();
+		this.hasDeviation = copy.hasDeviation();
+		
+		this.vorpalChance = copy.getVorpalChance();
+		this.vorpalMultiplier = copy.getVorpalMultiplier();
+		this.lifesteal = copy.getLifeStealPercentage();
+		this.attackerConditions = new LinkedList<>();
+		this.attackerConditions.addAll(copy.getAttackerConditions());
+		this.defenderConditions = new LinkedList<>();
+		this.defenderConditions.addAll(copy.getDefenderConditions());
+		this.successAttackConditions = new LinkedList<>();
+		this.successAttackConditions.addAll(copy.getSuccessAttackConditions());
+		this.failAttackConditions = new LinkedList<>();
+		this.failAttackConditions.addAll(copy.getFailAttackConditions());
+		
+		this.attachedAttacks = new LinkedList<>();
+		this.attachedAttacks.addAll(copy.getAttachedAttacks());
+		this.hasAlteration = copy.hasAlteration();
+		this.alteration = copy.getAlteration();
+		
+		this.isVorpal = copy.isVorpal;
+	}
 	public Attack() {
 		this.attacker = Character.EMPTY;
 		this.defender = Character.EMPTY;

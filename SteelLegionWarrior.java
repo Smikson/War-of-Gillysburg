@@ -1,7 +1,6 @@
 package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
-import WyattWitemeyer.WarOfGillysburg.Character;
 
 //Passive Abilities:
 //Unique Passive Ability: "Vengeance Strike"
@@ -80,7 +79,7 @@ class VengeanceStrike extends Ability {
 	}
 	
 	public Condition getEnemyDamageReduction() {
-		return this.enemyDamageReduction;
+		return new Condition(this.enemyDamageReduction);
 	}
 	
 	// Clears the counter map (should occur at the beginning of each turn for ranks 1 and 2)
@@ -197,6 +196,10 @@ class BleedDOT extends DamageOverTime {
 		}
 		
 		this.bleedAtk = bld.build();
+	}
+	public BleedDOT(BleedDOT copy) {
+		super(copy);
+		this.bleedAtk = new Attack(copy.bleedAtk);
 	}
 	
 	// For the bleed effect, activating executes the attack
@@ -436,11 +439,11 @@ class SwordplayProwess extends Ability {
 	}
 	
 	public Condition getEmpoweredCondition() {
-		return this.empoweredEffect;
+		return new Condition(this.empoweredEffect);
 	}
 	
 	public Condition getEmpoweredTextCondition() {
-		return this.empoweredText;
+		return new Condition(this.empoweredText);
 	}
 	
 	public void incrementAttacks() {
@@ -487,7 +490,7 @@ class SwordplayProwess extends Ability {
 			// To create an empowered attack, the attack must be Targeted and the Empowered Effect should be ready
 			if (atk.isTargeted() && this.isEmpowered()) {
 				// Add the Empowered effect to the attack
-				atk.addAttackerCondition(this.empoweredEffect);
+				atk.addAttackerCondition(this.getEmpoweredCondition());
 				
 				// Set the boolean for usingEmpowered to true
 				this.usingEmpowered = true;
@@ -519,7 +522,7 @@ class SwordplayProwess extends Ability {
 					
 					// Reset total attacks to zero and remove the display condition
 					this.resetAttacks();
-					this.getOwner().removeCondition(this.empoweredText);
+					this.getOwner().removeCondition(this.getEmpoweredTextCondition());
 				}
 				return;
 			}
@@ -647,7 +650,7 @@ class WarriorsMight extends Ability {
 	}
 	
 	public Stun getStun() {
-		return this.stun;
+		return new Stun(this.stun);
 	}
 }
 
@@ -662,6 +665,9 @@ class AgileFighter extends Ability {
 	
 	private int speedBonus;
 	
+	private boolean saveResponse;
+	private boolean hasResponseSave;
+	
 	private Condition basePreAttackBonus;
 	private Condition abilityPreAttackBonus;
 	private Condition baseBlockBonus;
@@ -672,6 +678,7 @@ class AgileFighter extends Ability {
 		// Initialize all Ability variables to defaults
 		super("Base Passive Ability: \"Agile Fighter\"", source, rank);
 		this.owner = source;
+		this.saveResponse = false;
 		
 		// Set the healing scalers of the ability, default scaler will be the max health scaler
 		this.setHealingScalers();
@@ -875,19 +882,33 @@ class AgileFighter extends Ability {
 	}
 	
 	public Condition getBasePreAttackBonus() {
-		return this.basePreAttackBonus;
+		return new Condition(this.basePreAttackBonus);
 	}
 	
 	public Condition getAbilityPreAttackBonus() {
-		return this.abilityPreAttackBonus;
+		return new Condition(this.abilityPreAttackBonus);
 	}
 	
 	public Condition getBaseBlockBonus() {
-		return this.baseBlockBonus;
+		return new Condition(this.baseBlockBonus);
 	}
 	
 	public Condition getAbilityBlockBonus() {
-		return this.abilityBlockBonus;
+		return new Condition(this.abilityBlockBonus);
+	}
+	
+	// Overrides decrementsTurnsRemaining and endTurnEffect to also reset the saved response to false at the beginning and end of each turn
+	@Override
+	public void decrementTurnsRemaining() {
+		super.decrementTurnsRemaining();
+		this.saveResponse = false;
+		this.hasResponseSave = false;
+	}
+	@Override
+	public void endTurnEffects() {
+		super.endTurnEffects();
+		this.saveResponse = false;
+		this.hasResponseSave = false;
 	}
 	
 	// Applies the pre-attack bonus when prompted, and heals the respective amount
@@ -895,11 +916,18 @@ class AgileFighter extends Ability {
 	public void applyPreAttackEffects(Attack atk) {
 		// If the owner is the attacker
 		if (this.getOwner().equals(atk.getAttacker())) {
-			// Prompt if the Ability should activate
-			System.out.println("Did " + this.getOwner().getName() + " move and attack?");
+			// Prompt if the Ability should activate when there is no current save of response
+			boolean savedThisCall = this.hasResponseSave;
+			if (!this.hasResponseSave) {
+				System.out.println("Did " + this.getOwner().getName() + " move and attack?");
+				
+				// Save the response
+				this.saveResponse = BattleSimulator.getInstance().askYorN();
+				this.hasResponseSave = true;
+			}
 			
 			// If not, we are done
-			if (!BattleSimulator.getInstance().askYorN()) {
+			if (!this.saveResponse) {
 				return;
 			}
 			
@@ -921,6 +949,11 @@ class AgileFighter extends Ability {
 			else {
 				atk.addAttackerCondition(this.getBasePreAttackBonus());
 				this.getOwner().addCondition(this.getBaseBlockBonus());
+			}
+			
+			// The rest (healing) only occurs if this instance was not saved before this function was called, thus if it is saved, we are done.
+			if (savedThisCall) {
+				return;
 			}
 			
 			// Then, heal the correct amount as prompted
@@ -1048,7 +1081,7 @@ class Sweep extends Ability {
 		return this.owner;
 	}
 	public Slow getSlow() {
-		return this.slow;
+		return new Slow(this.slow);
 	}
 	
 	
@@ -1302,7 +1335,7 @@ class Charge extends Ability {
 	}
 	
 	public Condition getTargetedPreAttackBonus() {
-		return this.targetedPreAttackBonus;
+		return new Condition(this.targetedPreAttackBonus);
 	}
 	
 	
@@ -1518,7 +1551,7 @@ class FlipStrike extends Ability {
 	}
 	
 	public Condition getPreAttackBonus() {
-		return this.preAttackBonus;
+		return new Condition(this.preAttackBonus);
 	}
 	
 	
@@ -1952,50 +1985,50 @@ class IntimidatingShout extends Ability {
 	}
 	
 	public Condition getTauntNormal() {
-		return this.tauntNormal;
+		return new Condition(this.tauntNormal);
 	}
 	public Condition getTauntNormalReducedValue() {
-		return this.tauntNormalReducedValue;
+		return new Condition(this.tauntNormalReducedValue);
 	}
 	public Condition getTauntNormalDeflection() {
-		return this.tauntNormalExtraDuration;
+		return new Condition(this.tauntNormalExtraDuration);
 	}
 	
 	public Condition getTauntAdvanced() {
-		return this.tauntAdvanced;
+		return new Condition(this.tauntAdvanced);
 	}
 	public Condition getTauntAdvancedReducedValue() {
-		return this.tauntAdvancedReducedValue;
+		return new Condition(this.tauntAdvancedReducedValue);
 	}
 	public Condition getTauntAdvancedDeflection() {
-		return this.tauntAdvancedExtraDuration;
+		return new Condition(this.tauntAdvancedExtraDuration);
 	}
 	
 	public Condition getTauntElite() {
-		return this.tauntElite;
+		return new Condition(this.tauntElite);
 	}
 	public Condition getTauntEliteReducedValue() {
-		return this.tauntEliteReducedValue;
+		return new Condition(this.tauntEliteReducedValue);
 	}
 	public Condition getTauntEliteDeflection() {
-		return this.tauntEliteExtraDuration;
+		return new Condition(this.tauntEliteExtraDuration);
 	}
 	
 	public Condition getTauntBoss() {
-		return this.tauntBoss;
+		return new Condition(this.tauntBoss);
 	}
 	public Condition getTauntBossReducedValue() {
-		return this.tauntBossReducedValue;
+		return new Condition(this.tauntBossReducedValue);
 	}
 	public Condition getTauntBossDeflection() {
-		return this.tauntBossExtraDuration;
+		return new Condition(this.tauntBossExtraDuration);
 	}
 	
 	public Condition getSelfDefenseBonus() {
-		return this.selfDefenseBonus;
+		return new Condition(this.selfDefenseBonus);
 	}
 	public Condition getSelfDefenseBonusDeflection() {
-		return this.selfDefenseBonusExtraDuration;
+		return new Condition(this.selfDefenseBonusExtraDuration);
 	}
 	
 	
@@ -2254,10 +2287,10 @@ class Deflection extends UltimateAbility {
 	}
 	
 	public Stun getStun() {
-		return this.stunEffect;
+		return new Stun(this.stunEffect);
 	}
 	public Condition getVsArmoredCondition() {
-		return this.vsArmored;
+		return new Condition(this.vsArmored);
 	}
 	
 	// Get methods for each extra electric Attack that can be made
