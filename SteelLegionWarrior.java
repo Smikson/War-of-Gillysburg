@@ -1680,8 +1680,9 @@ class IntimidatingShout extends Ability {
 		super("Ability 4: \"Intimidating Shout\"", source, rank);
 		this.owner = source;
 		
-		// Set the Cooldown of the Ability (this Ability has no scaler)
+		// Set the Cooldown of the Ability (this Ability has no scaler) and the duration, making the Ability activatable
 		this.setCooldown();
+		this.setDurationActive();
 		
 		// Calculate the additional Conditions of the ability
 		this.setTauntConditions();
@@ -1697,6 +1698,16 @@ class IntimidatingShout extends Ability {
 		}
 		// The Ability always starts off Cooldown
 		this.setOffCooldown();
+	}
+	
+	// Sets the Duration and makes the Ability activatable
+	private void setDurationActive() {
+		// Default duration of 1, increased to 2 at rank 10.
+		int duration = 1;
+		if (this.rank() == 10) {
+			duration = 2;
+		}
+		this.makeActiveAbility(duration, true);
 	}
 	
 	// Calculates the amount of damage reduction for Normal enemies (other enemies are multiples of this number)
@@ -1763,12 +1774,6 @@ class IntimidatingShout extends Ability {
 		}
 		
 		
-		// Default duration of 1, increased to 2 at rank 10.
-		int duration = 1;
-		if (this.rank() == 10) {
-			duration = 2;
-		}
-		
 		// Create the requirement that the reduced damage only occurs on the owner
 		DualRequirement isOwner = (Character withEffect, Character other) -> {
 			return other.equals(this.owner);
@@ -1813,46 +1818,54 @@ class IntimidatingShout extends Ability {
 		
 		// Create the base and extra duration Conditions for each version
 		// Normal
-		this.tauntNormal = new Condition("Intimidating Shout: TAUNT - Damage Reduced", duration);
+		this.tauntNormal = new Condition("Intimidating Shout: TAUNT - Damage Reduced", this.getDuration() + 1);
 		this.tauntNormal.setSource(this.owner);
+		this.tauntNormal.makeSourceIncrementing();
 		this.tauntNormal.makeEndOfTurn();
 		this.tauntNormal.addStatusEffect(normalBaseDmgReduction);
 		
-		this.tauntNormalExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", duration + 1);
+		this.tauntNormalExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", this.getDuration() + 2);
 		this.tauntNormalExtraDuration.setSource(this.owner);
+		this.tauntNormalExtraDuration.makeSourceIncrementing();
 		this.tauntNormalExtraDuration.makeEndOfTurn();
 		this.tauntNormalExtraDuration.addStatusEffect(normalBaseDmgReduction);
 		
 		// Advanced
-		this.tauntAdvanced = new Condition("Intimidating Shout: TAUNT - Damage Reduced", duration);
+		this.tauntAdvanced = new Condition("Intimidating Shout: TAUNT - Damage Reduced", this.getDuration() + 1);
 		this.tauntAdvanced.setSource(this.owner);
+		this.tauntAdvanced.makeSourceIncrementing();
 		this.tauntAdvanced.makeEndOfTurn();
 		this.tauntAdvanced.addStatusEffect(advancedBaseDmgReduction);
 		
-		this.tauntAdvancedExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", duration + 1);
+		this.tauntAdvancedExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", this.getDuration() + 2);
 		this.tauntAdvancedExtraDuration.setSource(this.owner);
+		this.tauntAdvancedExtraDuration.makeSourceIncrementing();
 		this.tauntAdvancedExtraDuration.makeEndOfTurn();
 		this.tauntAdvancedExtraDuration.addStatusEffect(advancedBaseDmgReduction);
 		
 		// Elite
-		this.tauntElite = new Condition("Intimidating Shout: TAUNT - Damage Reduced", duration);
+		this.tauntElite = new Condition("Intimidating Shout: TAUNT - Damage Reduced", this.getDuration() + 1);
 		this.tauntElite.setSource(this.owner);
+		this.tauntElite.makeSourceIncrementing();
 		this.tauntElite.makeEndOfTurn();
 		this.tauntElite.addStatusEffect(eliteBaseDmgReduction);
 		
-		this.tauntEliteExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", duration + 1);
+		this.tauntEliteExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", this.getDuration() + 2);
 		this.tauntEliteExtraDuration.setSource(this.owner);
+		this.tauntEliteExtraDuration.makeSourceIncrementing();
 		this.tauntEliteExtraDuration.makeEndOfTurn();
 		this.tauntEliteExtraDuration.addStatusEffect(eliteBaseDmgReduction);
 		
 		// Boss
-		this.tauntBoss = new Condition("Intimidating Shout: TAUNT - Damage Reduced", duration);
+		this.tauntBoss = new Condition("Intimidating Shout: TAUNT - Damage Reduced", this.getDuration() + 1);
 		this.tauntBoss.setSource(this.owner);
+		this.tauntBoss.makeSourceIncrementing();
 		this.tauntBoss.makeEndOfTurn();
 		this.tauntBoss.addStatusEffect(bossBaseDmgReduction);
 		
-		this.tauntBossExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", duration + 1);
+		this.tauntBossExtraDuration = new Condition("Intimidating Shout (Deflection): TAUNT - Damage Reduced", this.getDuration() + 2);
 		this.tauntBossExtraDuration.setSource(this.owner);
+		this.tauntBossExtraDuration.makeSourceIncrementing();
 		this.tauntBossExtraDuration.makeEndOfTurn();
 		this.tauntBossExtraDuration.addStatusEffect(bossBaseDmgReduction);
 		
@@ -1872,24 +1885,28 @@ class IntimidatingShout extends Ability {
 		// Normal
 		this.tauntNormalReducedValue = new Condition("Intimidating Shout: TAUNT - Damage Reduced", 1, actReq);
 		this.tauntNormalReducedValue.setSource(this.owner);
+		this.tauntNormalReducedValue.makeSourceIncrementing();
 		this.tauntNormalReducedValue.makeEndOfTurn();
 		this.tauntNormalReducedValue.addStatusEffect(normalReducedDmgReduction);
 		
 		// Advanced
 		this.tauntAdvancedReducedValue = new Condition("Intimidating Shout: TAUNT - Damage Reduced", 1, actReq);
 		this.tauntAdvancedReducedValue.setSource(this.owner);
+		this.tauntAdvancedReducedValue.makeSourceIncrementing();
 		this.tauntAdvancedReducedValue.makeEndOfTurn();
 		this.tauntAdvancedReducedValue.addStatusEffect(advancedReducedDmgReduction);
 		
 		// Elite
 		this.tauntEliteReducedValue = new Condition("Intimidating Shout: TAUNT - Damage Reduced", 1, actReq);
 		this.tauntEliteReducedValue.setSource(this.owner);
+		this.tauntEliteReducedValue.makeSourceIncrementing();
 		this.tauntEliteReducedValue.makeEndOfTurn();
 		this.tauntEliteReducedValue.addStatusEffect(eliteReducedDmgReduction);
 		
 		// Boss
 		this.tauntBossReducedValue = new Condition("Intimidating Shout: TAUNT - Damage Reduced", 1, actReq);
 		this.tauntBossReducedValue.setSource(this.owner);
+		this.tauntBossReducedValue.makeSourceIncrementing();
 		this.tauntBossReducedValue.makeEndOfTurn();
 		this.tauntBossReducedValue.addStatusEffect(bossReducedDmgReduction);
 	}
@@ -2169,12 +2186,14 @@ class IntimidatingShout extends Ability {
 	public void use(int version) {
 		// Use the normal version by default
 		if (version == 1) {
+			this.activate();
 			this.use();
 			return;
 		}
 		
 		// If the version specified is 2, use the Deflection version
 		if (version == 2) {
+			this.activate(1);
 			this.useDeflectionVersion();
 			return;
 		}

@@ -43,6 +43,9 @@ public class Ability {
 	public int turnsRemaining() {
 		return this.turnsRemaining;
 	}
+	public int activeTurnsRemaining() {
+		return this.activeTurnsRemaining;
+	}
 	public double getScaler() {
 		return this.scaler;
 	}
@@ -79,17 +82,20 @@ public class Ability {
 	protected void makeActiveAbility(int duration) {
 		this.makeActiveAbility(duration, false);
 	}
-	public void activate() {
+	public void activate(int extraTurns) {
 		// If somehow, the Ability activates while active, it first deactivates, then reactivates
 		if (this.isActive()) {
 			this.deactivate();
 		}
-		this.activeTurnsRemaining = this.duration;
+		this.activeTurnsRemaining = this.duration + extraTurns;
 		
 		// If the ability has a duration of 0 (a default ability), place it in the final turn -- will deactivate at end of turn
 		if (this.duration == 0) {
 			this.inFinalTurn = true;
 		}
+	}
+	public void activate() {
+		this.activate(0);
 	}
 	public void deactivate() {
 		this.activeTurnsRemaining = 0;
@@ -158,7 +164,7 @@ public class Ability {
 	public String toString() {
 		String activeInd = "";
 		if (this.isActive()) {
-			activeInd = "\n\t- ACTIVE: " + (this.activeTurnsRemaining == 0 ? this.activeTurnsRemaining + " Turn(s) Remaining!" : "Final Turn!");
+			activeInd = "\n\t- ACTIVE: " + (this.activeTurnsRemaining != 0 ? this.activeTurnsRemaining + " Turn(s) Remaining!" : "Final Turn!");
 		}
 		String cdInd = "";
 		if (this.onCooldown()) {
@@ -210,6 +216,14 @@ class UltimateAbility extends Ability {
 	
 	@Override
 	public String toString() {
-		return this.name + " - CD: " + this.chargesRemaining + " Charge(s) Remaining!";
+		String activeInd = "";
+		if (this.isActive()) {
+			activeInd = "\n\t- ACTIVE: " + (this.activeTurnsRemaining() != 0 ? this.activeTurnsRemaining() + " Turn(s) Remaining!" : "Final Turn!");
+		}
+		String cdInd = "";
+		if (this.onCooldown()) {
+			cdInd = "\n\t- CD: " + this.chargesRemaining + " Charge(s) Remaining!";
+		}
+		return this.name + activeInd + cdInd;
 	}
 }
