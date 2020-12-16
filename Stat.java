@@ -41,6 +41,6 @@ public class Stat {
 		String ret = this.version.toString();
 		String firstLetter = "" + ret.charAt(0);
 		ret = firstLetter + ret.toLowerCase().substring(1);
-		return ret + " = " + (this.total + this.bonus);
+		return ret + ": " + (this.total + this.bonus);
 	}
 }

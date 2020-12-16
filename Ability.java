@@ -172,6 +172,16 @@ public class Ability {
 		}
 		return this.name + activeInd + cdInd;
 	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = "";
+		ret += this.getName() + " - Rank " + this.rank();
+		ret += this.cooldown() > 0? ("\n\tCooldown: " + this.cooldown()) : "";
+		ret += this.getDuration() > 0? ("\n\tDuration: " + this.getDuration()) : "";
+		ret += "\n\tScaler: " + this.getScaler();
+		return ret;
+	}
 }
 
 
@@ -214,6 +224,7 @@ class UltimateAbility extends Ability {
 		return this.chargesRemaining <= 0;
 	}
 	
+	// Overrides toString for display purposes during combat
 	@Override
 	public String toString() {
 		String activeInd = "";
@@ -225,5 +236,15 @@ class UltimateAbility extends Ability {
 			cdInd = "\n\t- CD: " + this.chargesRemaining + " Charge(s) Remaining!";
 		}
 		return this.name + activeInd + cdInd;
+	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = "";
+		ret += this.getName() + " - Rank " + this.rank();
+		ret += this.maxCharges > 0? ("\n\tCharges: " + this.maxCharges) : "";
+		ret += this.getDuration() > 0? ("\n\tDuration: " + this.getDuration()) : "";
+		ret += "\n\tScaler: " + this.getScaler();
+		return ret;
 	}
 }

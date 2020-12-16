@@ -1085,13 +1085,24 @@ public class Character {
 	
 	
 	// Prints the Character, listing the stats after the name.
+	public String getStatStrings() {
+		String ret = "Level: " + this.getLevel();
+		for(Stat s : stats) {
+			ret += "\n" + s.toString();
+		}
+		return ret;
+	}
 	@Override
 	public String toString() {
-		String ret = "Name = " + this.getName() + "\n" +
-					 "Level = " + this.getLevel() + "\n";
-		for(Stat s : stats) {
-			ret += s.toString() + "\n";
-		}
+		return this.getName() + "\n" + this.getStatStrings();
+	}
+	// Does a full display of the Character (subclasses override to include Abilities)
+	public String getDescription() {
+		String ret = this.toString();
+		ret += "\nBase Damage Type: " + this.getBaseDmgType();
+		ret += "\nBase Range Type: " + this.getRangeType();
+		ret += "\nResistances: " + this.getResistances().toString();
+		ret += "\nVulnerabilities: " + this.getVulnerabilities().toString();
 		return ret;
 	}
 }

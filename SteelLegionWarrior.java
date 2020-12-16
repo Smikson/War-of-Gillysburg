@@ -171,6 +171,13 @@ class VengeanceStrike extends Ability {
 			this.execute((Enemy)atkRes.getAttacker());
 		}
 	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += "\n\t" + this.getEnemyDamageReduction().toString();
+		return ret;
+	}
 }
 
 // Base Passive Ability 1: "Swordplay Prowess"
@@ -549,6 +556,17 @@ class SwordplayProwess extends Ability {
 			}
 		}
 	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += "\n\tBleed Duration: " + this.getBleedDuration();
+		ret += this.getBleedVorpalChance() > 0? ("\n\tBleed Vorpal Chance: " + this.getBleedVorpalChance() + "\n\tBleed Vorpal Multiplier: " + this.getBleedVorpalMultiplier()) : "";
+		ret += "\n\tBonus Damage Stat: " + this.getDamageBonus();
+		ret += "\n\tBonus Armor Piercing Stat: " + this.getArmorPiercingBonus();
+		ret += "\n\t" + this.getEmpoweredCondition();
+		return ret;
+	}
 }
 
 // Base Passive Ability 2: "Warrior's Might"
@@ -651,6 +669,16 @@ class WarriorsMight extends Ability {
 	
 	public Stun getStun() {
 		return new Stun(this.stun);
+	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += "\n\tBonus Health Stat: " + this.getHealthBonus();
+		ret += "\n\tBonus Armor Stat: " + this.getArmorBonus();
+		ret += this.getThreatBonus() > 0? ("\n\tBonus Threat Stat: " + this.getThreatBonus()) : "";
+		ret += this.getDamageBonus() > 0? ("\n\tBonus Damage Stat: " + this.getDamageBonus()) : "";
+		return ret;
 	}
 }
 
@@ -974,6 +1002,19 @@ class AgileFighter extends Ability {
 			this.getOwner().restoreHealth((int)Math.round(regularSpaces * this.getMaxHealthScaler() / 2.0 * this.getOwner().getHealth()));
 		}
 	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += "\n\tHealing Scaler (max health): " + this.getMaxHealthScaler();
+		ret += this.getMissingHealthScaler() > 0? ("\n\tHealing Scaler (missing health): " + this.getMissingHealthScaler()) : "";
+		ret += this.getSpeedBonus() > 0? ("\n\tBonus Speed Stat: " + this.getSpeedBonus()) : "";
+		ret += "\n\t" + this.getBasePreAttackBonus();
+		ret += this.rank() >= 10? ("\n\t" + this.getAbilityPreAttackBonus()) : "";
+		ret += "\n\t" + this.getBaseBlockBonus();
+		ret += this.rank() >= 10? ("\n\t" + this.getAbilityBlockBonus()) : "";
+		return ret;
+	}
 }
 
 
@@ -1123,6 +1164,13 @@ class Sweep extends Ability {
 		
 		// This Ability uses the Character's turn actions
 		this.owner.useTurnActions();
+	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += this.rank() >= 3? ("\n\t" + this.getSlow()) : "";
+		return ret;
 	}
 }
 
@@ -1400,6 +1448,16 @@ class Charge extends Ability {
 		// This Ability uses the Character's turn actions
 		this.owner.useTurnActions();
 	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += "\n\tAOE Scaler: " + this.getAOEScaler();
+		ret += "\n\tTargeted Scaler: " + this.getTargetedScaler();
+		ret += "\n\tSpeed increase (for Ability): " + this.getSpeedPercentage() + "%";
+		ret += "\n\t" + this.getTargetedPreAttackBonus();
+		return ret;
+	}
 }
 
 // Ability 3: "Flip Strike"
@@ -1647,6 +1705,14 @@ class FlipStrike extends Ability {
 			flipAtk = new AttackBuilder(flipAtk).scaler(this.getScaler() * original.getScaler()).lifestealPercentage(30).build();
 		}
 		flipAtk.execute();
+	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += this.rank() >= 7? ("\n\tCannot Miss Chance: " + this.getNoMissChance()) : "";
+		ret += "\n\t" + this.getPreAttackBonus();
+		return ret;
 	}
 }
 
@@ -2201,6 +2267,14 @@ class IntimidatingShout extends Ability {
 		// Otherwise. print a warning if this function is ever actually directly called
 		System.out.println("Warning: The Ability, " + this.getName() + ", does not have a use(" + version + ") function defined, but it was called!");
 	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += "\n\t" + this.getTauntNormal();
+		ret += "\n\t" + this.getSelfDefenseBonus();
+		return ret;
+	}
 }
 
 // ULTIMATE Ability: "Deflection"
@@ -2543,6 +2617,15 @@ class Deflection extends UltimateAbility {
 		
 		this.getOwner().restoreHealth((int)Math.round(this.damageTaken * this.getHealingScaler()));
 	}
+	
+	// Returns the full information about the ability
+	public String getDescription() {
+		String ret = super.getDescription();
+		ret += "\n\tHealing Scaler: " + this.getHealingScaler();
+		ret += "\n\t" + this.getVsArmoredCondition();
+		ret += "\n\t" + this.getStun();
+		return ret;
+	}
 }
 
 
@@ -2768,6 +2851,23 @@ public class SteelLegionWarrior extends Character {
 				a.applyPostAttackEffects(atkRes);
 			}
 		}
+	}
+	
+	// Overrides the getStatStrings to include the classification
+	@Override
+	public String getStatStrings() {
+		return "Class: Steel Legion Warrior\n" + super.getStatStrings();
+	}
+	
+	// Does a full display of the Steel Legion Warrior including Abilities
+	public String getDescription() {
+		String ret = super.getDescription();
+		for (Ability a : abilities.values()) {
+			if (a.rank() > 0) {
+				ret += "\n" + a.getDescription();
+			}
+		}
+		return ret;
 	}
 }
 
