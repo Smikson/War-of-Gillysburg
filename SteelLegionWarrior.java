@@ -16,12 +16,12 @@ class VengeanceStrike extends Ability {
 	// Constructor
 	public VengeanceStrike(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super("Unique Passive Ability: \\\"Vengeance Strike\\\"\"", source, rank);
+		super("Unique Passive Ability: \"Vengeance Strike\"", source, rank);
 		this.owner = source;
 		
 		// Set scaler and counter
 		this.setScaler();
-		counter = new HashMap<Character,Integer>();
+		this.counter = new HashMap<Character,Integer>();
 		
 		// Calculate the additional Staus Effects
 		this.setEnemyDamageReduction();
@@ -245,7 +245,7 @@ class SwordplayProwess extends Ability {
 	// Constructor
 	public SwordplayProwess(SteelLegionWarrior source, int rank) {
 		// Initialize all Ability variables to defaults
-		super("Base Passive Ability: \\\"Swordplay Prowess\\\"\"", source, rank);
+		super("Base Passive Ability: \"Swordplay Prowess\"", source, rank);
 		this.owner = source;
 		
 		// Set the Bleed Scaler
@@ -2641,7 +2641,7 @@ public class SteelLegionWarrior extends Character {
 	private VengeanceStrike VengeanceStrike; // Unique Passive Ability (UPA)
 	private SwordplayProwess SwordplayProwess;
 	private WarriorsMight WarriorsMight;
-	private AgileFighter AgileFighter;  // Add initialization?
+	private AgileFighter AgileFighter;
 	
 	// Base Abilities
 	private Sweep Sweep;
@@ -2886,7 +2886,7 @@ class SteelLegionWarriorBuilder extends CharacterBuilder {
 	private int IntimidatingShoutRank;
 	private int DeflectionRank;
 	
-	// Constructs a SteelLegionTankBuilder (populating the CharacterBuilder variables) based on the constant stats from Character
+	// Constructs a SteelLegionWarriorBuilder (populating the CharacterBuilder variables) based on the constant stats from Character
 	public SteelLegionWarriorBuilder(Character base) {
 		super(base);
 		this.VengeanceStrikeRank = 0;
@@ -3058,7 +3058,7 @@ class SteelLegionWarriorBuilder extends CharacterBuilder {
 		this.IntimidatingShoutRank = newRank;
 		return this;
 	}
-	// Taunting Attack (ULTIMATE):
+	// Deflection (ULTIMATE):
 	public SteelLegionWarriorBuilder setDeflectionRank(int newRank) {
 		this.DeflectionRank = newRank;
 		return this;
@@ -3068,7 +3068,7 @@ class SteelLegionWarriorBuilder extends CharacterBuilder {
 	// Calculates the base stats based on level and stat-increasing passive abilities
 	private void setBaseStats() {
 		// Each stat is already set to its level 1 base value
-		// Note: below only occurs if the specified a level, since the base level is 0.
+		// Note: below only occurs if they specified a level, since the base level is 0.
 		// "Level Up" each stat: (Multiply by the given multiplier for each level up to the current level)
 		for (int counter = 2; counter <= this.Level; counter++) {
 			// All these only increment at intervals of 5

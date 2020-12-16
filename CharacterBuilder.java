@@ -531,39 +531,6 @@ public class CharacterBuilder {
 								  this.Type);
 	}
 	
-	public SentinelSpecialist buildSSPL() {
-		int baseHealth = this.Health;
-		int baseDamage = this.Damage;
-		
-		// If they specified a level, calculate the base Health and Damage for that level and overwrite any previous base Health.
-		if (this.Level > 0) {
-			baseHealth = this.calcBaseHealth(Character.SENTINEL_SPECIALIST, this.Level);
-			baseDamage = this.calcBaseDamage(Character.SENTINEL_SPECIALIST, this.Level);
-		}
-		
-		return new SentinelSpecialist(this.name, 
-									  this.Level,
-									  baseHealth + this.bHealth,
-									  baseDamage + this.bDamage,
-									  this.Armor + this.bArmor,
-									  this.ArmorPiercing + this.bArmorPiercing,
-									  this.Accuracy + this.bAccuracy,
-									  this.Dodge + this.bDodge,
-									  this.Block + this.bBlock,
-									  this.CriticalChance + this.bCriticalChance,
-									  this.Speed + this.bSpeed,
-									  this.AttackSpeed + this.bAttackSpeed,
-									  this.Range + this.bRange,
-									  this.Threat + this.bThreat,
-									  this.TacticalThreat + this.bTacticalThreat,
-									  this.STDdown,
-									  this.STDup,
-									  this.baseDmgType,
-									  this.resistances,
-									  this.vulnerabilities,
-									  this.Type);
-	}
-	
 	public SentinelArcArcher buildSAA() {
 		int baseHealth = this.Health;
 		int baseDamage = this.Damage;
