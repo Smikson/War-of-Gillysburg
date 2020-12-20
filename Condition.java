@@ -29,6 +29,7 @@ public class Condition {
 	private Character source;
 	private String name;
 	private int duration;
+	private int charges;
 	private boolean isStacking;
 	private boolean isSourceIncrementing;
 	private boolean isPermanent;
@@ -47,6 +48,7 @@ public class Condition {
 		this.source = Character.EMPTY;
 		this.name = name;
 		this.duration = duration;
+		this.charges = 0;
 		this.isStacking = false;
 		this.isSourceIncrementing = false;
 		this.isPermanent = false;
@@ -58,10 +60,11 @@ public class Condition {
 		this.activeRequirement = actReq;
 		this.linkedConditions = new HashSet<Condition>();
 	}
-	public Condition(Condition copy) {
+	public Condition(Condition copy, int duration) {
 		this.source = copy.getSource();
 		this.name = copy.getName();
-		this.duration = copy.duration();
+		this.duration = duration;
+		this.charges = copy.getCharges();
 		this.isStacking = copy.isStacking();
 		this.isSourceIncrementing = copy.isSourceIncrementing();
 		this.isPermanent = copy.isPermanent();
@@ -74,6 +77,9 @@ public class Condition {
 		this.activeRequirement = copy.getActiveRequirement();
 		this.linkedConditions = new HashSet<Condition>();
 		this.linkedConditions.addAll(copy.getLinkedConditions());
+	}
+	public Condition(Condition copy) {
+		this(copy, copy.duration());
 	}
 	public Condition(String name, int duration) {
 		this(name, duration, (Character withEffect) -> {return true;});
@@ -91,6 +97,25 @@ public class Condition {
 	}
 	public int duration() {
 		return this.duration;
+	}
+	public int getCharges() {
+		return this.charges;
+	}
+	public boolean isChargeBased() {
+		return this.charges > 0;
+	}
+	public boolean chargesUsed() {
+		// If not charge based, return false
+		if (!this.isChargeBased()) {
+			return false;
+		}
+		// Otherwise the charges are used if the number of charges on each StatusEffect are all greater than the max charges
+		for (StatusEffect se : this.getStatusEffects()) {
+			if (se.getUses() < this.getCharges()) {
+				return false;
+			}
+		}
+		return true;
 	}
 	public boolean isStacking() {
 		return this.isStacking;
@@ -127,6 +152,9 @@ public class Condition {
 	public void setSource(Character c) {
 		this.source = c;
 	}
+	public void makeChargeBased(int maxCharges) {
+		this.charges = maxCharges;
+	}
 	public void makeStacking() {
 		this.isStacking = true;
 	}
@@ -149,12 +177,27 @@ public class Condition {
 	
 	// Function to determine if the duration of the condition is expired
 	public boolean isExpired() {
+		// If we have a Condition based on charges, the condition is expired 
+		
+		
 		// A duration of -1 implies a permanent condition.
 		if (this.duration == -1) {
+			// If the condition is based on charges, return if there are charges remaining
+			if (this.isChargeBased()) {
+				return this.chargesUsed();
+			}
+			// Otherwise, since its permanent, return false
 			return false;
 		}
 		
-		return this.turnCount >= this.duration();
+		// For any non-permanent Condition that is not charge based, we return whether or not the turns are expired
+		boolean turnsExpired = this.turnCount >= this.duration();
+		if (!this.isChargeBased()) {
+			return turnsExpired;
+		}
+		
+		// Otherwise, we know we are charge-based, meaning if our turns are expired or if our charges are used, we are expired
+		return turnsExpired || this.chargesUsed();
 	}
 	
 	

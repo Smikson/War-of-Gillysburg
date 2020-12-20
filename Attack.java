@@ -240,6 +240,51 @@ public class Attack {
 		return this.alteration;
 	}
 	
+	// Called specifically for when flex Damage occurs to figure out which of the three damage types is chosen
+	private Attack.DmgType getUsedDmgType() {
+		// First, if this is called with flex not the damage type, simply return the damage type of this attack
+		if (!this.getDmgType().equals(Attack.DmgType.FLEX)) {
+			return this.getDmgType();
+		}
+		
+		// Then, calculate which of the three damage types is the "best" based on resistances and vulnerabilities of the defender
+		// Calculate the "scaler" applied for the resistance present for each of the three
+		double resistPierce = this.getDefender().getResistances().containsKey(Attack.DmgType.PIERCING)? (1.0 - this.getDefender().getResistances().get(Attack.DmgType.PIERCING)/100.0) : 1;
+		double resistSlash = this.getDefender().getResistances().containsKey(Attack.DmgType.SLASHING)? (1.0 - this.getDefender().getResistances().get(Attack.DmgType.SLASHING)/100.0) : 1;
+		double resistSmash = this.getDefender().getResistances().containsKey(Attack.DmgType.SMASHING)? (1.0 - this.getDefender().getResistances().get(Attack.DmgType.SMASHING)/100.0) : 1;
+		
+		// Calculate the "scaler" applied for the vulnerability present of each of the three
+		double vulPierce = this.getDefender().getVulnerabilities().containsKey(Attack.DmgType.PIERCING)? (1.0 + this.getDefender().getVulnerabilities().get(Attack.DmgType.PIERCING)/100.0) : 1;
+		double vulSlash = this.getDefender().getVulnerabilities().containsKey(Attack.DmgType.SLASHING)? (1.0 + this.getDefender().getVulnerabilities().get(Attack.DmgType.SLASHING)/100.0) : 1;
+		double vulSmash = this.getDefender().getVulnerabilities().containsKey(Attack.DmgType.SMASHING)? (1.0 + this.getDefender().getVulnerabilities().get(Attack.DmgType.SMASHING)/100.0) : 1;
+		
+		// Calculate the best scenario (the largest combined scaler through multiplication), returning the Attack Type matching the best
+		double pierceScaler = resistPierce * vulPierce;
+		double slashScaler = resistSlash * vulSlash;
+		double smashScaler = resistSmash * vulSmash;
+		if (pierceScaler > slashScaler && pierceScaler > smashScaler) {
+			return Attack.DmgType.PIERCING;
+		}
+		if (slashScaler > smashScaler) {
+			return Attack.DmgType.SLASHING;
+		}
+		return Attack.DmgType.SMASHING;
+	}
+	
+	// A few legal set commands
+	public void setCanHit(boolean val) {
+		this.canHit = val;
+	}
+	public void makeCannotMiss() {
+		this.canMiss = false;
+	}
+	public void makeGuaranteedCrit() {
+		this.guaranteedCrit = true;
+	}
+	public void setCanCrit(boolean val) {
+		this.canCrit = val;
+	}
+	
 	// Overrides the toString function that may be helpful when debugging
 	@Override
 	public String toString() {
@@ -513,7 +558,8 @@ public class Attack {
 		int dmgTaken = minDamage + vary.roll() - 1;
 		
 		// The defender takes the damage
-		dmgTaken = this.getDefender().takeDamage(dmgTaken, this.getDmgType());
+		Attack.DmgType usedType = this.getUsedDmgType();
+		dmgTaken = this.getDefender().takeDamage(dmgTaken, usedType);
 		
 		// Apply lifesteal and Unapply the single attack (this attack only) Conditions
 		this.applyLifeSteal(dmgTaken);
@@ -527,7 +573,7 @@ public class Attack {
 		AttackResult attachedAtkResult = new AttackResultBuilder()
 				.attacker(this.getAttacker())
 				.defender(this.getDefender())
-				.type(this.getDmgType())
+				.type(usedType)
 				.range(this.getRangeType())
 				.isTargeted(this.isTargeted())
 				.didHit(true)
@@ -684,14 +730,15 @@ public class Attack {
 		int dmgTaken = minDamage + vary.roll() - 1;
 		
 		// The defender takes the damage
-		dmgTaken = this.getDefender().takeDamage(dmgTaken, this.getDmgType());
+		Attack.DmgType usedType = this.getUsedDmgType();
+		dmgTaken = this.getDefender().takeDamage(dmgTaken, usedType);
 		
 		
 		// Start the attack result builder from the results from this successful attack
 		AttackResultBuilder atkResultBuilder = new AttackResultBuilder()
 				.attacker(this.getAttacker())
 				.defender(this.getDefender())
-				.type(this.getDmgType())
+				.type(usedType)
 				.range(this.getRangeType())
 				.isTargeted(this.isTargeted())
 				.didHit(true)

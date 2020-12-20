@@ -240,6 +240,19 @@ public class SentinelSpecialistBuilder extends CharacterBuilder {
 		}
 		
 		// Calculate the bonus stats given by certain Abilities //DE Do this
+		if (this.MasterworkArrowsRank > 0) {
+			MasterworkArrows ma = new MasterworkArrows(this.MasterworkArrowsRank);
+			this.bDamage += ma.getDamageBonus();
+			this.bArmorPiercing += ma.getArmorPiercingBonus();
+			this.bAccuracy += ma.getAccuracyBonus();
+		}
+		if (this.SurvivableRank > 0) {
+			Survivable sb = new Survivable(this.SurvivableRank);
+			this.bHealth += sb.getHealthBonus();
+			this.bArmor += sb.getArmorBonus();
+			this.bDodge += sb.getDodgeBonus();
+		}
+		
 		
 		/*
 		if (this.SwordplayProwessRank > 0) {

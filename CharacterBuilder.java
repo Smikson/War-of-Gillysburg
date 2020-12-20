@@ -244,7 +244,7 @@ public class CharacterBuilder {
 		return this;
 	}
 	public CharacterBuilder addResistance(Attack.DmgType resistance, double value) {
-		if (resistance.equals(Attack.DmgType.TRUE)) {
+		if (resistance.equals(Attack.DmgType.TRUE) || resistance.equals(Attack.DmgType.FLEX)) {
 			return this;
 		}
 		
@@ -261,7 +261,7 @@ public class CharacterBuilder {
 		return this;
 	}
 	public CharacterBuilder addVulnerability(Attack.DmgType vulnerability, double value) {
-		if (vulnerability.equals(Attack.DmgType.TRUE)) {
+		if (vulnerability.equals(Attack.DmgType.TRUE) || vulnerability.equals(Attack.DmgType.FLEX)) {
 			return this;
 		}
 		

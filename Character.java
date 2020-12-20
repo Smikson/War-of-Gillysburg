@@ -419,6 +419,9 @@ public class Character {
 			return;
 		}
 		
+		// Increment the number of uses of the StatusEffect
+		se.incrementUses();
+		
 		// Selects the affected stat
 		Stat changed = this.getStat(se.getAlteredStat());
 		
@@ -741,9 +744,9 @@ public class Character {
 				if (con.isExpired()) {
 					toRemove.add(con);
 				}
-				for (Condition c : toRemove) {
-						this.removeCondition(c);
-				}
+			}
+			for (Condition c : toRemove) {
+				combatant.removeCondition(c);
 			}
 			
 			combatant.applyBasicStatusEffects();
@@ -831,9 +834,9 @@ public class Character {
 				if (con.isExpired()) {
 					toRemove.add(con);
 				}
-				for (Condition c : toRemove) {
-						this.removeCondition(c);
-				}
+			}
+			for (Condition c : toRemove) {
+				combatant.removeCondition(c);
 			}
 			
 			combatant.unapplyBasicStatusEffects();
@@ -890,13 +893,15 @@ public class Character {
 			}
 		}
 		
+		// Applies resistance/vulnerability effects if present
 		if (this.getResistances().containsKey(aType)) {
-			damageDealt *= 1 - this.getResistances().get(aType)/100.0;
+			damageDealt = (int)Math.round(damageDealt * (1.0 - this.getResistances().get(aType)/100.0));
 		}
 		if (this.getVulnerabilities().containsKey(aType)) {
-			damageDealt *= 1 + this.getVulnerabilities().get(aType)/100.0;
+			damageDealt = (int)Math.round(damageDealt * (1.0 + this.getVulnerabilities().get(aType)/100.0));
 		}
 		
+		// Deals the amount of damage to this Character
 		int shieldDamage = 0;
 		if (this.Shields > 0) {
 			int remainingShields = this.Shields - damageDealt;

@@ -21,6 +21,9 @@ public class StatusEffect {
 	private boolean affectsSelf;
 	public boolean isApplied;
 	
+	// Keeps track of the number of times the StatusEffect was applied (helpful for charge-based Conditions)
+	private int uses;
+	
 	// Constructors
 	public StatusEffect(Stat.Version altered, double value, Type type) {
 		this.altered = altered;
@@ -33,6 +36,8 @@ public class StatusEffect {
 		this.isFlat = false;
 		this.affectsSelf = true;
 		this.isApplied = false;
+		
+		this.uses = 0;
 	}
 	public StatusEffect(Stat.Version altered, double value) {
 		this(altered, value, Type.BASIC);
@@ -63,6 +68,9 @@ public class StatusEffect {
 	public boolean affectsSelf() {
 		return this.affectsSelf;
 	}
+	public int getUses() {
+		return this.uses;
+	}
 	
 	
 	
@@ -86,6 +94,10 @@ public class StatusEffect {
 	// Sets the dual-requirement for a non-basic status effect (incoming or outgoing)
 	public void setDualRequirement(DualRequirement appReq) {
 		this.applyDualRequirement = appReq;
+	}
+	// Increments the number of uses when the StatusEffect is applied
+	public void incrementUses() {
+		this.uses++;
 	}
 	
 	// To String methods for clarity when playing
