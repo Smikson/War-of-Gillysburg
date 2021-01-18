@@ -1,4 +1,5 @@
 package WyattWitemeyer.WarOfGillysburg;
+import java.util.*;
 
 // Base Passive Ability: "Survivable"
 public class Survivable extends Ability {
@@ -14,11 +15,14 @@ public class Survivable extends Ability {
 	private double healingPercentage;
 	private Condition nextAttackBonus;
 	
+	private boolean didAvoid;
+	
 	// Constructor
 	public Survivable(SentinelSpecialist source, int rank) {
 		// Initialize all Ability variables to defaults
 		super("Base Passive Ability: \"Survivable\"", source, rank);
 		this.owner = source;
+		this.didAvoid = false;
 		
 		// Calculate the additional stat amounts
 		this.setStatBonuses();
@@ -160,6 +164,7 @@ public class Survivable extends Ability {
 		// Set the Condition to have the two StatusEffects, but decrement based on Charges instead of turns (permanent otherwise)
 		this.nextAttackBonus = new Condition("Survivable: Next Attack Bonus", -1);
 		this.nextAttackBonus.setSource(this.owner);
+		this.nextAttackBonus.makeChargeBased(1);
 		this.nextAttackBonus.addStatusEffect(dmgBonus);
 		this.nextAttackBonus.addStatusEffect(accBonus);
 	}
@@ -195,9 +200,85 @@ public class Survivable extends Ability {
 		return new Condition(this.nextAttackBonus);
 	}
 	
-	//DE Override PreAttackEffects and use the new public "landAttack", "makeCannotMiss", and/or "setCanHit(bool)"
+	// Applies the pre attack effects of the chance to block when Dodging fails
+	@Override
+	public void applyPreAttackEffects(Attack atk) {
+		// Resets didAvoid if need be
+		this.didAvoid = false;
+		
+		// Only acts if the owner is the defender
+		if (atk.getDefender().equals(this.getOwner())) {
+			// First find the results of if the incoming attack would normally land
+			boolean willHit = atk.canHit();
+			if (willHit && atk.canMiss()) {
+				willHit = atk.landAttack();
+			}
+			
+			// If the attack will hit, but can miss, instead add a chance to block
+			if (willHit && atk.canMiss()) {
+				// Get the chance to block the attack
+				double blkChance = this.getBlockChance();
+				
+				// Possible bonuses based off Enemy attacker
+				if (atk.getAttacker() instanceof Enemy) {
+					Enemy attacker = (Enemy)atk.getAttacker();
+					
+					// At rank 5 the chance is doubled vs Normal and Advanced enemies
+					if (this.rank() >= 5 && (attacker.getDifficulty().equals(Enemy.Difficulty.NORMAL) || attacker.getDifficulty().equals(Enemy.Difficulty.ADVANCED))) {
+						blkChance *= 2;
+					}
+					
+					// At rank 15 the chance is increased by 50% vs Elite enemies
+					if (this.rank() >= 15 && attacker.getDifficulty().equals(Enemy.Difficulty.ELITE)) {
+						blkChance *= 1.5;
+					}
+				}
+				
+				// Create a random probability
+				Random rd = new Random();
+				double prob = rd.nextDouble();
+				
+				// If the random probably is less than the chance to block, the attack will be blocked instead
+				if (prob <= blkChance) {
+					// Above rank 10, extra bonuses need to be applied in the PostAttackEffects
+					if (this.rank() >= 10) {
+						this.didAvoid = true;
+					}
+					
+					// Change the attack so that is cannot hit, and state that the Armor protected the Sentinel Specialist
+					atk.setCanHit(false);
+					System.out.println(this.getOwner().getName() + "\'s Armor protected " + this.getOwner().getName() + " from " + atk.getAttacker().getName() + "\'s attack!");
+				}
+				// Otherwise, the attack must hit since the land attack has already been calculated, change the attack to represent this
+				else {
+					atk.makeCannotMiss();
+				}
+			}
+			// If the attack will not hit, change the attack to reflect that, and at rank 15 the extra post-attack bonuses still occur
+			else if (!willHit) {
+				atk.setCanHit(false);
+				if (this.rank() >= 15) {
+					this.didAvoid = true;
+				}
+			}
+		}
+	}
 	
-	
+	// Applies the post attack effects of the chance to block when Dodging fails
+	@Override
+	public void applyPostAttackEffects(AttackResult atkRes) {
+		// Bonues are only applied when the owner is the defender and the local "didAvoid" is true (which as an additional check must happen after rank 10
+		if (atkRes.getDefender().equals(this.getOwner()) && this.didAvoid && this.rank() >= 10) {
+			// Heal the owner for the amount of missing health based on the scaler of this Ability
+			this.getOwner().restoreHealth((int)Math.round(this.getOwner().getMissingHealth() * this.getHealingPercentage() / 100.0));
+			
+			// Add the next-attack buff to the owner
+			this.getOwner().addCondition(this.getNextAttackBonus());
+			
+			// Reset didAvoid to false
+			this.didAvoid = false;
+		}
+	}
 	
 	
 	// Returns the full information about the ability

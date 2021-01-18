@@ -7,6 +7,7 @@ public class FrozenArrow extends Ability {
 	
 	// Additional Variables
 	private int ccBaseDuration;
+	private int numStacks;
 	
 	// Constructor
 	public FrozenArrow(SentinelSpecialist source, int rank) {
@@ -17,6 +18,9 @@ public class FrozenArrow extends Ability {
 		// Sets the scaler and Cooldown of the Ability
 		this.setCooldown();
 		this.setScaler();
+		
+		// Initialize additional variables
+		this.numStacks = 0;
 		
 		// Sets the base duration for Crowd Control Effects
 		this.setBaseDuration();
@@ -103,10 +107,31 @@ public class FrozenArrow extends Ability {
 		return new Stun("Frozen Arrow: Stun", duration);
 	}
 	
+	// Functions for "Empowered" effects
+	public int getNumStacks() {
+		return this.numStacks;
+	}
+	public boolean isEmpowered() {
+		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
+	}
+	public void makeEmpowered() {
+		this.numStacks = this.owner.getEmpoweredStackRequirement();
+	}
 	
 	
 	//DE Will need several if statement for affecting fire/ice/hairy targets differently
 	
+	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use2 for using the Empowered version
+	
+	// Override the to-String to include a description of the number of stacks and if the Ability is Empowered
+	@Override
+	public String toString() {
+		String ori = super.toString();
+		if (this.isEmpowered()) {
+			return ori + " --EMPOWERED";
+		}
+		return ori + "  (" + this.getNumStacks() + " stack(s))";
+	}
 	
 	// Returns the full information about the ability
 	public String getDescription() {

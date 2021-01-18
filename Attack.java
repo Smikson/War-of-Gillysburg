@@ -271,7 +271,7 @@ public class Attack {
 		return Attack.DmgType.SMASHING;
 	}
 	
-	// A few legal set commands
+	// A few legal set functions
 	public void setCanHit(boolean val) {
 		this.canHit = val;
 	}

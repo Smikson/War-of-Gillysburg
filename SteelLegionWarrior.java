@@ -2365,7 +2365,7 @@ class Deflection extends UltimateAbility {
 		StatusEffect bonusArmoredDamage = new StatusEffect(Stat.Version.DAMAGE, percentBonus);
 		bonusArmoredDamage.makePercentage();
 		bonusArmoredDamage.setDualRequirement(isArmored);
-		this.vsArmored = new Condition("Deflection Bonus Armored Damage", -1);
+		this.vsArmored = new Condition("Deflection: Bonus Armored Damage", -1);
 		this.vsArmored.setSource(this.owner);
 		this.vsArmored.addStatusEffect(bonusArmoredDamage);
 	}

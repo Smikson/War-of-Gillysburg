@@ -12,9 +12,9 @@ public class Character {
 	public static final Character EMPTY = new Character("Null",0,0,0,0,0,0,0,0,0,0,0,0,0,0,90,110, Attack.DmgType.SLASHING,new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.NONE);
 	public static final Character STEEL_LEGION_TANK = new Character("Tank",0,750,70,185,100,125,0,38,2,3,1,1,20,3,90,110, Attack.DmgType.SLASHING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
 	public static final Character STEEL_LEGION_WARRIOR = new Character("Warrior",0,635,85,162,118,125,0,30,5,6,5,1,15,5,90,110, Attack.DmgType.SLASHING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character STEEL_LEGION_BARBARIAN = new Character("Barbarian",0,530,125,158,124,100,0,28,7,6,6,1,12,8,90,110, Attack.DmgType.SMASHING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character STEEL_LEGION_BARBARIAN = new Character("Barbarian",0,530,125,158,124,100,0,28,7,6,6,1,12,8,90,110, Attack.DmgType.FLEX, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
 	public static final Character SENTINEL_SNIPER = new Character("Sniper",0,400,140,118,146,160,27,0,8,5,8,8,5,20,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
-	public static final Character SENTINEL_SPECIALIST = new Character("Specialist",0,500,100,138,140,140,25,0,5,5,7,5,7,18,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
+	public static final Character SENTINEL_SPECIALIST = new Character("Specialist",0,500,100,138,140,140,25,0,5,5,7,5,7,18,90,110, Attack.DmgType.FLEX, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
 	public static final Character SENTINEL_ARC_ARCHER = new Character("Arc Archer",0,350,85,125,130,150,43,0,7,6,35,6,6,19,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
 	public static final Character SILENT_DEATH_SHADOW = new Character("Shadow",0,375,150,117,147,118,33,0,10,7,5,1,2,25,90,110, Attack.DmgType.PIERCING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
 	public static final Character SILENT_DEATH_POISON_SPECIALIST = new Character("Poison Specialist",0,480,110,140,128,115,24,0,5,4,4,1,6,15,90,110, Attack.DmgType.SLASHING, new HashMap<Attack.DmgType,Double>(), new HashMap<Attack.DmgType,Double>(), Character.Type.PLAYER);
@@ -848,10 +848,6 @@ public class Character {
 		
 		// State facts
 		System.out.println(this.getName() + "'s turn is over.");
-		
-		// Return (though basic, this is a model to be overwritten)
-		System.out.println("Enter something then press enter to continue.");
-		BattleSimulator.getInstance().getPrompter().nextLine();
 		System.out.println("\n-----------------------------------------------------------------------------");
 	}
 	
@@ -867,9 +863,9 @@ public class Character {
 	
 	// Direct combat methods (attacking, healing, dealing damage...)
 	// Restores the health of the target by a certain amount, then returns the amount actually healed (if someone tried to heal above the maximum)
-	protected void restoreHealth(int amount) {
+	protected int restoreHealth(int amount) {
 		if (amount <= 0) {
-			return;
+			return 0;
 		}
 		
 		int healingReceived = amount;
@@ -880,9 +876,10 @@ public class Character {
 		}
 		if (healingReceived == 0) {
 			System.out.println(this.getName() + " healed at maximum health.");
-			return;
+			return 0;
 		}
 		System.out.println(this.getName() + " healed for " + healingReceived + " Health for a new total of " + this.getCurrentHealth());
+		return healingReceived;
 	}
 	// Takes damage by numerical amount
 	protected int takeDamage(int damageDealt, Attack.DmgType aType) {

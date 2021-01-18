@@ -135,7 +135,12 @@ public class MultiPurposed extends Ability {
 	//DE put the crit bonus in as a Condition that updates at the beginning of each turn
 	//DE Will need to somehow connect the "use" of this Ability to the "use of other Abilities and that of the Basic Attack
 	
+	//DE have use function (make name of this Random Ability or something) that selects random Ability (remove Basic Attack as option replace with this in main class)
+	//DE have an "isActive" for when the version is the random Ability
+	//DE have a single "getBuffs" function that includes the bonus damage for random Ability when "isActive" is true, all abilities should call before use (to also get Cooldown bonus etc)
+	//DE or make a permanent Condition on character? All Abilities have a version 2 that is case from this Ability -- best way
 	
+	//DE Masterwork rank 15 -> Empowered counts as separate
 	
 	
 	// Returns the full information about the ability

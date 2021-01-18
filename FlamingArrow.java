@@ -9,6 +9,7 @@ public class FlamingArrow extends Ability {
 	private double baseScaler;
 	private double fireScaler;
 	private int fireDuration;
+	private int numStacks;
 	
 	// Constructor
 	public FlamingArrow(SentinelSpecialist source, int rank) {
@@ -19,6 +20,9 @@ public class FlamingArrow extends Ability {
 		// Sets the Cooldown and scalers of the Ability
 		this.setCooldown();
 		this.setScalers();
+		
+		// Initialize additional variables
+		this.numStacks = 0;
 		
 		// Sets the burn duration of the Ability
 		this.setFireDuration();
@@ -124,10 +128,34 @@ public class FlamingArrow extends Ability {
 		return new Stun("Flaming Arrow: Stun", 1);
 	}
 	
+	// Functions for "Empowered" effects
+	public int getNumStacks() {
+		return this.numStacks;
+	}
+	public boolean isEmpowered() {
+		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
+	}
+	public void makeEmpowered() {
+		this.numStacks = this.owner.getEmpoweredStackRequirement();
+	}
+	
 	
 	//DE Need to create a "SentinelBurnDOT" class that is basically exactly the same as "BleedDOT" but no vorpal and deals fire damage
 	//DE For rank 10, might want a list of already burned enemies so it doesnt affect the same enemy twice, but can just add a prompt in "SentinelBurnDOT"
 	
+	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use2 for using the Empowered version
+	
+	
+	
+	// Override the to-String to include a description of the number of stacks and if the Ability is Empowered
+	@Override
+	public String toString() {
+		String ori = super.toString();
+		if (this.isEmpowered()) {
+			return ori + " --EMPOWERED";
+		}
+		return ori + "  (" + this.getNumStacks() + " stack(s))";
+	}
 	
 	// Returns the full information about the ability
 	public String getDescription() {

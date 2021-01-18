@@ -12,6 +12,7 @@ public class SentinelSpecialistBuilder extends CharacterBuilder {
 	private int ExplodingArrowRank;
 	private int PenetrationArrowRank;
 	private int BlackArrowRank;
+	private int RestorationArrowRank;
 	
 	// Constructs a SentinelSpecialistBuilder (populating the CharacterBuilder variables) based on the constant stats from Character
 	public SentinelSpecialistBuilder(Character base) {
@@ -25,6 +26,7 @@ public class SentinelSpecialistBuilder extends CharacterBuilder {
 		this.ExplodingArrowRank = 0;
 		this.PenetrationArrowRank = 0;
 		this.BlackArrowRank = 0;
+		this.RestorationArrowRank = 0;
 	}
 	public SentinelSpecialistBuilder(SentinelSpecialist base) {
 		super(base);
@@ -37,6 +39,7 @@ public class SentinelSpecialistBuilder extends CharacterBuilder {
 		this.ExplodingArrowRank = base.getAbilityRank(SentinelSpecialist.AbilityNames.ExplodingArrow);
 		this.PenetrationArrowRank = base.getAbilityRank(SentinelSpecialist.AbilityNames.PenetrationArrow);
 		this.BlackArrowRank = base.getAbilityRank(SentinelSpecialist.AbilityNames.BlackArrow);
+		this.RestorationArrowRank = base.getAbilityRank(SentinelSpecialist.AbilityNames.RestorationArrow);
 	}
 	public SentinelSpecialistBuilder() {
 		this(Character.SENTINEL_SPECIALIST);
@@ -190,6 +193,11 @@ public class SentinelSpecialistBuilder extends CharacterBuilder {
 		this.BlackArrowRank = newRank;
 		return this;
 	}
+	// Restoration Arrow (Hidden Ability):
+	public SentinelSpecialistBuilder setRestorationArrowRank(int newRank) {
+		this.RestorationArrowRank = newRank;
+		return this;
+	}
 	
 	
 	// Calculates the base stats based on level and stat-increasing passive abilities
@@ -252,26 +260,6 @@ public class SentinelSpecialistBuilder extends CharacterBuilder {
 			this.bArmor += sb.getArmorBonus();
 			this.bDodge += sb.getDodgeBonus();
 		}
-		
-		
-		/*
-		if (this.SwordplayProwessRank > 0) {
-			SwordplayProwess sp = new SwordplayProwess(this.SwordplayProwessRank);
-			this.bDamage += sp.getDamageBonus();
-			this.bArmorPiercing += sp.getArmorPiercingBonus();
-		}
-		if (this.WarriorsMightRank > 0) {
-			WarriorsMight wm = new WarriorsMight(this.WarriorsMightRank);
-			this.bHealth += wm.getHealthBonus();
-			this.bArmor += wm.getArmorBonus();
-			this.bThreat += wm.getThreatBonus();
-			this.bDamage += wm.getDamageBonus();
-		}
-		if (this.AgileFighterRank >= 5) {
-			AgileFighter af = new AgileFighter(this.AgileFighterRank);
-			this.bSpeed += af.getSpeedBonus();
-		}
-		*/
 	}
 	
 	// Finishes the build by returning a SentinelSpecialist Character
@@ -280,6 +268,6 @@ public class SentinelSpecialistBuilder extends CharacterBuilder {
 		this.setBaseStats();
 		
 		// Return the Sentinel Specialist
-		return new SentinelSpecialist(super.build(), this.EmpoweredArrowsRank, this.MasterworkArrowsRank, this.SurvivableRank, this.MultiPurposedRank, this.FlamingArrowRank, this.FrozenArrowRank, this.ExplodingArrowRank, this.PenetrationArrowRank, this.BlackArrowRank);
+		return new SentinelSpecialist(super.build(), this.EmpoweredArrowsRank, this.MasterworkArrowsRank, this.SurvivableRank, this.MultiPurposedRank, this.FlamingArrowRank, this.FrozenArrowRank, this.ExplodingArrowRank, this.PenetrationArrowRank, this.BlackArrowRank, this.RestorationArrowRank);
 	}
 }

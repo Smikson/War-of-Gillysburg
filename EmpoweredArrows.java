@@ -1,4 +1,5 @@
 package WyattWitemeyer.WarOfGillysburg;
+import java.util.*;
 
 // Passive Abilities:
 // Unique Passive Ability: "Empowered Arrows"
@@ -103,10 +104,65 @@ public class EmpoweredArrows extends Ability {
 		return new Condition(this.abilityPreAttackBonus);
 	}
 	
-	//DE Masterwork Arrows rank 15 - if "Empowered" misses, effect returns, counts as separate for "Multi-purposed"
+	// Use function called when the action is chosen from the possible Commands (uses multiple empowered abilities)
+	@Override
+	public void use() {
+		// If unavailable (no abilities currently empowered), state the issue and immediately return
+		if (!this.owner.hasEmpoweredAbility()) {
+			System.out.println("There are no empowered abilities, select a different action.");
+			return;
+		}
+		
+		// Get the available Empowered Abilities as options for multiple selection
+		LinkedList<String> abilityChoices = new LinkedList<>();
+		for (int abilityNum : this.owner.getEmpoweredAbilities()) {
+			if (abilityNum == 1) {
+				abilityChoices.add("Flaming Arrow");
+			}
+			else if (abilityNum == 2) {
+				abilityChoices.add("Frozen Arrow");
+			}
+			else if (abilityNum == 3) {
+				abilityChoices.add("Exploding Arrow");
+			}
+			else if (abilityNum == 4) {
+				abilityChoices.add("Penetration Arrow");
+			}
+			else if (abilityNum == 5) {
+				abilityChoices.add("Restoration Arrow");
+			}
+		}
+		
+		// Select the Empowered Abilities that will be used
+		LinkedList<Integer> toUse = new LinkedList<>();
+		toUse = BattleSimulator.getInstance().promptSelectMultiple("Select all available Empowered Abilities you wish to use this turn", abilityChoices);
+		
+		//DE use each ability marked in toUse (holds index from owner's list of empowered abilities (toUse is 1-indexed)
+		for (int index : toUse) {
+			int ability = this.owner.getEmpoweredAbilities().get(index - 1);
+			//DE USE THE DAMAGE REDUCTION BASED ON toUse.size()!!!!!
+			if (ability == 1) {
+				//DE use Flaming Arrow
+			}
+			else if (ability == 2) {
+				//DE use Frozen Arrow
+			}
+			else if (ability == 3) {
+				//DE use Exploding Arrow
+			}
+			else if (ability == 4) {
+				//DE use Penetration Arrow
+			}
+			else if (ability == 5) {
+				//DE use Restoration Arrow
+			}
+		}
+	}
 	
-	
-	
+	// Overrides the to-String to more correctly display the function of this Ability's use function
+	public String toString() {
+		return "Passive: \"Empowered Arrows\" (Use multiple EMPOWERED Abilities) - " + (this.owner.hasEmpoweredAbility()? "Available" : "Unavailable");
+	}
 	
 	// Returns the full information about the ability
 	public String getDescription() {

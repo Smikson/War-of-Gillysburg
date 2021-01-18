@@ -8,6 +8,7 @@ public class ExplodingArrow extends Ability {
 	// Additional Variables
 	private double baseScaler;
 	private double explosionScaler;
+	private int numStacks;
 	
 	// Constructor
 	public ExplodingArrow(SentinelSpecialist source, int rank) {
@@ -18,6 +19,9 @@ public class ExplodingArrow extends Ability {
 		// Sets the scalers and the Cooldown of the Ability
 		this.setCooldown();
 		this.setScalers();
+		
+		// Initialize additional variables
+		this.numStacks = 0;
 	}
 	
 	// Sets the Cooldown
@@ -100,11 +104,33 @@ public class ExplodingArrow extends Ability {
 		return this.explosionScaler;
 	}
 	
+	// Functions for 'Empowered" effects
+	public int getNumStacks() {
+		return this.numStacks;
+	}
+	public boolean isEmpowered() {
+		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
+	}
+	public void makeEmpowered() {
+		this.numStacks = this.owner.getEmpoweredStackRequirement();
+	}
+	
 	
 	//DE Watch for dealing less damage to allies and primary target taking bonus explosive damage
 	//DE Needs a check for number of enemies hit to grant "next Ability is Empowered" status
 	
+	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use2 for using the Empowered version
 	
+	
+	// Override the to-String to include a description of the number of stacks and if the Ability is Empowered
+	@Override
+	public String toString() {
+		String ori = super.toString();
+		if (this.isEmpowered()) {
+			return ori + " --EMPOWERED";
+		}
+		return ori + "  (" + this.getNumStacks() + " stack(s))";
+	}
 	
 	// Returns the full information about the ability
 	public String getDescription() {

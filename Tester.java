@@ -47,7 +47,6 @@ public class Tester {
 		BattleSimulator.getInstance().addEnemy(spi1);
 		BattleSimulator.getInstance().addEnemy(spi2);
 		BattleSimulator.getInstance().addEnemy(spi3);
-		//BattleSimulator.getInstance().initiate();
-		System.out.println(ian.getDescription());
+		BattleSimulator.getInstance().initiate();
 	}
 }

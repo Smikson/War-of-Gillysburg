@@ -7,6 +7,7 @@ public class PenetrationArrow extends Ability {
 	
 	// Additional Variables
 	private Condition enemyArmorReduction;
+	private int numStacks;
 	
 	// Constructor
 	public PenetrationArrow(SentinelSpecialist source, int rank) {
@@ -17,6 +18,9 @@ public class PenetrationArrow extends Ability {
 		// Sets the Cooldown and the scaler of the Ability
 		this.setCooldown();
 		this.setScaler();
+		
+		// Initialize additional variables
+		this.numStacks = 0;
 		
 		// Sets the enemy Condition of the Ability
 		this.setEnemyArmorCondition();
@@ -116,11 +120,32 @@ public class PenetrationArrow extends Ability {
 		return new Condition(this.enemyArmorReduction);
 	}
 	
+	// Functions for "Empowered" effects
+	public int getNumStacks() {
+		return this.numStacks;
+	}
+	public boolean isEmpowered() {
+		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
+	}
+	public void makeEmpowered() {
+		this.numStacks = this.owner.getEmpoweredStackRequirement();
+	}
 	
 	
 	//DE Same as before with the ability to make the next ability empowered
 	
+	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use2 for using the Empowered version
 	
+	
+	// Override the to-String to include a description of the number of stacks and if the Ability is Empowered
+	@Override
+	public String toString() {
+		String ori = super.toString();
+		if (this.isEmpowered()) {
+			return ori + " --EMPOWERED";
+		}
+		return ori + "  (" + this.getNumStacks() + " stack(s))";
+	}
 	
 	// Returns the full information about the ability
 	public String getDescription() {

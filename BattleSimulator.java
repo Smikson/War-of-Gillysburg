@@ -234,6 +234,97 @@ public class BattleSimulator {
 	}
 	
 	// Return a list of chosen Characters in combatants (by convention, an empty list implies the user wants to "cancel" and select a different command)
+	public LinkedList<Integer> promptSelectMultiple(String prompt, LinkedList<String> choices) {
+		// Declare starting variables
+		int choice = 0;
+		LinkedList<Integer> ret = new LinkedList<>();
+		
+		// Display options
+		System.out.println("[Use the negative of the chosen number to remove it from the list]");
+		System.out.println(prompt);
+		System.out.println("0. Done (Cancels if list is completely empty)");
+		for (int i = 0; i < choices.size(); i++) {
+			System.out.println("" + (i+1) + ". " + choices.get(i));
+		}
+		System.out.println();
+		System.out.print("Choice? ");
+		
+		// Loop until 0 is entered
+		while (true) {
+			// Get input, make sure it is an integer
+			if (this.getPrompter().hasNextInt()) {
+				// Get their choice and move to the next line
+				choice = this.getPrompter().nextInt();
+				this.getPrompter().nextLine();
+				
+				// If they chose 0, return
+				if (choice == 0) {
+					return ret;
+				}
+				// If they chose a positive available option
+				else if (choice <= choices.size() && choice > 0) {
+					// Check if already in list
+					if (ret.contains(choice)) {
+						System.out.println("List already contains " + choice + ".");
+					}
+					// Add chosen number to the list
+					else {
+						// Add the selected number to the return list
+						ret.add(choice);
+						
+						// Display the current list for checking
+						System.out.print("Current list: " + ret.get(0));
+						for (int i = 1; i < ret.size(); i++) {
+							System.out.print(", " + ret.get(i));
+						}
+						System.out.println();
+					}
+					// Continue prompt
+					System.out.print("Choice? ");
+				}
+				// If they chose a negative available option
+				else if ((-choice) <= choices.size() && (-choice) > 0) {
+					// If their choice is in the list
+					if (ret.contains(-choice)) {
+						// Remove the choice
+						ret.remove(new Integer(-choice));
+						
+						// Display the remaining list
+						System.out.print("Current list: ");
+						if (!ret.isEmpty()) {
+							System.out.print(ret.get(0));
+							for (int i = 1; i < ret.size(); i++) {
+								System.out.print(", " + ret.get(i));
+							}
+						}
+						System.out.println();
+					}
+					// If their choice is not in the list, notify
+					else {
+						System.out.println("Choice already not in list.");
+					}
+					// Continue prompt
+					System.out.print("Choice? ");
+				}
+				// If the user entered an invalid number, notify
+				else {
+					System.out.println("Invalid response. Please enter a valid response.");
+					System.out.print("Choice? ");
+				}
+			}
+			// If the user entered a non-integer, notify
+			else {
+				String response = this.getPrompter().nextLine();
+				System.out.println("\""+response+"\" is not a valid response. Please enter a valid response.");
+				System.out.print("Choice? ");
+			}
+		}
+	}
+	public LinkedList<Integer> promptSelectMultiple(LinkedList<String> choices) {
+		return this.promptSelectMultiple("Choose from the following:", choices);
+	}
+	
+	// Return a list of chosen Characters in combatants (by convention, an empty list implies the user wants to "cancel" and select a different command)
 	public LinkedList<Character> targetMultiple() {
 		// Declare starting variables
 		int choice = 0;
@@ -307,7 +398,7 @@ public class BattleSimulator {
 						// Display the remaining list
 						System.out.print("Current list: ");
 						if (!ret.isEmpty()) {
-							System.out.println(ret.get(0).getName());
+							System.out.print(ret.get(0).getName());
 							for (int i = 1; i < ret.size(); i++) {
 								System.out.print(", " + ret.get(i).getName());
 							}
