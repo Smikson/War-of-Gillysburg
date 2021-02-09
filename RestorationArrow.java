@@ -235,6 +235,9 @@ public class RestorationArrow extends Ability {
 		this.numStacks = this.owner.getEmpoweredStackRequirement();
 	}
 	
+	//DE When the use function is called in a different Ability it needs to call a function from the main class to add it to the list
+	//DE Each Ability will need to call something from the base Sentinel Specialist to get the scaler bonus from here
+	
 	
 	//DE Same need another class that extends DamageOverTime but instead Heals over time based on the scalers
 	

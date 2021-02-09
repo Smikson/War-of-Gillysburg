@@ -102,8 +102,9 @@ class BasicAttackCommand extends Command {
             this.attack = new AttackBuilder(this.attack).defender(chosen).build();
 			this.attack.execute();
 			
-			// Using a basic attack uses the character's turn actions, then end the current function
+			// Using a basic attack uses the character's turn actions and is specified in the character, then end the current function
 			this.getOwner().useTurnActions();
+			this.getOwner().setBasicAttackUsed();
 			return;
 		}
 		

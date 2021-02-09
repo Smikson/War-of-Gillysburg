@@ -67,8 +67,9 @@ public class Character {
 	protected LinkedList<AttackResult> AttacksMade;
 	protected LinkedList<AttackResult> AttacksDefended;
 	
-	// Boolean to keep track of when its this Character's turn
+	// Boolean to keep track of when its this Character's turn and if they used a basic attack during their turn
 	private boolean inTurn;
+	private boolean usedBasicAttack;
 	
 	// Constructor (sets each stat variable)
 	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
@@ -133,8 +134,9 @@ public class Character {
 		this.commands.add(new AlterCharacterCommand(this));
 		this.commands.add(new EndTurnCommand(this));
 		
-		// Initializes in turn to false
+		// Initializes in turn and used basic attack to false
 		this.inTurn = false;
+		this.usedBasicAttack = false;
 	}
 	public Character(Character copy) {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
@@ -249,6 +251,12 @@ public class Character {
 	// Functions that show the status of the Character
 	public boolean inTurn() {
 		return this.inTurn;
+	}
+	public boolean usedBasicAttack() {
+		return this.usedBasicAttack;
+	}
+	public void setBasicAttackUsed() {
+		this.usedBasicAttack = true;
 	}
 	public boolean isDead() {
 		return this.getCurrentHealth() <= 0;
@@ -711,8 +719,9 @@ public class Character {
 	
 	// Start of turn
 	protected void beginTurnSetup() {
-		// Designate the Character is in its turn
+		// Designate the Character is in its turn, and make sure used basic attack is false
 		this.inTurn = true;
+		this.usedBasicAttack = false;
 		
 		// Make turn actions available
 		this.turnActionsSpent = false;

@@ -131,6 +131,11 @@ public class PenetrationArrow extends Ability {
 		this.numStacks = this.owner.getEmpoweredStackRequirement();
 	}
 	
+	//DE When the use function is called in a different Ability it needs to call a function from the main class to add it to the list
+	//DE Each Ability will need to call something from the base Sentinel Specialist to get the scaler bonus from here
+	//DE Needs a use(2) for when it is used randomly by Multi-purposed
+	//DE Masterwork rank 15 -> Empowered counts as separate for Multi-Purposed
+	
 	
 	//DE Same as before with the ability to make the next ability empowered
 	

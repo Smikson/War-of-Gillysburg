@@ -26,6 +26,9 @@ public class SentinelSpecialist extends Character {
 	// Maps all Abilities so all Cooldowns can be reduced at once
 	private HashMap<SentinelSpecialist.AbilityNames, Ability> abilities;
 	
+	// A set containing the unique Abilities used so far (useful for Multi-Purposed)
+	private HashSet<String> uniqueAbilities;
+	
 	// These first two methods help set up the Steel Legion Warrior subclass.
 	public SentinelSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int eaRank, int maRank, int sRank, int mpRank, int fireRank, int iceRank, int exRank, int pRank, int blackRank, int raRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
@@ -41,7 +44,7 @@ public class SentinelSpecialist extends Character {
 		this.BlackArrow = new BlackArrow(this, blackRank);
 		this.RestorationArrow = new RestorationArrow(this, raRank);
 		
-		// Add Abilities to a list for Cooldown purposes
+		// Add Abilities to a list for Cooldown and usage purposes
 		this.abilities = new HashMap<>();
 		this.abilities.put(SentinelSpecialist.AbilityNames.EmpoweredArrows, this.EmpoweredArrows);
 		this.abilities.put(SentinelSpecialist.AbilityNames.MasterworkArrows, this.MasterworkArrows);
@@ -53,6 +56,11 @@ public class SentinelSpecialist extends Character {
 		this.abilities.put(SentinelSpecialist.AbilityNames.PenetrationArrow, this.PenetrationArrow);
 		this.abilities.put(SentinelSpecialist.AbilityNames.BlackArrow, this.BlackArrow);
 		this.abilities.put(SentinelSpecialist.AbilityNames.RestorationArrow, this.RestorationArrow);
+		
+		//DE Initialize abilities as "charged" if they have multiple charges (based on Multi-Purposed rank)
+		
+		// Initialize the Unique Abilities set
+		this.uniqueAbilities = new HashSet<>();
 		
 		// Add new commands for Abilities
 		if (this.EmpoweredArrows.rank() >= 3) {
@@ -127,6 +135,33 @@ public class SentinelSpecialist extends Character {
 	// Function to return the Ability Pre-Attack Bonus of Empowered Abilities
 	public Condition getEmpoweredPreAttackBonus() {
 		return this.EmpoweredArrows.getAbilityPreAttackBonus();
+	}
+	
+	// Function to add to the set of unique abilities
+	public void addToUniqueSet(String added) {
+		this.uniqueAbilities.add(added);
+	}
+	
+	// Function to calculate the number of turns left on Cooldown for all Abilities for Multi-Purposed
+	public int getCooldownTurns() {
+		// Sum the turns remaining of each Ability
+		int total = 0;
+		for (Ability a : abilities.values()) {
+			if (a.rank() > 0) {
+				if (a.onCooldown()) {
+					total += a.turnsRemaining();
+				}
+				//DE Add extra from charges?
+			}
+		}
+		
+		// Return the result
+		return total;
+	}
+	
+	// Function to get the scaler bonus from Multi-Purposed
+	public double scalerBonus() {
+		return this.MultiPurposed.getScalerBonus(this.getCooldownTurns());
 	}
 	
 	// Function to randomly Empower a basic Ability
@@ -264,6 +299,11 @@ public class SentinelSpecialist extends Character {
 				this.randomlyEmpower();
 			}
 		}
+		
+		// At rank 10, Multi-Purposed has a permanent condition that refreshes at the beginning of each turn
+		if (this.MultiPurposed.rank() >= 10) {
+			this.addCondition(this.MultiPurposed.getPermanentCondition(this.getCooldownTurns()));
+		}
 	}
 	
 	// End of Turn Override
@@ -275,6 +315,11 @@ public class SentinelSpecialist extends Character {
 		// If we're dead, we're done
 		if (this.isDead()) {
 			return;
+		}
+		
+		// If we used a basic attack, add it to the set
+		if (this.usedBasicAttack()) {
+			this.uniqueAbilities.add("Basic Attack");
 		}
 		
 		// Ability Effects

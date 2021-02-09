@@ -9,7 +9,7 @@ public class MultiPurposed extends Ability {
 	private Condition abilityDamageBonus;
 	//DE either here or in Character, need a set/list of the distinct Abilities used
 	private double scalerBonusPerCooldown;
-	private double critBonusPerCooldown;
+	private double critAccBonusPerCooldown;
 	private int uniqueRequirement;
 	
 	// Constructor
@@ -66,7 +66,7 @@ public class MultiPurposed extends Ability {
 	private void setCooldownBonuses() {
 		// Intitalize both to be 0
 		this.scalerBonusPerCooldown = 0;
-		this.critBonusPerCooldown = 0;
+		this.critAccBonusPerCooldown = 0;
 		
 		// Neither starts until rank 5
 		for (int walker = 5; walker <= this.rank(); walker++) {
@@ -81,17 +81,17 @@ public class MultiPurposed extends Ability {
 			// Rank 10 grants +.01x to scalers and +1% crit
 			else if (walker == 10) {
 				this.scalerBonusPerCooldown += .01;
-				this.critBonusPerCooldown += 1;
+				this.critAccBonusPerCooldown += 1;
 			}
 			// Ranks 11-14 grant +.02x to scalers and +.5% crit per rank
 			else if (walker <= 14) {
 				this.scalerBonusPerCooldown += .02;
-				this.critBonusPerCooldown += .5;
+				this.critAccBonusPerCooldown += .5;
 			}
 			// Rank 15 grants +.02x to scalers and +2% crit
 			else if (walker == 15) {
 				this.scalerBonusPerCooldown += .02;
-				this.critBonusPerCooldown += 2;
+				this.critAccBonusPerCooldown += 2;
 			}
 		}
 	}
@@ -119,26 +119,39 @@ public class MultiPurposed extends Ability {
 	public double getScalerBonus(int cdTurns) {
 		return this.scalerBonusPerCooldown * cdTurns;
 	}
-	//DE Possibly create conditions for these two based on specifed number of Cooldown turns
-	public double getCritBonus(int cdTurns) {
-		return this.critBonusPerCooldown * cdTurns;
-	}
-	public double getAccBonus(int cdTurns) {
-		return this.getCritBonus(cdTurns);
+	
+	// Returns the critical chance and accuracy bonuses that are recalculated at the beginning of every turn
+	public Condition getPermanentCondition(int cdTurns) {
+		// Create the status effects for crit and accuracy bonuses
+		double amount = this.critAccBonusPerCooldown*cdTurns;
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, amount, StatusEffect.Type.OUTGOING);
+		critBonus.makeFlat();
+		StatusEffect accBonus = new StatusEffect(Stat.Version.ACCURACY, amount, StatusEffect.Type.OUTGOING);
+		accBonus.makePercentage();
+		
+		// Create the permanent Condition
+		Condition cdBonuses = new Condition("Multi-Purposed: Crit and Accuracy CD Bonuses", -1);
+		cdBonuses.setSource(this.owner);
+		if (amount != 0) {
+			cdBonuses.addStatusEffect(critBonus);
+			cdBonuses.addStatusEffect(accBonus);
+		}
+		
+		// Return the result
+		return cdBonuses;
 	}
 	
 	public int getUniqueRequirement() {
 		return this.uniqueRequirement;
 	}
 	
-	//DE Each Ability will need to call something from the base Sentinel Specialist to get the scaler bonus from here
+	
 	//DE put the crit bonus in as a Condition that updates at the beginning of each turn
-	//DE Will need to somehow connect the "use" of this Ability to the "use of other Abilities and that of the Basic Attack
 	
 	//DE have use function (make name of this Random Ability or something) that selects random Ability (remove Basic Attack as option replace with this in main class)
-	//DE have an "isActive" for when the version is the random Ability
-	//DE have a single "getBuffs" function that includes the bonus damage for random Ability when "isActive" is true, all abilities should call before use (to also get Cooldown bonus etc)
-	//DE or make a permanent Condition on character? All Abilities have a version 2 that is case from this Ability -- best way
+	//DE have an "isActive" for when the version is the random Ability -- no
+	//DE have a single "getBuffs" -- no -- function that includes the bonus damage for random Ability when "isActive" is true, all abilities should call before use (to also get Cooldown bonus etc)
+	//DE or make a permanent Condition on character? All Abilities have a version 2 that is case from this Ability -- best way, replace at beg on turn
 	
 	//DE Masterwork rank 15 -> Empowered counts as separate
 	
@@ -148,8 +161,8 @@ public class MultiPurposed extends Ability {
 		String ret = super.getDescription();
 		ret += "\n\tNumber of Required Unique Abilities: " + this.getUniqueRequirement();
 		ret += "\n\t" + this.getAbilityDamageBonus();
-		ret += this.rank() >= 10? ("\n\tBonus Crit Per Turn of Cooldown: " + this.getCritBonus(1)) : "";
-		ret += this.rank() >= 10? ("\n\tBonus Accuracy Per Turn of Cooldown: " + this.getAccBonus(1)) : "";
+		ret += this.rank() >= 10? ("\n\tBonus Crit Per Turn of Cooldown: " + this.critAccBonusPerCooldown) : "";
+		ret += this.rank() >= 10? ("\n\tBonus Accuracy Per Turn of Cooldown: " + this.critAccBonusPerCooldown) : "";
 		return ret;
 	}
 }

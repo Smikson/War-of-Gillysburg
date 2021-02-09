@@ -139,6 +139,11 @@ public class FlamingArrow extends Ability {
 		this.numStacks = this.owner.getEmpoweredStackRequirement();
 	}
 	
+	//DE When the use function is called in a different Ability it needs to call a function from the main class to add it to the list
+	//DE Each Ability will need to call something from the base Sentinel Specialist to get the scaler bonus from here
+	//DE Needs a use(2) for when it is used randomly by Multi-purposed
+	//DE Masterwork rank 15 -> Empowered counts as separate for Multi-Purposed
+	
 	
 	//DE Need to create a "SentinelBurnDOT" class that is basically exactly the same as "BleedDOT" but no vorpal and deals fire damage
 	//DE For rank 10, might want a list of already burned enemies so it doesnt affect the same enemy twice, but can just add a prompt in "SentinelBurnDOT"
