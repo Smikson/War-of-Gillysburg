@@ -1,5 +1,8 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.*;
+
+
 public class Ability {
 	// Variables, the cooldown, scaler, and duration can be set when making the Ability
 	private String name;
@@ -183,6 +186,139 @@ public class Ability {
 		return ret;
 	}
 }
+
+// ChargedAbility acts as a normal Ability but has multiple "charges" (and thus multiple turncounters, etc)
+class ChargedAbility extends Ability {
+	// Variables for multiple charges
+	private int charges;
+	private LinkedList<Integer> chargeTurnsRemaining;
+	
+	// Constructors
+	public ChargedAbility(String name, Character owner, int rank, int charges) {
+		// Create a normal Ability
+		super(name, owner, rank);
+		
+		// Initialize the additional variables based on the number of specified charges
+		this.charges = charges;
+		this.chargeTurnsRemaining = new LinkedList<>();
+		for (int i = 0; i < this.charges; i++) {
+			this.chargeTurnsRemaining.add(0);
+		}
+	}
+	
+	// Get method for class variables
+	public int getCharges() {
+		return this.charges;
+	}
+	public int chargeTurnsRemaining(int index) {
+		if (index < 0 || index >= this.getCharges()) {
+			System.out.println("Warning: Tried to get charge turns remaining for " + this.getName() + " out of bounds");
+			return -1;
+		}
+		return this.chargeTurnsRemaining.get(index);
+	}
+	
+	// Override the get method for turns remaining to return ALL turns remaining (for all charges)
+	@Override
+	public int turnsRemaining() {
+		int sum = 0;
+		for (int tr : this.chargeTurnsRemaining) {
+			sum += tr;
+		}
+		return sum;
+	}
+	
+	// Functions to deal with Cooldowns (including overrides from Ability)
+	public void setTurnsRemaining(int index, int turns) {
+		if (index < 0 || index >= this.getCharges()) {
+			System.out.println("Warning: Tried to set charge turns remaining for " + this.getName() + " out of bounds");
+			return;
+		}
+		this.chargeTurnsRemaining.set(index, turns);
+	}
+	// Let the default be whatever charge is stored in the first position (index 0)
+	@Override
+	public void setTurnsRemaining(int turns) {
+		this.setTurnsRemaining(0, turns);
+	}
+	
+	// Sets a specific charge on Cooldown
+	public void setOnCooldown(int index) {
+		this.setTurnsRemaining(index, this.cooldown());
+	}
+	// Set on Cooldown will by default use 1 charge of the Ability: the charge with smallest turns remaining (first smallest if tied)
+	@Override
+	public void setOnCooldown() {
+		// Finds the smallest turns remaining (first smallest if tied)
+		int smallestRem = this.cooldown();
+		int index = 0;
+		for (int i = 0; i < this.getCharges(); i++) {
+			if (this.chargeTurnsRemaining(i) < smallestRem) {
+				smallestRem = this.chargeTurnsRemaining(i);
+				index = i;
+			}
+		}
+		
+		// Places that charge "on Cooldown"
+		this.setOnCooldown(index);
+	}
+	// Sets all charges on Cooldown
+	public void setOnCooldownAll() {
+		for (int i = 0; i < this.getCharges(); i++) {
+			this.setOnCooldown(i);
+		}
+	}
+	
+	// Sets a specific charge on Cooldown
+	public void setOffCooldown(int index) {
+		this.setTurnsRemaining(index, 0);
+	}
+	// Set off Cooldown will by default use 1 charge of the Ability: the charge with largest turns remaining (first largest if tied)
+	@Override
+	public void setOffCooldown() {
+		// Finds the largest turns remaining (first largest if tied)
+		int largestRem = 0;
+		int index = 0;
+		for (int i = 0; i < this.getCharges(); i++) {
+			if (this.chargeTurnsRemaining(i) > largestRem) {
+				largestRem = this.chargeTurnsRemaining(i);
+				index = i;
+			}
+		}
+		
+		// Places that charge "off Cooldown"
+		this.setOffCooldown(index);
+	}
+	// Sets all charges off Cooldown
+	public void setOffCooldownAll() {
+		for (int i = 0; i < this.getCharges(); i++) {
+			this.setOffCooldown(i);
+		}
+	}
+	
+	// Checks to see if a certain charge is "on Cooldown"
+	public boolean onCooldown(int index) {
+		// The charge is on Cooldown if there are turns remaining and the Cooldown exists
+		return this.chargeTurnsRemaining(index) > 0 && this.cooldown() > 0;
+	}
+	
+	// By default, the Ability is "on Cooldown" only if all its charges are "on Cooldown"
+	@Override
+	public boolean onCooldown() {
+		// Return false if any charge is not on Cooldown
+		for (int i = 0; i < this.getCharges(); i++) {
+			if (!this.onCooldown(i)) {
+				return false;
+			}
+		}
+		
+		// Return true otherwise
+		return true;
+	}
+	
+	
+}
+
 
 
 class UltimateAbility extends Ability {
