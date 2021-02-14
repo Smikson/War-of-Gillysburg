@@ -218,6 +218,30 @@ class ChargedAbility extends Ability {
 		return this.chargeTurnsRemaining.get(index);
 	}
 	
+	// Basic function to return the number of charges that are currently off cooldown
+	public int getChargesRemaining() {
+		// Start at 0 and add 1 for each charge not on Cooldown
+		int total = 0;
+		for (int i = 0; i < this.getCharges(); i++) {
+			if (!this.onCooldown(i)) {
+				total++;
+			}
+		}
+		
+		// Return the result
+		return total;
+	}
+	
+	// Basic function to return the turns remaining list as a string in a readable format
+	public String getCooldownString() {
+		String ret = "[" + this.chargeTurnsRemaining(0);
+		for (int i = 1; i < this.getCharges(); i++) {
+			ret += ", " + this.chargeTurnsRemaining(i);
+		}
+		return ret + "]";
+	}
+	
+	
 	// Override the get method for turns remaining to return ALL turns remaining (for all charges)
 	@Override
 	public int turnsRemaining() {
@@ -233,6 +257,14 @@ class ChargedAbility extends Ability {
 		if (index < 0 || index >= this.getCharges()) {
 			System.out.println("Warning: Tried to set charge turns remaining for " + this.getName() + " out of bounds");
 			return;
+		}
+		
+		// Do the same as the base Ability but for the specified index
+		if (turns < 0) {
+			turns = 0;
+		}
+		if (turns > this.cooldown) {
+			turns = this.cooldown;
 		}
 		this.chargeTurnsRemaining.set(index, turns);
 	}
@@ -316,7 +348,48 @@ class ChargedAbility extends Ability {
 		return true;
 	}
 	
+	// Override the decrement turns remaining to apply for all charges of the Ability
+	public void decrementTurnsRemaining() {
+		// Decrease each charge's turns remaining by 1
+		for (int i = 0; i < this.getCharges(); i++) {
+			if (this.onCooldown(i)) {
+				this.setTurnsRemaining(i, this.chargeTurnsRemaining(i) - 1);
+			}
+		}
+		
+		// Like in the normal Ability, decrease the active turns remaining if this is also an activatable ability
+		if (this.isActive()) {
+			this.setActiveTurnsRemaining(this.activeTurnsRemaining() - 1);
+		}
+	}
 	
+	
+	// Override toString and getDescription functions
+	// Used to print the Ability's name for reference
+	@Override
+	public String toString() {
+		String activeInd = "";
+		if (this.isActive()) {
+			activeInd = "\n\t- ACTIVE: " + (this.activeTurnsRemaining() != 0 ? this.activeTurnsRemaining() + " Turn(s) Remaining!" : "Final Turn!");
+		}
+		String CDchargeInd = "";
+		if (this.getCharges() > 1) {
+			CDchargeInd = "\n\t- CD: " + this.getChargesRemaining() + " out of " + this.getCharges() + " Charges Remaining! -- " + this.getCooldownString() + " Turn(s) Remaining!";
+		}
+		return this.getName() + activeInd + CDchargeInd;
+	}
+	
+	// Returns the full information about the ability
+	@Override
+	public String getDescription() {
+		String ret = "";
+		ret += this.getName() + " - Rank " + this.rank();
+		ret += "\nCharged Ability - Charges: " + this.getCharges();
+		ret += this.cooldown() > 0? ("\n\tCooldown: " + this.cooldown()) : "";
+		ret += this.getDuration() > 0? ("\n\tDuration: " + this.getDuration()) : "";
+		ret += "\n\tScaler: " + this.getScaler();
+		return ret;
+	}
 }
 
 
