@@ -559,7 +559,7 @@ public class Character {
 		// Added commands are added to the end of the list, but before the last two commands (Alter Character and End Turn)
 		this.commands.add(this.commands.size() - 2, added);
 	}
-	protected void alterBasicAttack(BasicAttackCommand altered) {
+	protected void alterBasicAttack(Command altered) {
 		this.commands.remove(0);
 		this.commands.add(0, altered);
 	}

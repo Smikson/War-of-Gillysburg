@@ -141,14 +141,15 @@ public class FlamingArrow extends Ability {
 	
 	//DE When the use function is called in a different Ability it needs to call a function from the main class to add it to the list
 	//DE Each Ability will need to call something from the base Sentinel Specialist to get the scaler bonus from here
-	//DE Needs a use(2) for when it is used randomly by Multi-purposed
+	//DE Needs a use(3) for when it is used randomly by Multi-purposed
+	//DE Start use(3) by clearing the unique list, above rank 5 also add the Ability at the end to the unique set
 	//DE Masterwork rank 15 -> Empowered counts as separate for Multi-Purposed
 	
 	
 	//DE Need to create a "SentinelBurnDOT" class that is basically exactly the same as "BleedDOT" but no vorpal and deals fire damage
 	//DE For rank 10, might want a list of already burned enemies so it doesnt affect the same enemy twice, but can just add a prompt in "SentinelBurnDOT"
 	
-	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use2 for using the Empowered version
+	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use(2) for using the Empowered version
 	
 	
 	

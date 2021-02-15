@@ -1,5 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
+import java.util.*;
+
 // Base Passive Ability: "Multi-Purposed"
 public class MultiPurposed extends Ability {
 	// Holds the owner of the Ability as a Sentinel Specialist
@@ -145,15 +147,37 @@ public class MultiPurposed extends Ability {
 		return this.uniqueRequirement;
 	}
 	
-	
-	//DE put the crit bonus in as a Condition that updates at the beginning of each turn
-	
-	//DE have use function (make name of this Random Ability or something) that selects random Ability (remove Basic Attack as option replace with this in main class)
-	//DE or make a permanent Condition on character? All Abilities have a version 2 that is case from this Ability -- best way, replace at beg on turn
-	
-	//DE Still need to put the ability to cast a random ability from basic attack in the main class begin turn or begin turn setup function (don't forget to return to normal in end turn)
-	
-	//DE Masterwork rank 15 -> Empowered counts as separate
+	// Function returning the custom command to cast a random ability from replaced basic attack
+	public CustomCommand getRandomAbilityCommand() {
+		// Create the Custom Command Execution needed for the random ability command
+		CustomCmdExe useRandomAbility = () -> {
+			// Get the 4 possible Abilities as long as their rank > 0
+			LinkedList<SentinelSpecialist.AbilityNames> abilities = new LinkedList<>();
+			if (this.owner.getAbilityRank(SentinelSpecialist.AbilityNames.FlamingArrow) > 0) {
+				abilities.add(SentinelSpecialist.AbilityNames.FlamingArrow);
+			}
+			if (this.owner.getAbilityRank(SentinelSpecialist.AbilityNames.FrozenArrow) > 0) {
+				abilities.add(SentinelSpecialist.AbilityNames.FrozenArrow);
+			}
+			if (this.owner.getAbilityRank(SentinelSpecialist.AbilityNames.ExplodingArrow) > 0) {
+				abilities.add(SentinelSpecialist.AbilityNames.ExplodingArrow);
+			}
+			if (this.owner.getAbilityRank(SentinelSpecialist.AbilityNames.PenetrationArrow) > 0) {
+				abilities.add(SentinelSpecialist.AbilityNames.PenetrationArrow);
+			}
+			
+			// Get a random index
+			Dice d = new Dice(abilities.size());
+			int index = d.roll() - 1;
+			
+			// Tell which Ability was chosen then execute the use(3) version
+			System.out.println("Arrow Selected: " + abilities.get(index).toString() + "!");
+			this.owner.useAbility(abilities.get(index), 3);
+		};
+		
+		String display = "RANDOM ABILITY (Multi-Purposed)";
+		return new CustomCommand(this.owner, display, useRandomAbility);
+	}
 	
 	
 	// Returns the full information about the ability

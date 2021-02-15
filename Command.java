@@ -2,6 +2,19 @@ package WyattWitemeyer.WarOfGillysburg;
 
 import java.util.*;
 
+//Implementation of lambda function for custom command executions.
+interface CustomCmdExe {
+	// Function to define an empty void lambda function that will do some execution of a command
+	void evaluate();
+	
+	// Default is that "Custom Command did nothing!" is printed
+	default void evalDefault() {
+		System.out.println("Custom Command did nothing!");
+		return;
+	}
+}
+
+
 public abstract class Command {
 	// Variables all commands must have: A character that owns the command, and whether that command is usable
 	private Character owner;
@@ -235,5 +248,32 @@ class AbilityCommand extends Command {
 	}
 }
 
-
+// Custom Command: Display is a specified String, execute is a specified lambda function (CustomCmdExe)
+class CustomCommand extends Command {
+	// A Variable to hold the String to display and the CustomCmdExe
+	private String display;
+	private CustomCmdExe cmdExe;
+	
+	// Constructor: the above variables must be specified, assume always usable
+	public CustomCommand(Character owner, String display, CustomCmdExe cmdExe) {
+		// Calls the super (Command) constructor specifying the command is usable (true)
+		super(owner, true);
+		
+		// Sets the class variables
+		this.display = display;
+		this.cmdExe = cmdExe;
+	}
+	
+	// Overrides the abstract display function to show the specified custom String
+	@Override
+	public String display() {
+		return this.display;
+	}
+	
+	// Overrides the abstract execute function to call the use(1) function of the ability
+	@Override
+	public void execute() {
+		this.cmdExe.evaluate();
+	}
+}
 

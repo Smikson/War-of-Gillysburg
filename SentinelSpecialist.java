@@ -26,8 +26,9 @@ public class SentinelSpecialist extends Character {
 	// Maps all Abilities so all Cooldowns can be reduced at once
 	private HashMap<SentinelSpecialist.AbilityNames, Ability> abilities;
 	
-	// A set containing the unique Abilities used so far (useful for Multi-Purposed)
+	// A set containing the unique Abilities used so far, boolean to keep track of if we've altered the basic attack (useful for Multi-Purposed)
 	private HashSet<String> uniqueAbilities;
+	private boolean baIsAltered;
 	
 	// These first two methods help set up the Steel Legion Warrior subclass.
 	public SentinelSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int eaRank, int maRank, int sRank, int mpRank, int fireRank, int iceRank, int exRank, int pRank, int blackRank, int raRank) {
@@ -59,31 +60,18 @@ public class SentinelSpecialist extends Character {
 		
 		//DE Initialize abilities as "charged" if they have multiple charges (based on Multi-Purposed rank)
 		
-		// Initialize the Unique Abilities set
+		// Initialize the Unique Abilities set, set baIsAltered to false
 		this.uniqueAbilities = new HashSet<>();
+		this.baIsAltered = false;
 		
 		// Add new commands for Abilities
-		if (this.EmpoweredArrows.rank() >= 3) {
-			this.addCommand(new AbilityCommand(this.EmpoweredArrows));
-		}
-		if (this.FlamingArrow.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.FlamingArrow));
-		}
-		if (this.FrozenArrow.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.FrozenArrow));
-		}
-		if (this.ExplodingArrow.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.ExplodingArrow));
-		}
-		if (this.PenetrationArrow.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.PenetrationArrow));
-		}
-		if (this.RestorationArrow.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.RestorationArrow));
-		}
-		if (this.BlackArrow.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.BlackArrow));
-		}
+		this.addCommand(new AbilityCommand(this.EmpoweredArrows));
+		this.addCommand(new AbilityCommand(this.FlamingArrow));
+		this.addCommand(new AbilityCommand(this.FrozenArrow));
+		this.addCommand(new AbilityCommand(this.ExplodingArrow));
+		this.addCommand(new AbilityCommand(this.PenetrationArrow));
+		this.addCommand(new AbilityCommand(this.RestorationArrow));
+		this.addCommand(new AbilityCommand(this.BlackArrow));
 	}
 	public SentinelSpecialist(Character copy, int eaRank, int maRank, int sRank, int mpRank, int fireRank, int iceRank, int exRank, int pRank, int blackRank, int raRank) {
 		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), eaRank, maRank, sRank, mpRank, fireRank, iceRank, exRank, pRank, blackRank, raRank);
@@ -304,6 +292,12 @@ public class SentinelSpecialist extends Character {
 		if (this.MultiPurposed.rank() >= 10) {
 			this.addCondition(this.MultiPurposed.getPermanentCondition(this.getCooldownTurns()));
 		}
+		
+		// At rank 1, Multi-Purposed replaces the basic attack when there is enough in the unique abilities set
+		if (this.MultiPurposed.rank() > 0 && this.uniqueAbilities.size() >= this.MultiPurposed.getUniqueRequirement()) {
+			this.alterBasicAttack(MultiPurposed.getRandomAbilityCommand());
+			this.baIsAltered = true;
+		}
 	}
 	
 	// End of Turn Override
@@ -327,6 +321,12 @@ public class SentinelSpecialist extends Character {
 			if (a.rank() > 0) {
 				a.endTurnEffects();
 			}
+		}
+		
+		// Restore the basic attack if it is altered from Multi-Purposed
+		if (this.baIsAltered) {
+			this.restoreBasicAttack();
+			this.baIsAltered = false;
 		}
 	}
 	

@@ -121,13 +121,14 @@ public class FrozenArrow extends Ability {
 	
 	//DE When the use function is called in a different Ability it needs to call a function from the main class to add it to the list
 	//DE Each Ability will need to call something from the base Sentinel Specialist to get the scaler bonus from here
-	//DE Needs a use(2) for when it is used randomly by Multi-purposed
+	//DE Needs a use(3) for when it is used randomly by Multi-purposed
+	//DE Start use(3) by clearing the unique list, above rank 5 also add the Ability at the end to the unique set
 	//DE Masterwork rank 15 -> Empowered counts as separate for Multi-Purposed
 	
 	
 	//DE Will need several if statement for affecting fire/ice/hairy targets differently
 	
-	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use2 for using the Empowered version
+	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use(2) for using the Empowered version
 	
 	// Override the to-String to include a description of the number of stacks and if the Ability is Empowered
 	@Override

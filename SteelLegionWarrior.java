@@ -2680,21 +2680,11 @@ public class SteelLegionWarrior extends Character {
 		this.abilities.put(SteelLegionWarrior.AbilityNames.Deflection, this.Deflection);
 		
 		// Add new commands for Abilities
-		if (this.Sweep.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.Sweep));
-		}
-		if (this.Charge.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.Charge));
-		}
-		if (this.FlipStrike.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.FlipStrike));
-		}
-		if (this.IntimidatingShout.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.IntimidatingShout));
-		}
-		if (this.Deflection.rank() > 0) {
-			this.addCommand(new AbilityCommand(this.Deflection));
-		}
+		this.addCommand(new AbilityCommand(this.Sweep));
+		this.addCommand(new AbilityCommand(this.Charge));
+		this.addCommand(new AbilityCommand(this.FlipStrike));
+		this.addCommand(new AbilityCommand(this.IntimidatingShout));
+		this.addCommand(new AbilityCommand(this.Deflection));
 		
 		// Finish creating the Deflection Ability (needed Intimidating Shout to be created)
 		this.Deflection.setDuration();
