@@ -44,7 +44,7 @@ public class CharacterBuilder {
 	protected HashMap<Attack.DmgType,Double> resistances;
 	protected HashMap<Attack.DmgType,Double> vulnerabilities;
 	
-	protected Character.Type Type;
+	protected LinkedList<Character.Type> Types;
 	
 	public CharacterBuilder(Character c) {
 		// Matches everything (as total) with the current Character, setting all bonuses to 0.
@@ -70,7 +70,7 @@ public class CharacterBuilder {
 		this.resistances = c.getResistances();
 		this.vulnerabilities = c.getVulnerabilities();
 		
-		this.Type = c.getType();
+		this.Types = c.getTypes();
 		
 		this.bHealth = 0;
 		this.bDamage = 0;
@@ -278,8 +278,8 @@ public class CharacterBuilder {
 		return this;
 	}
 	
-	public CharacterBuilder Type(Character.Type type) {
-		this.Type = type;
+	public CharacterBuilder addType(Character.Type type) {
+		this.Types.add(type);
 		return this;
 	}
 	
@@ -462,7 +462,7 @@ public class CharacterBuilder {
 							 this.baseDmgType,
 							 this.resistances,
 							 this.vulnerabilities,
-							 this.Type);
+							 this.Types);
 	}
 	
 	public SteelLegionBarbarian buildSLB() {
@@ -495,7 +495,7 @@ public class CharacterBuilder {
 									    this.baseDmgType,
 									    this.resistances,
 									    this.vulnerabilities,
-									    this.Type);
+									    this.Types);
 	}
 	
 	public SentinelSniper buildSS() {
@@ -528,7 +528,7 @@ public class CharacterBuilder {
 								  this.baseDmgType,
 								  this.resistances,
 								  this.vulnerabilities,
-								  this.Type);
+								  this.Types);
 	}
 	
 	public SentinelArcArcher buildSAA() {
@@ -561,7 +561,7 @@ public class CharacterBuilder {
 									 this.baseDmgType,
 									 this.resistances,
 									 this.vulnerabilities,
-									 this.Type);
+									 this.Types);
 	}
 	
 	public SilentDeathShadow buildSDS() {
@@ -594,7 +594,7 @@ public class CharacterBuilder {
 									 this.baseDmgType,
 									 this.resistances,
 									 this.vulnerabilities,
-									 this.Type);
+									 this.Types);
 	}
 	
 	public SilentDeathPoisonSpecialist buildSDPS(){
@@ -627,7 +627,7 @@ public class CharacterBuilder {
 											   this.baseDmgType,
 											   this.resistances,
 											   this.vulnerabilities,
-											   this.Type);
+											   this.Types);
 	}
 	
 	public SilentDeathHunter buildSDH() {
@@ -660,7 +660,7 @@ public class CharacterBuilder {
 									 this.baseDmgType,
 									 this.resistances,
 									 this.vulnerabilities,
-									 this.Type);
+									 this.Types);
 	}
 	
 	public KinitchuOrderDragonFireWizard buildKODFW() {
@@ -693,7 +693,7 @@ public class CharacterBuilder {
 												 this.baseDmgType,
 												 this.resistances,
 												 this.vulnerabilities,
-												 this.Type);
+												 this.Types);
 	}
 	
 	public KinitchuOrderThaumraturge buildKOT() {
@@ -726,7 +726,7 @@ public class CharacterBuilder {
 											 this.baseDmgType,
 											 this.resistances,
 											 this.vulnerabilities,
-											 this.Type);
+											 this.Types);
 	}
 	
 	public KinitchuOrderArcana buildKOA() {
@@ -759,7 +759,7 @@ public class CharacterBuilder {
 									   this.baseDmgType,
 									   this.resistances,
 									   this.vulnerabilities,
-									   this.Type);
+									   this.Types);
 	}
 	
 	public KinitchuOrderLuminescentWizard buildKOL() {
@@ -792,7 +792,7 @@ public class CharacterBuilder {
 												  this.baseDmgType,
 												  this.resistances,
 												  this.vulnerabilities,
-												  this.Type);
+												  this.Types);
 	}
 	
 	public KinitchuOrderNecromancer buildKON() {
@@ -825,6 +825,6 @@ public class CharacterBuilder {
 										    this.baseDmgType,
 										    this.resistances,
 										    this.vulnerabilities,
-										    this.Type);
+										    this.Types);
 	}
 }

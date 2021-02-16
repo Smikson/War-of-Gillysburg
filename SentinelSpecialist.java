@@ -31,19 +31,30 @@ public class SentinelSpecialist extends Character {
 	private boolean baIsAltered;
 	
 	// These first two methods help set up the Steel Legion Warrior subclass.
-	public SentinelSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int eaRank, int maRank, int sRank, int mpRank, int fireRank, int iceRank, int exRank, int pRank, int blackRank, int raRank) {
-		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, type);
+	public SentinelSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, LinkedList<Type> types, int eaRank, int maRank, int sRank, int mpRank, int fireRank, int iceRank, int exRank, int pRank, int blackRank, int raRank) {
+		// Calls the super constructor to create the Character
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, types);
+		
+		// Charges for base Abilities based on Multi_Purposed rank
+		int charges = 1;
+		if (mpRank >= 10) {
+			charges = 2;
+			if (mpRank >= 15) {
+				charges = 3;
+			}
+		}
+		
+		// Initializes all Abilities according to their specifications.
 		this.EmpoweredArrows = new EmpoweredArrows(this, eaRank);
 		this.MasterworkArrows = new MasterworkArrows(this, maRank);
 		this.Survivable = new Survivable(this, sRank);
 		this.MultiPurposed = new MultiPurposed(this, mpRank);
-		this.FlamingArrow = new FlamingArrow(this, fireRank);
-		this.FrozenArrow = new FrozenArrow(this, iceRank);
-		this.ExplodingArrow = new ExplodingArrow(this, exRank);
-		this.PenetrationArrow = new PenetrationArrow(this, pRank);
+		this.FlamingArrow = new FlamingArrow(this, fireRank, charges);
+		this.FrozenArrow = new FrozenArrow(this, iceRank, charges);
+		this.ExplodingArrow = new ExplodingArrow(this, exRank, charges);
+		this.PenetrationArrow = new PenetrationArrow(this, pRank, charges);
 		this.BlackArrow = new BlackArrow(this, blackRank);
-		this.RestorationArrow = new RestorationArrow(this, raRank);
+		this.RestorationArrow = new RestorationArrow(this, raRank, charges);
 		
 		// Add Abilities to a list for Cooldown and usage purposes
 		this.abilities = new HashMap<>();
@@ -74,7 +85,7 @@ public class SentinelSpecialist extends Character {
 		this.addCommand(new AbilityCommand(this.BlackArrow));
 	}
 	public SentinelSpecialist(Character copy, int eaRank, int maRank, int sRank, int mpRank, int fireRank, int iceRank, int exRank, int pRank, int blackRank, int raRank) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), eaRank, maRank, sRank, mpRank, fireRank, iceRank, exRank, pRank, blackRank, raRank);
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getTypes(), eaRank, maRank, sRank, mpRank, fireRank, iceRank, exRank, pRank, blackRank, raRank);
 	}
 	public SentinelSpecialist(SentinelSpecialist copy) {
 		this(copy, copy.getAbilityRank(SentinelSpecialist.AbilityNames.EmpoweredArrows), copy.getAbilityRank(SentinelSpecialist.AbilityNames.MasterworkArrows), copy.getAbilityRank(SentinelSpecialist.AbilityNames.Survivable), copy.getAbilityRank(SentinelSpecialist.AbilityNames.MultiPurposed), copy.getAbilityRank(SentinelSpecialist.AbilityNames.FlamingArrow), copy.getAbilityRank(SentinelSpecialist.AbilityNames.FrozenArrow), copy.getAbilityRank(SentinelSpecialist.AbilityNames.ExplodingArrow), copy.getAbilityRank(SentinelSpecialist.AbilityNames.PenetrationArrow), copy.getAbilityRank(SentinelSpecialist.AbilityNames.BlackArrow), copy.getAbilityRank(SentinelSpecialist.AbilityNames.RestorationArrow));
@@ -125,9 +136,19 @@ public class SentinelSpecialist extends Character {
 		return this.EmpoweredArrows.getAbilityPreAttackBonus();
 	}
 	
+	// Function to return the Ability Pre-Attack Bonus when cast randomly from Multi-Purposed
+	public Condition getRandomAbilityPreAttackBonus() {
+		return this.MultiPurposed.getAbilityDamageBonus();
+	}
+	
 	// Function to add to the set of unique abilities
 	public void addToUniqueSet(String added) {
 		this.uniqueAbilities.add(added);
+	}
+	
+	// Function to clear the set of unique abilities (when it is used by Multi-Purposed)
+	public void clearUniqueSet() {
+		this.uniqueAbilities.clear();
 	}
 	
 	// Function to calculate the number of turns left on Cooldown for all Abilities for Multi-Purposed
@@ -150,6 +171,15 @@ public class SentinelSpecialist extends Character {
 	// Function to get the scaler bonus from Multi-Purposed
 	public double scalerBonus() {
 		return this.MultiPurposed.getScalerBonus(this.getCooldownTurns());
+	}
+	
+	// Function to increment all stacks (used by ULTIMATE: Black Arrow)
+	public void incrementAllStacks() {
+		this.FlamingArrow.incrementStacks();
+		this.FrozenArrow.incrementStacks();
+		this.ExplodingArrow.incrementStacks();
+		this.PenetrationArrow.incrementStacks();
+		this.RestorationArrow.incrementStacks();
 	}
 	
 	// Function to randomly Empower a basic Ability

@@ -368,6 +368,12 @@ class ChargedAbility extends Ability {
 	// Used to print the Ability's name for reference
 	@Override
 	public String toString() {
+		// If there is only 1 charge, display like a normal ability
+		if (this.getCharges() == 1) {
+			return super.toString();
+		}
+		
+		// Otherwise create a slightly unique string
 		String activeInd = "";
 		if (this.isActive()) {
 			activeInd = "\n\t- ACTIVE: " + (this.activeTurnsRemaining() != 0 ? this.activeTurnsRemaining() + " Turn(s) Remaining!" : "Final Turn!");

@@ -399,17 +399,24 @@ public class Attack {
 		return didHit;
 	}
 	
-	// criticalEffect: Calculates if the ability critically struck and returns the scaler effect (1 if no effect)
-	public double criticalEffect() {
-		// Initialize return value
-		double ret = 1.0;
-		
+	// Calculates if the ability critically struck
+	public boolean calcCrit() {
 		// Find if the attack critically struck
 		Dice percent = new Dice(100);
 		boolean didCrit = percent.roll() <= this.getAttacker().getCriticalChance();
 		if (this.guaranteedCrit()) {
 			didCrit = true;
 		}
+		return didCrit;
+	}
+	
+	// criticalEffect: Calculates if the ability critically struck and returns the scaler effect (1 if no effect)
+	public double criticalEffect() {
+		// Initialize return value
+		double ret = 1.0;
+		
+		// Find if the attack critically struck
+		boolean didCrit = this.calcCrit();
 		
 		// If it did, adjust the effect accordingly
 		if (didCrit && this.canCrit()) {
@@ -418,6 +425,7 @@ public class Attack {
 			
 			// Check for vorpal effect
 			if (this.getVorpalChance() > 0) {
+				Dice percent = new Dice(100);
 				boolean isVorpal = percent.roll() <= this.getVorpalChance();
 				if (isVorpal) {
 					critDamage = this.getVorpalMultiplier();
@@ -586,20 +594,20 @@ public class Attack {
 	}
 	
 	// Executes the attack
-	public void execute() {
+	public AttackResult execute() {
 		// Make sure neither target is dead:
 		if (this.getAttacker().isDead()) {
 			System.out.println(this.getAttacker().getName() + " is dead. Thus, " + this.getAttacker().getName() + " is incapable of attacking.");
 			System.out.println("Continue with attack anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
-				return;
+				return AttackResult.EMPTY;
 			}
 		}
 		if (this.getDefender().isDead()) {
 			System.out.println(this.getDefender().getName() + " is already dead. The attack would have no effect.");
 			System.out.println("Continue with attack anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
-				return;
+				return AttackResult.EMPTY;
 			}
 		}
 		
@@ -608,14 +616,14 @@ public class Attack {
 			System.out.println(this.getAttacker().getName() + " cannot attack due to crowd control.");
 			System.out.println("Continue with attack anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
-				return;
+				return AttackResult.EMPTY;
 			}
 		}
 		if (!this.getDefender().isTargetable()) {
 			System.out.println(this.getDefender().getName() + " cannot be attacked due to crowd control.");
 			System.out.println("Continue with attack anyway?");
 			if (!BattleSimulator.getInstance().askYorN()) {
-				return;
+				return AttackResult.EMPTY;
 			}
 		}
 		
@@ -677,8 +685,8 @@ public class Attack {
 			this.getDefender().applyPostAttackEffects(atkResult);
 			this.getAttacker().applyPostAttackEffects(atkResult);
 			
-			// Stop the rest of the attack
-			return;
+			// Stop the rest of the attack and return the attack result
+			return atkResult;
 		}
 		
 		// Calculate base amount, armor effect, critical effect, and deviated effect.
@@ -773,6 +781,9 @@ public class Attack {
 		// Apply Post-Attack Effects
 		this.getDefender().applyPostAttackEffects(atkResult);
 		this.getAttacker().applyPostAttackEffects(atkResult);
+		
+		// Return the attack result
+		return atkResult;
 	}
 }
 

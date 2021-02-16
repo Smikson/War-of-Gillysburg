@@ -1,7 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 // Hidden Ability: "Restoration Arrow"
-public class RestorationArrow extends Ability {
+public class RestorationArrow extends ChargedAbility {
 	// Holds the owner of the Ability as a Sentinel Specialist
 	private SentinelSpecialist owner;
 	
@@ -15,9 +15,9 @@ public class RestorationArrow extends Ability {
 	private int numStacks;
 	
 	// Constructor
-	public RestorationArrow(SentinelSpecialist source, int rank) {
+	public RestorationArrow(SentinelSpecialist source, int rank, int charges) {
 		// Initialize all Ability variables to defaults
-		super("Ability 1: \"Flaming Arrow\"", source, rank);
+		super("Ability 1: \"Flaming Arrow\"", source, rank, charges);
 		this.owner = source;
 		
 		// Sets the Cooldown and scalers of the Ability
@@ -227,6 +227,9 @@ public class RestorationArrow extends Ability {
 	// Functions for 'Empowered" effects
 	public int getNumStacks() {
 		return this.numStacks;
+	}
+	public void incrementStacks() {
+		this.numStacks++;
 	}
 	public boolean isEmpowered() {
 		return this.numStacks >= this.owner.getEmpoweredStackRequirement();

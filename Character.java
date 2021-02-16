@@ -5,7 +5,7 @@ import java.util.*;
 public class Character {
 	// Lists Types that can be added to a Character
 	public static enum Type {
-		NONE, PLAYER, FIRE, ICE, HAIRY, VERMIN, DRAGON, ARMORED
+		NONE, PLAYER, ALLY, ENEMY, FIRE, ICE, WATER, HAIRY, VERMIN, DRAGON, ARMORED
 	}
 	
 	// Static Characters to aid with Character building and leveling up from a base level.
@@ -53,7 +53,7 @@ public class Character {
 	private HashMap<Attack.DmgType,Double> resistances;
 	private HashMap<Attack.DmgType,Double> vulnerabilities;
 	
-	private Type CharacterType;
+	private LinkedList<Type> CharacterTypes;
 	
 	// Contains a list of the basic stats (everything but STDup/down, Current Health, and shields), conditions, and damage over time effects for looping through
 	protected LinkedList<Stat> stats;
@@ -72,7 +72,7 @@ public class Character {
 	private boolean usedBasicAttack;
 	
 	// Constructor (sets each stat variable)
-	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
+	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, LinkedList<Type> types) {
 		this.name = nam;
 		this.Level = lvl;
 		this.Health = new Stat(hp, Stat.Version.HEALTH);
@@ -103,7 +103,8 @@ public class Character {
 		this.resistances.putAll(resis);
 		this.vulnerabilities.putAll(vuls);
 		
-		this.CharacterType = type;
+		this.CharacterTypes = new LinkedList<>();
+		this.CharacterTypes.addAll(types);
 		
 		// Puts all the basic stats in the list.
 		this.stats = new LinkedList<Stat>();
@@ -138,8 +139,12 @@ public class Character {
 		this.inTurn = false;
 		this.usedBasicAttack = false;
 	}
+	public Character(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
+		this(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, new LinkedList<Type>());
+		this.CharacterTypes.add(type);
+	}
 	public Character(Character copy) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getTypes());
 	}
 	public Character() {
 		this(Character.EMPTY);
@@ -212,8 +217,14 @@ public class Character {
 		return copy;
 	}
 	
-	public Type getType() {
-		return this.CharacterType;
+	public LinkedList<Type> getTypes() {
+		// Copies the list so alterations do not occur on the Character itself
+		LinkedList<Type> copy = new LinkedList<>();
+		copy.addAll(this.CharacterTypes);
+		return copy;
+	}
+	public boolean hasType(Type type) {
+		return this.getTypes().contains(type);
 	}
 	
 	public int getSTDdown() {

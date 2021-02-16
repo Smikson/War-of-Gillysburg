@@ -186,7 +186,7 @@ class BleedDOT extends DamageOverTime {
 	// Holds the Bleed's attack
 	private Attack bleedAtk;
 	
-	// Constructor
+	// Constructors
 	public BleedDOT(SteelLegionWarrior source, Character affected, int duration, int damage, boolean isCrit, int vorpalChance, double vorpalMultiplier) {
 		super(source, "Swordplay Prowess: Bleed Effect", duration);
 		AttackBuilder bld = new AttackBuilder()
@@ -1139,9 +1139,6 @@ class Sweep extends Ability {
         	enemies.clear();
         }
 		
-		// Before anything, put Sweep "on Cooldown"
-		this.setOnCooldown();
-		
 		// Make the attack and apply the slow against all enemies affected
 		for (Character enemy : enemies) {
 			// Applies the attack
@@ -1161,6 +1158,9 @@ class Sweep extends Ability {
 			// Applies the slow
 			enemy.addCondition(this.getSlow());
 		}
+		
+		// Put Sweep "on Cooldown"
+		this.setOnCooldown();
 		
 		// This Ability uses the Character's turn actions
 		this.owner.useTurnActions();
@@ -1406,9 +1406,6 @@ class Charge extends Ability {
          	return;
          }
 		
-		// Before anything, put CHARGE! "on Cooldown"
-		this.setOnCooldown();
-		
 		// Make the attack against all AOE enemies
 		for (Character enemy : enemies) {
 			// Applies the attack
@@ -1444,6 +1441,9 @@ class Charge extends Ability {
 			targetedAtk = new AttackBuilder(targetedAtk).guaranteedCrit().build();
 		}
 		targetedAtk.execute();
+
+		// Put CHARGE! "on Cooldown"
+		this.setOnCooldown();
 		
 		// This Ability uses the Character's turn actions
 		this.owner.useTurnActions();
@@ -1622,9 +1622,6 @@ class FlipStrike extends Ability {
 	    	return;
 	    }
 		
-		// Before anything, put Flip Strike "on Cooldown"
-		this.setOnCooldown();
-		
 		// Make the attack against the targeted enemy with the self-buff
 		Attack flipAtk = new AttackBuilder()
 				.attacker(this.owner)
@@ -1658,7 +1655,15 @@ class FlipStrike extends Ability {
 				flipAtk = new AttackBuilder(flipAtk).cannotMiss().build();
 			}
 		}
-		flipAtk.execute();
+		AttackResult res = flipAtk.execute();
+		
+		// If the attack failed, end the function before messing with Cooldowns and turn actions
+		if (res.equals(AttackResult.EMPTY)) {
+			return;
+		}
+		
+		// Put Flip Strike "on Cooldown"
+		this.setOnCooldown();
 		
 		// This Ability uses the Character's turn actions
 		this.owner.useTurnActions();
@@ -2360,7 +2365,7 @@ class Deflection extends UltimateAbility {
 		}
 		
 		DualRequirement isArmored = (Character withEffect, Character other) -> {
-			return other.getType().equals(Character.Type.ARMORED);
+			return other.hasType(Character.Type.ARMORED);
 		};
 		StatusEffect bonusArmoredDamage = new StatusEffect(Stat.Version.DAMAGE, percentBonus);
 		bonusArmoredDamage.makePercentage();
@@ -2654,9 +2659,9 @@ public class SteelLegionWarrior extends Character {
 	private HashMap<SteelLegionWarrior.AbilityNames, Ability> abilities;
 	
 	// These first two methods help set up the Steel Legion Warrior subclass.
-	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
+	public SteelLegionWarrior(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, LinkedList<Type> types, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
 		// Calls the super constructor to create the Character, then initializes all Abilities according to their specifications.
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, type);
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, types);
 		this.VengeanceStrike = new VengeanceStrike(this, vsRank);
 		this.SwordplayProwess = new SwordplayProwess(this, spRank);
 		this.WarriorsMight = new WarriorsMight(this, wmRank);
@@ -2690,7 +2695,7 @@ public class SteelLegionWarrior extends Character {
 		this.Deflection.setDuration();
 	}
 	public SteelLegionWarrior(Character copy, int vsRank, int spRank, int wmRank, int afRank, int sweepRank, int chargeRank, int fsRank, int isRank, int deflectRank) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType(), vsRank, spRank, wmRank, afRank, sweepRank, chargeRank, fsRank, isRank, deflectRank);
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getTypes(), vsRank, spRank, wmRank, afRank, sweepRank, chargeRank, fsRank, isRank, deflectRank);
 	}
 	public SteelLegionWarrior(SteelLegionWarrior copy) {
 		this(copy, copy.getAbilityRank(SteelLegionWarrior.AbilityNames.VengeanceStrike), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.SwordplayProwess), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.WarriorsMight), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.AgileFighter), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.Sweep), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.Charge), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.FlipStrike), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.IntimidatingShout), copy.getAbilityRank(SteelLegionWarrior.AbilityNames.Deflection));
@@ -3000,8 +3005,8 @@ class SteelLegionWarriorBuilder extends CharacterBuilder {
 	}
 	
 	@Override
-	public SteelLegionWarriorBuilder Type(Character.Type type) {
-		super.Type(type);
+	public SteelLegionWarriorBuilder addType(Character.Type type) {
+		super.addType(type);
 		return this;
 	}
 	

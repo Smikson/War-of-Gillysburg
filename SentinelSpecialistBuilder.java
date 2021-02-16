@@ -140,8 +140,8 @@ public class SentinelSpecialistBuilder extends CharacterBuilder {
 	}
 	
 	@Override
-	public SentinelSpecialistBuilder Type(Character.Type type) {
-		super.Type(type);
+	public SentinelSpecialistBuilder addType(Character.Type type) {
+		super.addType(type);
 		return this;
 	}
 	

@@ -16,8 +16,8 @@ public class Enemy extends Character {
 	private boolean UseThreat;
 	private Enemy.Difficulty difficulty;
 	
-	public Enemy(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, boolean useThrt, Difficulty diff, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, Type type) {
-		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, type);
+	public Enemy(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, boolean useThrt, Difficulty diff, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, LinkedList<Type> types) {
+		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, types);
 		this.ThreatOrder = new LinkedList<>();
 		this.UseThreat = useThrt;
 		this.difficulty = diff;
@@ -27,7 +27,7 @@ public class Enemy extends Character {
 		this.addCommand(new DisplayThreatOrderCommand(this));
 	}
 	public Enemy(Character copy, boolean useThrt, Difficulty diff) {
-		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), useThrt, diff, copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getType());
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), useThrt, diff, copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getTypes());
 	}
 	public Enemy(Enemy copy) {
 		this(copy, copy.usesThreat(), copy.getDifficulty());
@@ -235,8 +235,8 @@ class EnemyBuilder extends CharacterBuilder {
 		return this;
 	}
 	@Override
-	public EnemyBuilder Type(Character.Type type) {
-		super.Type(type);
+	public EnemyBuilder addType(Character.Type type) {
+		super.addType(type);
 		return this;
 	}
 	

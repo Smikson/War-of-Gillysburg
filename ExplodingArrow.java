@@ -1,7 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 // Ability 3: "Exploding Arrow"
-public class ExplodingArrow extends Ability {
+public class ExplodingArrow extends ChargedAbility {
 	// Holds the owner of the Ability as a Sentinel Specialist
 	private SentinelSpecialist owner;
 	
@@ -11,9 +11,9 @@ public class ExplodingArrow extends Ability {
 	private int numStacks;
 	
 	// Constructor
-	public ExplodingArrow(SentinelSpecialist source, int rank) {
+	public ExplodingArrow(SentinelSpecialist source, int rank, int charges) {
 		// Initialize all Ability variables to defaults
-		super("Ability 3: \"Exploding Arrow\"", source, rank);
+		super("Ability 3: \"Exploding Arrow\"", source, rank, charges);
 		this.owner = source;
 		
 		// Sets the scalers and the Cooldown of the Ability
@@ -107,6 +107,9 @@ public class ExplodingArrow extends Ability {
 	// Functions for 'Empowered" effects
 	public int getNumStacks() {
 		return this.numStacks;
+	}
+	public void incrementStacks() {
+		this.numStacks++;
 	}
 	public boolean isEmpowered() {
 		return this.numStacks >= this.owner.getEmpoweredStackRequirement();

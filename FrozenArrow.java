@@ -1,7 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 // Ability 2: "Frozen Arrow"
-public class FrozenArrow extends Ability {
+public class FrozenArrow extends ChargedAbility {
 	// Holds the owner of the Ability as a Sentinel Specialist
 	private SentinelSpecialist owner;
 	
@@ -10,9 +10,9 @@ public class FrozenArrow extends Ability {
 	private int numStacks;
 	
 	// Constructor
-	public FrozenArrow(SentinelSpecialist source, int rank) {
+	public FrozenArrow(SentinelSpecialist source, int rank, int charges) {
 		// Initialize all Ability variables to defaults
-		super("Ability 2: \"Frozen Arrow\"", source, rank);
+		super("Ability 2: \"Frozen Arrow\"", source, rank, charges);
 		this.owner = source;
 		
 		// Sets the scaler and Cooldown of the Ability
@@ -110,6 +110,9 @@ public class FrozenArrow extends Ability {
 	// Functions for "Empowered" effects
 	public int getNumStacks() {
 		return this.numStacks;
+	}
+	public void incrementStacks() {
+		this.numStacks++;
 	}
 	public boolean isEmpowered() {
 		return this.numStacks >= this.owner.getEmpoweredStackRequirement();

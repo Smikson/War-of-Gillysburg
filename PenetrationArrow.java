@@ -1,7 +1,7 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 // Ability 4: "Penetration Arrow"
-public class PenetrationArrow extends Ability {
+public class PenetrationArrow extends ChargedAbility {
 	// Holds the owner of the Ability as a Sentinel Specialist
 	private SentinelSpecialist owner;
 	
@@ -10,9 +10,9 @@ public class PenetrationArrow extends Ability {
 	private int numStacks;
 	
 	// Constructor
-	public PenetrationArrow(SentinelSpecialist source, int rank) {
+	public PenetrationArrow(SentinelSpecialist source, int rank, int charges) {
 		// Initialize all Ability variables to defaults
-		super("Ability 4: \"Penetration Arrow\"", source, rank);
+		super("Ability 4: \"Penetration Arrow\"", source, rank, charges);
 		this.owner = source;
 		
 		// Sets the Cooldown and the scaler of the Ability
@@ -123,6 +123,9 @@ public class PenetrationArrow extends Ability {
 	// Functions for "Empowered" effects
 	public int getNumStacks() {
 		return this.numStacks;
+	}
+	public void incrementStacks() {
+		this.numStacks++;
 	}
 	public boolean isEmpowered() {
 		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
