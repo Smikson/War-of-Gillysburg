@@ -33,10 +33,10 @@ public class RestorationArrow extends ChargedAbility {
 	
 	// Sets the Cooldown of the Ability
 	private void setCooldown() {
-		// The Cooldown is always 6 until rank 5 where it is reduced to 5
-		this.cooldown = 6;
+		// The Cooldown is always 7 until rank 5 where it is reduced to 6
+		this.cooldown = 7;
 		if (this.rank() >= 5) {
-			this.cooldown = 5;
+			this.cooldown = 6;
 		}
 	}
 	

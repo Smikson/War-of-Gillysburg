@@ -5,7 +5,7 @@ import java.util.*;
 public class Character {
 	// Lists Types that can be added to a Character
 	public static enum Type {
-		NONE, PLAYER, ALLY, ENEMY, FIRE, ICE, WATER, HAIRY, VERMIN, DRAGON, ARMORED
+		NONE, PLAYER, ALLY, ENEMY, FIRE, ICE, WATER, HAIRY, HUMAN, DWARF, ELF, UNDEAD, VERMIN, DRAGON, ARMORED
 	}
 	
 	// Static Characters to aid with Character building and leveling up from a base level.
@@ -309,13 +309,16 @@ public class Character {
 	}
 	
 	// To see if a condition is contained by the Character
-	protected boolean containsCondition(Condition c) {
+	protected boolean containsCondition(String name) {
 		for (Condition con : this.conditions) {
-			if (con.getName().equals(c.getName())) {
+			if (con.getName().equals(name)) {
 				return true;
 			}
 		}
 		return false;
+	}
+	protected boolean containsCondition(Condition c) {
+		return this.containsCondition(c.getName());
 	}
 	
 	// To add conditions to this Character
