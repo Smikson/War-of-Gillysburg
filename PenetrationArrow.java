@@ -127,6 +127,17 @@ public class PenetrationArrow extends ChargedAbility {
 	public void incrementStacks() {
 		this.numStacks++;
 	}
+	public void decrementStacks() {
+		this.numStacks--;
+		if (this.numStacks < 0) {
+			this.numStacks = 0;
+		}
+	}
+	public void resetStacks() {
+		for (int x = 0; x < this.owner.getEmpoweredStackRequirement(); x++) {
+			this.decrementStacks();
+		}
+	}
 	public boolean isEmpowered() {
 		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
 	}
@@ -145,6 +156,50 @@ public class PenetrationArrow extends ChargedAbility {
 	
 	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use(2) for using the Empowered version
 	
+	
+	// Function to specify which version of the Ability is to be used (1 for default version, 2 for Empowered version, 3 for cast randomly (Multi-Purposed) version)
+	@Override
+	public void use(int version) {
+		// Default version, what is used as specified from the Command of this Ability
+		if (version == 1) {
+			this.use();
+			return;
+		}
+		
+		// Empowered version, rarely directly specified, is usually called from default version when this Ability isEmpowered().
+		if (version == 2) {
+			this.useEmpowered();
+			return;
+		}
+		
+		// Cast randomly (Multi-Purposed) version, cast from the new basic attack from getting enough unique abilities cast
+		if (version == 3) {
+			this.useRandom();
+			return;
+		}
+		
+		// Print a warning if this function is ever actually directly called with a wrong version number
+		System.out.println("Warning: The Ability, " + this.getName() + ", does not have a use(" + version + ") function defined, but it was called!");
+	}
+	
+	// Use(1): Default version of Ability
+	@Override
+	public void use() {
+		
+	}
+	
+	// Use(2): Empowered version of Ability
+	public void useEmpowered(double scalerPortion) {
+		
+	}
+	public void useEmpowered() {
+		this.useEmpowered(1.0);
+	}
+	
+	// Use(3): Cast randomly (Multi-Purposed) version of Ability
+	public void useRandom() {
+		
+	}
 	
 	// Override the to-String to include a description of the number of stacks and if the Ability is Empowered
 	@Override

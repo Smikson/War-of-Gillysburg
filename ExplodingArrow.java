@@ -206,19 +206,6 @@ public class ExplodingArrow extends ChargedAbility {
 		System.out.println("Warning: The Ability, " + this.getName() + ", does not have a use(" + version + ") function defined, but it was called!");
 	}
 	
-	//DE When the use function is called in a different Ability it needs to call a function from the main class to add it to the list
-	//DE Each Ability will need to call something from the base Sentinel Specialist to get the scaler bonus from here
-	//DE Needs a use(3) for when it is used randomly by Multi-purposed
-	//DE Start use(3) by clearing the unique list, above rank 5 also add the Ability at the end to the unique set
-	//DE Masterwork rank 15 -> Empowered counts as separate for Multi-Purposed
-	
-	
-	//DE Watch for dealing less damage to allies and primary target taking bonus explosive damage
-	//DE Needs a check for number of enemies hit to grant "next Ability is Empowered" status
-	
-	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use(2) for using the Empowered version
-	
-	
 	// Use(1): Default version of Ability
 	@Override
 	public void use() {
