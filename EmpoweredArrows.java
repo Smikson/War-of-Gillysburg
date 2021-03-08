@@ -76,14 +76,17 @@ public class EmpoweredArrows extends Ability {
 				break;
 		}
 		
-		// Creates the StatusEffect for bonus Damage Condition to be added to the respective Abilities attack(s)
+		// Creates the StatusEffect for bonus Damage and Accuracy Conditions to be added to the respective Abilities attack(s)
 		StatusEffect dmgBonus = new StatusEffect(Stat.Version.DAMAGE, amount, StatusEffect.Type.OUTGOING);
 		dmgBonus.makePercentage();
+		StatusEffect accBonus = new StatusEffect(Stat.Version.ACCURACY, amount, StatusEffect.Type.OUTGOING);
+		accBonus.makePercentage();
 		
 		// Create the Condition, duration of 0 since its only used for the one attack
 		this.abilityPreAttackBonus = new Condition("Empowered Arrows: Pre Attack Damage Bonus", 0);
 		this.abilityPreAttackBonus.setSource(this.owner);
 		this.abilityPreAttackBonus.addStatusEffect(dmgBonus);
+		this.abilityPreAttackBonus.addStatusEffect(accBonus);
 	}
 	
 	// Get methods for additional effects

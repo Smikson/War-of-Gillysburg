@@ -231,11 +231,55 @@ public class RestorationArrow extends ChargedAbility {
 	public void incrementStacks() {
 		this.numStacks++;
 	}
+	public void decrementStacks() {
+		this.numStacks--;
+		if (this.numStacks < 0) {
+			this.numStacks = 0;
+		}
+	}
+	public void resetStacks() {
+		for (int x = 0; x < this.owner.getEmpoweredStackRequirement(); x++) {
+			this.decrementStacks();
+		}
+	}
 	public boolean isEmpowered() {
 		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
 	}
 	public void makeEmpowered() {
 		this.numStacks = this.owner.getEmpoweredStackRequirement();
+	}
+	
+	// Function to specify which version of the Ability is to be used (1 for default version, 2 for Empowered version)
+	@Override
+	public void use(int version) {
+		// Default version, what is used as specified from the Command of this Ability
+		if (version == 1) {
+			this.use();
+			return;
+		}
+		
+		// Empowered version, rarely directly specified, is usually called from default version when this Ability isEmpowered().
+		if (version == 2) {
+			this.useEmpowered();
+			return;
+		}
+		
+		// Print a warning if this function is ever actually directly called with a wrong version number
+		System.out.println("Warning: The Ability, " + this.getName() + ", does not have a use(" + version + ") function defined, but it was called!");
+	}
+	
+	// Use(1): Default version of Ability
+	@Override
+	public void use() {
+		
+	}
+	
+	// Use(2): Empowered version of Ability
+	public void useEmpowered(double scalerPortion) {
+		
+	}
+	public void useEmpowered() {
+		this.useEmpowered(1.0);
 	}
 	
 	//DE When the use function is called in a different Ability it needs to call a function from the main class to add it to the list

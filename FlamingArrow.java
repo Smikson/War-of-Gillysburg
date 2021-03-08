@@ -291,6 +291,7 @@ public class FlamingArrow extends ChargedAbility {
 		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
 	}
 	public void makeEmpowered() {
+		this.setOffCooldownAll();
 		this.numStacks = this.owner.getEmpoweredStackRequirement();
 	}
 	

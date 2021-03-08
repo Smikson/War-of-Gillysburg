@@ -178,6 +178,7 @@ public class ExplodingArrow extends ChargedAbility {
 		return this.numStacks >= this.owner.getEmpoweredStackRequirement();
 	}
 	public void makeEmpowered() {
+		this.setOffCooldownAll();
 		this.numStacks = this.owner.getEmpoweredStackRequirement();
 	}
 	
@@ -252,6 +253,8 @@ public class ExplodingArrow extends ChargedAbility {
             	}
             }
     	}
+    	
+    	int numHit = primaryAOE.size() + aoe50.size();
 		
 		// Create the base attack
 	    Attack baseAtk = new AttackBuilder()
@@ -313,6 +316,11 @@ public class ExplodingArrow extends ChargedAbility {
 			this.setOffCooldownAll();
 		}
 		
+		// At rank 10, if we hit at least 7 enemies, randomly Empower
+		if (this.rank() == 10 && numHit >= 7) {
+			this.owner.randomlyEmpower();
+		}
+		
 		// This Ability uses the Character's turn actions
 		this.owner.useTurnActions();
 	}
@@ -354,6 +362,8 @@ public class ExplodingArrow extends ChargedAbility {
         		aoe50.remove(c);
         	}
         }
+        
+        int numHit = primaryAOE.size() + aoe50.size();
         
         // Create the base attack
 	    Attack baseAtk = new AttackBuilder()
@@ -466,6 +476,11 @@ public class ExplodingArrow extends ChargedAbility {
  			this.setOffCooldownAll();
  		}
  		
+ 		// At rank 10, if we hit at least 7 enemies, randomly Empower
+		if (this.rank() == 10 && numHit >= 7) {
+			this.owner.randomlyEmpower();
+		}
+ 		
  		// This Ability uses the Character's turn actions
  		this.owner.useTurnActions();
 	}
@@ -515,6 +530,8 @@ public class ExplodingArrow extends ChargedAbility {
             	}
             }
     	}
+    	
+    	int numHit = primaryAOE.size() + aoe50.size();
     	
     	// Create the base attack
 	    AttackBuilder baseAtkBld = new AttackBuilder()
@@ -630,6 +647,11 @@ public class ExplodingArrow extends ChargedAbility {
   		if (this.isEmpowered()) {
   			this.setOffCooldownAll();
   		}
+  		
+  		// At rank 10, if we hit at least 7 enemies, randomly Empower
+		if (this.rank() == 10 && numHit >= 7) {
+			this.owner.randomlyEmpower();
+		}
 	}
 	
 	

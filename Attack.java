@@ -444,7 +444,7 @@ public class Attack {
 			
 			// Always add extra critical chance as critical damage
 			if (this.getAttacker().getCriticalChance()>100) {
-				ret += (this.getAttacker().getCriticalChance() - 100)/100; // This was changed to divide by 100
+				ret += (this.getAttacker().getCriticalChance() - 100.0)/100.0; // This was changed to divide by 100
 			}
 		}
 		
