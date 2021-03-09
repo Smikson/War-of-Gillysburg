@@ -138,28 +138,36 @@ public class EmpoweredArrows extends Ability {
 		
 		// Select the Empowered Abilities that will be used
 		LinkedList<Integer> toUse = new LinkedList<>();
-		toUse = BattleSimulator.getInstance().promptSelectMultiple("Select all available Empowered Abilities you wish to use this turn", abilityChoices);
-		
-		//DE use each ability marked in toUse (holds index from owner's list of empowered abilities (toUse is 1-indexed)
+		toUse = BattleSimulator.getInstance().promptSelectMultiple("Select all available Empowered Abilities you wish to use this turn.", abilityChoices);
+		//DE Exit Point!!
+		// Use each ability marked in toUse (holds index from owner's list of empowered abilities (toUse is 1-indexed)
 		for (int index : toUse) {
 			int ability = this.owner.getEmpoweredAbilities().get(index - 1);
-			//DE USE THE DAMAGE REDUCTION BASED ON toUse.size()!!!!!
+			// Flaming Arrow
 			if (ability == 1) {
-				//DE use Flaming Arrow
+				this.owner.useAbilityEmpowered(SentinelSpecialist.AbilityNames.FlamingArrow, this.getMultAbilityScaler() / toUse.size(), false);
 			}
+			// Frozen Arrow
 			else if (ability == 2) {
 				//DE use Frozen Arrow
+				this.owner.useAbilityEmpowered(SentinelSpecialist.AbilityNames.FrozenArrow, this.getMultAbilityScaler() / toUse.size(), false);
 			}
+			// Exploding Arrow
 			else if (ability == 3) {
-				//DE use Exploding Arrow
+				this.owner.useAbilityEmpowered(SentinelSpecialist.AbilityNames.ExplodingArrow, this.getMultAbilityScaler() / toUse.size(), false);
 			}
+			// Penetration Arrow
 			else if (ability == 4) {
-				//DE use Penetration Arrow
+				this.owner.useAbilityEmpowered(SentinelSpecialist.AbilityNames.PenetrationArrow, this.getMultAbilityScaler() / toUse.size(), false);
 			}
+			// Restoration Arrow
 			else if (ability == 5) {
-				//DE use Restoration Arrow
+				this.owner.useAbilityEmpowered(SentinelSpecialist.AbilityNames.RestorationArrow, this.getMultAbilityScaler() / toUse.size(), false);
 			}
 		}
+		
+		// Lastly, using this Ability in this manner also uses the Character's turn actions
+		this.owner.useTurnActions();
 	}
 	
 	// Overrides the to-String to more correctly display the function of this Ability's use function

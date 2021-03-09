@@ -1,6 +1,124 @@
 package WyattWitemeyer.WarOfGillysburg;
 
 // Hidden Ability: "Restoration Arrow"
+// Makes use of a heal over time defined here (extends DOT, likely should just be named OT)
+class SentinelHealOT extends DamageOverTime {
+	// Variables needed to complete the restoration (slightly condensed)
+	private SentinelSpecialist source;
+	private Character affected;
+	private int duration;
+	private double scaler1, scaler2, scaler3, missHpBonus;
+	private boolean isCrit, canRandEmp;
+	private int curTurn;
+	
+	// Constructors
+	public SentinelHealOT(SentinelSpecialist source, Character affected, int duration, double scaler1, double scaler2, double scaler3, double missHpBonus, boolean isCrit, boolean canRandEmp) {
+		super(source, "Restoration Arrow: Heal Over Time Effect", duration);
+		this.source = source;
+		this.affected = affected;
+		this.duration = duration;
+		this.scaler1 = scaler1;
+		this.scaler2 = scaler2;
+		this.scaler3 = scaler3;
+		this.missHpBonus = missHpBonus;
+		this.isCrit = isCrit;
+		this.canRandEmp = canRandEmp;
+		this.curTurn = 0;
+	}
+	public SentinelHealOT(SentinelHealOT copy) {
+		super(copy);
+		this.source = copy.source;
+		this.affected = copy.affected;
+		this.duration = copy.duration;
+		this.scaler1 = copy.scaler1;
+		this.scaler2 = copy.scaler2;
+		this.scaler3 = copy.scaler3;
+		this.missHpBonus = copy.missHpBonus;
+		this.isCrit = copy.isCrit;
+		this.canRandEmp = copy.canRandEmp;
+		this.curTurn = 0;
+	}
+	
+	// For the heal over time effect, restore the amount based on the current turn
+	@Override
+	public void executeDOT() {
+		// Increment to know if we are on turn 1, 2, or 3
+		this.curTurn++;
+		
+		// If the current turn is greater than the duration, do nothing
+		if (this.curTurn > this.duration) {
+			return;
+		}
+		
+		// Figure out which scaler to use based on the current turn
+		double scaler = 0;
+		switch(this.curTurn) {
+			case 1:
+				scaler = this.scaler1;
+				break;
+			case 2:
+				scaler = this.scaler2;
+				break;
+			case 3:
+				scaler = this.scaler3;
+				break;
+		}
+		
+		// Get the amount that the Character will be healed based on the found scaler
+		double amount = this.source.getDamage() * scaler;
+		if (this.isCrit) {
+			amount *= 2;
+		}
+		int healAmt = (int)Math.round(amount);
+		int missingHealth = this.affected.getMissingHealth();
+		
+		// Heal the Character for the specified amount
+		this.affected.restoreHealth(healAmt);
+		
+		// Check if this initial heal did heal the Character over their maximum, and randomly empower if appropriate
+		if (healAmt > missingHealth && this.canRandEmp) {
+			this.source.randomlyEmpower();
+			this.canRandEmp = false;
+		}
+		
+		// If we're on the third heal and we did not fully restore the character (and the missHpBonus > 0), apply the missing health bonus heal
+		if (this.curTurn == 3 && this.affected.getMissingHealth() != 0 && this.missHpBonus > 0) {
+			this.affected.restoreHealth((int)Math.round(this.affected.getMissingHealth() * this.missHpBonus));
+		}
+	}
+	
+	// Returns the display line (without the tabs) of the Bleed DOT effect in the Condition
+	@Override
+	public String getDOTString() {
+		// Do the same calculations as above to get a good estimate of the amount to be healed
+		// Figure out which scaler to use based on the current turn
+		double scaler = 0;
+		switch(this.curTurn + 1) {
+			case 1:
+				scaler = this.scaler1;
+				break;
+			case 2:
+				scaler = this.scaler2;
+				break;
+			case 3:
+				scaler = this.scaler3;
+				break;
+		}
+		
+		// Get the amount that the Character will be healed based on the found scaler
+		double amount = this.source.getDamage() * scaler;
+		if (this.isCrit) {
+			amount *= 2;
+		}
+		int estimate = (int)Math.round(amount);
+		
+		// Return the String with the estimate
+		return "Healing Over Time: Next heals ~" + estimate + " healing at the beginning of the turn.";
+	}
+}
+
+
+//The class Flaming Arrow itself
 public class RestorationArrow extends ChargedAbility {
 	// Holds the owner of the Ability as a Sentinel Specialist
 	private SentinelSpecialist owner;
@@ -224,7 +342,7 @@ public class RestorationArrow extends ChargedAbility {
 		return new Condition(this.selfCritBonus);
 	}
 	
-	// Functions for 'Empowered" effects
+	// Functions for "Empowered" effects
 	public int getNumStacks() {
 		return this.numStacks;
 	}
@@ -271,25 +389,142 @@ public class RestorationArrow extends ChargedAbility {
 	// Use(1): Default version of Ability
 	@Override
 	public void use() {
+		// First, if we are Empowered, cast the Empowered version of this Ability instead
+		if (this.isEmpowered()) {
+			this.useEmpowered();
+			return;
+		}
 		
+		// Get the target of the heal
+		Character affected = BattleSimulator.getInstance().targetSingle();
+	    if (affected.equals(Character.EMPTY)) {
+	    	return;
+	    }
+	    
+	    // If the ability can crit (at least rank 3), see if it will crit
+	    boolean isCrit = false;
+	    if (this.rank() >= 3) {
+	    	Attack fake = new AttackBuilder().attacker(this.owner).defender(affected).isTargeted().build();
+	    	if (fake.calcCrit()) {
+	    		isCrit = true;
+	    	}
+	    }
+	    
+	    // Get the base heal amount, doubled if we will crit (also notify if we crit, as restore does not notify)
+	    double amount = this.getBaseScaler() * this.owner.getDamage();
+	    if (isCrit) {
+	    	amount *= 2;
+	    	System.out.println("Restoration Arrow CRITICALLY Healed!");
+	    }
+	    int healAmt = (int)Math.round(amount);
+	    int missingHealth = affected.getMissingHealth();
+	    
+	    // Heal the Character for the specified amount
+ 		affected.restoreHealth(healAmt);
+ 		
+ 		// Check if this initial heal did heal the Character over their maximum, and randomly empower if appropriate
+ 		boolean canRandEmp = this.rank() == 15;
+ 		if (healAmt > missingHealth && canRandEmp) {
+ 			this.owner.randomlyEmpower();
+ 			canRandEmp = false;
+ 		}
+ 		
+ 		// Create the heal over time effect and add it to the affected Character (can only crit if we've crit so far and above rank 5)
+ 		isCrit = isCrit && this.rank() >= 5;
+ 		int duration = this.rank() >= 7? 3 : 2;
+ 		SentinelHealOT healOT = new SentinelHealOT(this.owner, affected, duration, this.getFirstTurnScaler(), this.getSecondTurnScaler(), this.getThirdTurnScaler(), this.getMissingHealthScaler(), isCrit, canRandEmp);
+ 		affected.addCondition(healOT);
+ 		
+ 		// Add basic "Restoration Arrow" to the set of unique abilities used
+ 		this.owner.addToUniqueSet("Restoration Arrow");
+ 		
+ 		// This Ability should never miss, add a stack
+ 		this.incrementStacks();
+ 		
+ 		// Put Restoration Arrow "on Cooldown"
+		this.setOnCooldown();
+		
+		// If we are EMPOWERED after adding stacks, refresh all Cooldowns for this ability
+		if (this.isEmpowered()) {
+			this.setOffCooldownAll();
+		}
+		
+		// This Ability uses the Character's turn actions
+		this.owner.useTurnActions();
 	}
 	
 	// Use(2): Empowered version of Ability
-	public void useEmpowered(double scalerPortion) {
-		
+	public void useEmpowered(double scalerPortion, boolean usesTurnActions) {
+		// Get the target of the heal
+		Character affected = BattleSimulator.getInstance().targetSingle();
+	    if (affected.equals(Character.EMPTY)) {
+	    	return;
+	    }
+	    
+	    // If the ability can crit (at least rank 3), see if it will crit
+	    boolean isCrit = false;
+	    if (this.rank() >= 3) {
+	    	Attack fake = new AttackBuilder().attacker(this.owner).defender(affected).isTargeted().build();
+	    	if (fake.calcCrit()) {
+	    		isCrit = true;
+	    	}
+	    }
+	    
+	    // Apply the Empowered Pre Attack Bonus Condition before calculating heal amounts
+	    this.owner.apply(this.owner.getEmpoweredPreAttackBonus());
+	    
+	    // Get the base heal amount, doubled if we will crit (also notify if we crit, as restore does not notify)
+	    double amount = (this.getBaseScaler() + this.getFirstTurnScaler() + this.getSecondTurnScaler() + this.getThirdTurnScaler()) * this.owner.getDamage() * scalerPortion;
+	    if (isCrit) {
+	    	amount *= 2;
+	    	System.out.println("Restoration Arrow CRITICALLY Healed!");
+	    }
+	    int healAmt = (int)Math.round(amount);
+	    int missingHealth = affected.getMissingHealth();
+	    
+	    // Heal the Character for the specified amount
+  		affected.restoreHealth(healAmt);
+	    
+	    // Unapply the Empowered Pre Attack Bonus Condition
+	    this.owner.unapply(this.owner.getEmpoweredPreAttackBonus());
+	    
+	    // Add "Restoration Arrow" or "EMPOWERED Restoration Arrow" to the set of unique abilities used based on rank of Masterwork Arrows
+	    if (this.owner.getAbilityRank(SentinelSpecialist.AbilityNames.MasterworkArrows) == 15) {
+	    	this.owner.addToUniqueSet("EMPOWERED Restoration Arrow");
+	    }
+	    else {
+	    	this.owner.addToUniqueSet("Restoration Arrow");
+	    }
+	    
+	    // Reset the stacks, then increment the stacks if Empowered Arrows is at least rank 4
+  		this.resetStacks();
+  		if (this.owner.getAbilityRank(SentinelSpecialist.AbilityNames.EmpoweredArrows) >= 4) {
+  			this.incrementStacks();
+  		}
+  		
+  		// Put Restoration Arrow "on Cooldown" if Empowered Arrows is less than rank 2
+  		if (this.owner.getAbilityRank(SentinelSpecialist.AbilityNames.EmpoweredArrows) < 2) {
+  			this.setOnCooldown();
+  		}
+  		
+  		// If we are somehow EMPOWERED after adding stacks, refresh all Cooldowns for this ability
+  		if (this.isEmpowered()) {
+  			this.setOffCooldownAll();
+  		}
+  		
+  		// Check if this initial heal did heal the Character over their maximum, and randomly empower if appropriate
+  		if (healAmt > missingHealth && this.rank() == 15) {
+  			this.owner.randomlyEmpower();
+  		}
+ 		
+  		// This Ability uses the Character's turn actions when specified
+		if (usesTurnActions) {
+			this.owner.useTurnActions();
+		}
 	}
 	public void useEmpowered() {
-		this.useEmpowered(1.0);
+		this.useEmpowered(1.0, true);
 	}
-	
-	//DE When the use function is called in a different Ability it needs to call a function from the main class to add it to the list
-	//DE Each Ability will need to call something from the base Sentinel Specialist to get the scaler bonus from here
-	
-	
-	//DE Same need another class that extends DamageOverTime but instead Heals over time based on the scalers
-	
-	
-	//DE in use, set numStacks + or - 1 based on rank of EmpoweredArrows and include use2 for using the Empowered version
 	
 	
 	// Override the to-String to include a description of the number of stacks and if the Ability is Empowered

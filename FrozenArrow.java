@@ -356,7 +356,7 @@ public class FrozenArrow extends ChargedAbility {
 	}
 	
 	// Use(2): Empowered version of Ability
-	public void useEmpowered(double scalerPortion) {
+	public void useEmpowered(double scalerPortion, boolean usesTurnActions) {
 		// Select the target enemy
  		Enemy enemy = BattleSimulator.getInstance().targetSingleEnemy();
 	    if (enemy.equals(Enemy.EMPTY)) {
@@ -522,11 +522,13 @@ public class FrozenArrow extends ChargedAbility {
  			this.setOffCooldownAll();
  		}
  		
- 		// This Ability uses the Character's turn actions
- 		this.owner.useTurnActions();
+ 		// This Ability uses the Character's turn actions when specified
+		if (usesTurnActions) {
+			this.owner.useTurnActions();
+		}
 	}
 	public void useEmpowered() {
-		this.useEmpowered(1.0);
+		this.useEmpowered(1.0, true);
 	}
 	
 	// Use(3): Cast randomly (Multi-Purposed) version of Ability

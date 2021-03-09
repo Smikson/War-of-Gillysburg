@@ -75,8 +75,12 @@ public class SentinelSpecialist extends Character {
 		this.uniqueAbilities = new HashSet<>();
 		this.baIsAltered = false;
 		
-		// Add new commands for Abilities
-		this.addCommand(new AbilityCommand(this.EmpoweredArrows));
+		// Add the passive command for Empowered Arrows only if it is Above rank 3
+		if (this.EmpoweredArrows.rank() >= 3) {
+			this.addCommand(new AbilityCommand(this.EmpoweredArrows));
+		}
+		
+		// Add all other new commands for Abilities (the usual check for rank > 0 is sufficient)
 		this.addCommand(new AbilityCommand(this.FlamingArrow));
 		this.addCommand(new AbilityCommand(this.FrozenArrow));
 		this.addCommand(new AbilityCommand(this.ExplodingArrow));
@@ -124,6 +128,29 @@ public class SentinelSpecialist extends Character {
 	public boolean isAbilityActive(SentinelSpecialist.AbilityNames name) {
 		Ability chosen = this.abilities.get(name);
 		return chosen.isActive();
+	}
+	
+	// Functions to use the EMPOWERED version of an Ability
+	public void useAbilityEmpowered(SentinelSpecialist.AbilityNames name, double scalerPortion, boolean usesTurnActions) {
+		// Check the 5 possible Abilities (cannot use ULTIMATE from this function), if the name was none that were specified, do nothing
+		if (name.equals(SentinelSpecialist.AbilityNames.FlamingArrow)) {
+			this.FlamingArrow.useEmpowered(scalerPortion, usesTurnActions);
+		}
+		else if (name.equals(SentinelSpecialist.AbilityNames.FrozenArrow)) {
+			this.FrozenArrow.useEmpowered(scalerPortion, usesTurnActions);
+		}
+		else if (name.equals(SentinelSpecialist.AbilityNames.ExplodingArrow)) {
+			this.ExplodingArrow.useEmpowered(scalerPortion, usesTurnActions);
+		}
+		else if (name.equals(SentinelSpecialist.AbilityNames.PenetrationArrow)) {
+			this.PenetrationArrow.useEmpowered(scalerPortion, usesTurnActions);
+		}
+		else if (name.equals(SentinelSpecialist.AbilityNames.RestorationArrow)) {
+			this.RestorationArrow.useEmpowered(scalerPortion, usesTurnActions);
+		}
+	}
+	public void useAbilityEmpowered(SentinelSpecialist.AbilityNames name) {
+		this.useAbilityEmpowered(name, 1.0, true);
 	}
 	
 	// Function to return the stack requirement for Empowered Abilities

@@ -400,14 +400,17 @@ public class Attack {
 	}
 	
 	// Calculates if the ability critically struck
-	public boolean calcCrit() {
+	public boolean calcCrit(int alteredChance) {
 		// Find if the attack critically struck
 		Dice percent = new Dice(100);
-		boolean didCrit = percent.roll() <= this.getAttacker().getCriticalChance();
+		boolean didCrit = percent.roll() <= this.getAttacker().getCriticalChance() + alteredChance;
 		if (this.guaranteedCrit()) {
 			didCrit = true;
 		}
 		return didCrit;
+	}
+	public boolean calcCrit() {
+		return this.calcCrit(0);
 	}
 	
 	// criticalEffect: Calculates if the ability critically struck and returns the scaler effect (1 if no effect)

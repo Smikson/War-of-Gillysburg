@@ -177,9 +177,6 @@ public class Condition {
 	
 	// Function to determine if the duration of the condition is expired
 	public boolean isExpired() {
-		// If we have a Condition based on charges, the condition is expired 
-		
-		
 		// A duration of -1 implies a permanent condition.
 		if (this.duration == -1) {
 			// If the condition is based on charges, return if there are charges remaining

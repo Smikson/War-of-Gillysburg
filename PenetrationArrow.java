@@ -291,7 +291,7 @@ public class PenetrationArrow extends ChargedAbility {
 	}
 	
 	// Use(2): Empowered version of Ability
-	public void useEmpowered(double scalerPortion) {
+	public void useEmpowered(double scalerPortion, boolean usesTurnActions) {
 		// Select all enemies hit by the AOE, assume enemy must be hit
 	    System.out.println("Choose enemies affected:");
     	LinkedList<Character> targets = BattleSimulator.getInstance().targetMultiple();
@@ -358,11 +358,13 @@ public class PenetrationArrow extends ChargedAbility {
 			this.owner.randomlyEmpower();
 		}
 		
-		// This Ability uses the Character's turn actions
-		this.owner.useTurnActions();
+		// This Ability uses the Character's turn actions when specified
+		if (usesTurnActions) {
+			this.owner.useTurnActions();
+		}
 	}
 	public void useEmpowered() {
-		this.useEmpowered(1.0);
+		this.useEmpowered(1.0, true);
 	}
 	
 	// Use(3): Cast randomly (Multi-Purposed) version of Ability

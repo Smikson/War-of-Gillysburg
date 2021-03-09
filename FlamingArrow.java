@@ -43,7 +43,7 @@ class SentinelBurnDOT extends DamageOverTime {
 		this.source = copy.source;
 	}
 	
-	// For the bleed effect, activating executes the attack
+	// For the burn effect, activating executes the attack
 	@Override
 	public void executeDOT() {
 		AttackResult res = this.burnAttack.execute();
@@ -420,7 +420,7 @@ public class FlamingArrow extends ChargedAbility {
 	}
 	
 	// Use(2): Empowered version of Ability
-	public void useEmpowered(double scalerPortion) {
+	public void useEmpowered(double scalerPortion, boolean usesTurnActions) {
 		// Select the target enemy
  		Enemy enemy = BattleSimulator.getInstance().targetSingleEnemy();
 	    if (enemy.equals(Enemy.EMPTY)) {
@@ -526,11 +526,13 @@ public class FlamingArrow extends ChargedAbility {
 			this.setOffCooldownAll();
 		}
 		
-		// This Ability uses the Character's turn actions
-		this.owner.useTurnActions();
+		// This Ability uses the Character's turn actions when specified
+		if (usesTurnActions) {
+			this.owner.useTurnActions();
+		}
 	}
 	public void useEmpowered() {
-		this.useEmpowered(1.0);
+		this.useEmpowered(1.0, true);
 	}
 	
 	// Use(3): Cast randomly (Multi-Purposed) version of Ability
