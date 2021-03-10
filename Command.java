@@ -56,8 +56,8 @@ public abstract class Command {
 		displayCopy.addAll(displays);
 		displayCopy.removeFirst();
 		
-		// Prompt to select a command from the usable Commands and their displays (With none as basic attack)
-		int choice = BattleSimulator.getInstance().promptSelect("Possible Actions:", true, "Basic Attack", displayCopy);
+		// Prompt to select a command from the usable Commands and their displays (With none as displays[0])
+		int choice = BattleSimulator.getInstance().promptSelect("Possible Actions:", true, displays.get(0), displayCopy);
 		
 		// Since none option is included the response is the index of the correct command in the original list.
 		// Execute the command chosen

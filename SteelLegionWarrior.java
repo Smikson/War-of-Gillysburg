@@ -212,6 +212,11 @@ class BleedDOT extends DamageOverTime {
 	// For the bleed effect, activating executes the attack
 	@Override
 	public void executeDOT() {
+		// If the target is dead, do nothing
+		if (this.bleedAtk.getDefender().isDead()) {
+			return;
+		}
+		
 		this.bleedAtk.execute();
 	}
 	

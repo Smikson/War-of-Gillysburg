@@ -17,6 +17,7 @@ public class PlayerDataBase {
 			.setLeaderStrikeRank(10)
 			.setHaHaHaYouCantKillMeRank(3)
 			.build();
+	
 	public static final SteelLegionWarrior JD = new SteelLegionWarriorBuilder()
 			.Name("J.D.")
 			.Level(10)
@@ -42,6 +43,20 @@ public class PlayerDataBase {
 			.setFlipStrikeRank(3)
 			.setIntimidatingShoutRank(3)
 			.setDeflectionRank(2)
+			.build();
+	
+	public static final SentinelSpecialist MCKENNA = new SentinelSpecialistBuilder()
+			.Name("McKenna")
+			.Level(10)
+			.setEmpoweredArrowsRank(1)
+			.setMasterworkArrowsRank(1)
+			.setSurvivableRank(1)
+			.setMultiPurposedRank(1)
+			.setFlamingArrowRank(2)
+			.setFrozenArrowRank(2)
+			.setExplodingArrowRank(2)
+			.setPenetrationArrowRank(2)
+			.setBlackArrowRank(1)
 			.build();
 	
 	

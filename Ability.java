@@ -370,7 +370,15 @@ class ChargedAbility extends Ability {
 	public String toString() {
 		// If there is only 1 charge, display like a normal ability
 		if (this.getCharges() == 1) {
-			return super.toString();
+			String activeInd = "";
+			if (this.isActive()) {
+				activeInd = "\n\t- ACTIVE: " + (this.activeTurnsRemaining() != 0 ? this.activeTurnsRemaining() + " Turn(s) Remaining!" : "Final Turn!");
+			}
+			String cdInd = "";
+			if (this.onCooldown()) {
+				cdInd = "\n\t- CD: " + this.chargeTurnsRemaining(0) + " Turn(s) Remaining!";
+			}
+			return this.getName() + activeInd + cdInd;
 		}
 		
 		// Otherwise create a slightly unique string
