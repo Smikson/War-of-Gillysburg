@@ -1,150 +1,106 @@
 package WyattWitemeyer.WarOfGillysburg;
 import java.util.*;
 
+import WyattWitemeyer.WarOfGillysburg.Character.Type;
+
+// The Sentinel Arc Archer itself:
 public class SentinelArcArcher extends Character{
+	// Enumerates the names of the abilities so Cooldown and use functions can be called
+	public static enum AbilityNames {
+		QuickShot, Flawlessness, CombatRoll, AttackSpeed, MultiShot, DoubleShredder, Concentrate, FlipTrickShot, RainOfArrows
+	}
+	
+	// Passive Abilities
+	private QuickShot QuickShot; // Unique Passive Ability (UPA)
+	private Flawlessness Flawlessness;
+	private CombatRoll CombatRoll;
+	private AttackSpeed AttackSpeed;
+	
+	// Base Abilities
+	private MultiShot MultiShot;
+	private DoubleShredder DoubleShredder;
+	private Concentrate Concentrate;
+	private FlipTrickShot FlipTrickShot;
+	private RainOfArrows RainOfArrows;
+	
+	// Maps all Abilities so all Cooldowns can be reduced at once
+	private HashMap<SentinelArcArcher.AbilityNames, Ability> abilities;
+	
+	
 	// These first two methods help set up the Sentinel Arc Archer subclass.
-	public SentinelArcArcher(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, LinkedList<Type> types) {
+	public SentinelArcArcher(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, LinkedList<Type> types, int qsRank, int fRank, int crRank, int asRank, int msRank, int dsRank, int cRank, int ftsRank, int roaRank) {
+		// Calls the super constructor to create the Character
 		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, types);
-	}
-	public SentinelArcArcher(Character ori) {
-		super(ori.getName(), ori.getLevel(), ori.getHealth(), ori.getDamage(), ori.getArmor(), ori.getArmorPiercing(), ori.getAccuracy(), ori.getDodge(), ori.getBlock(), ori.getCriticalChance(), ori.getSpeed(), ori.getAttackSpeed(), ori.getRange(), ori.getThreat(), ori.getTacticalThreat(), ori.getSTDdown(), ori.getSTDup(), ori.getBaseDmgType(), ori.getResistances(), ori.getVulnerabilities(), ori.getTypes());
-	}
-	
-	// Deals the Damage from the "Quick Shot" Passive Ability
-	public void useQuickShot(Character enemy) {
-		//this.attack(enemy, .75); // Attack, Targeted, .75x Damage
-	}
-	
-	// Returns a new Character with improved stats based on the "Combat Roll" Passive Ability for purposes of Calculation only.
-	public SentinelArcArcher useCombatRollEnhancement() {
-		return new CharacterBuilder(this).Damage((int) Math.round(this.getDamage() * 1.1)).buildSAA();
-	}
-	
-	// Returns a new Character with improved stats based on the "Attack Speed" Passive Ability during the bonus turn for purposes of Calculation only.
-	public SentinelArcArcher useAttackSpeedBonusTurnEnhancement() {
-		return new CharacterBuilder(this).Damage((int) Math.round(this.getDamage() * .5)).buildSAA();
-	}
-	
-	// Deals the Damage from the "Multi-Shot" Ability (Ability 1) to multiple enemies
-	public void useMultiShot(List<Character> enemies) {
-		/*
-		for (Character enemy:enemies) {
-			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
-		}
-		*/
-	}
-	
-	// Deals the Damage from the first arrow of the "Double Shredder" Ability (Ability 2)
-	public void useDoubleShredder1(Character enemy) {
-		/*
-		// THINGS THAT CHANGE FOR ABILITY RIGHT HERE
-		double scaler = .5;
 		
+		// Initializes all Abilities according to their specifications.
+		this.QuickShot = new QuickShot(this, qsRank);
+		this.Flawlessness = new Flawlessness(this, fRank);
+		this.CombatRoll = new CombatRoll(this, crRank);
+		this.AttackSpeed = new AttackSpeed(this, asRank);
+		this.MultiShot = new MultiShot(this, msRank);
+		this.DoubleShredder = new DoubleShredder(this, dsRank);
+		this.Concentrate = new Concentrate(this, cRank);
+		this.FlipTrickShot = new FlipTrickShot(this, ftsRank);
+		this.RainOfArrows = new RainOfArrows(this, roaRank);
 		
-		// The First Arrow
+		// Add Abilities to a list for Cooldown and usage purposes
+		this.abilities = new HashMap<>();
+		this.abilities.put(SentinelArcArcher.AbilityNames.QuickShot, this.QuickShot);
+		this.abilities.put(SentinelArcArcher.AbilityNames.Flawlessness, this.Flawlessness);
+		this.abilities.put(SentinelArcArcher.AbilityNames.CombatRoll, this.CombatRoll);
+		this.abilities.put(SentinelArcArcher.AbilityNames.AttackSpeed, this.AttackSpeed);
+		this.abilities.put(SentinelArcArcher.AbilityNames.MultiShot, this.MultiShot);
+		this.abilities.put(SentinelArcArcher.AbilityNames.DoubleShredder, this.DoubleShredder);
+		this.abilities.put(SentinelArcArcher.AbilityNames.Concentrate, this.Concentrate);
+		this.abilities.put(SentinelArcArcher.AbilityNames.FlipTrickShot, this.FlipTrickShot);
+		this.abilities.put(SentinelArcArcher.AbilityNames.RainOfArrows, this.RainOfArrows);
 		
-		boolean didHit = this.landAttack(enemy);
-		
-		// If the attack (Arrow 1) missed
-		if (!didHit) {
-			System.out.println(this.getName() + " missed the first arrow shot at " + enemy.getName() + "!");
-			
-			// The second arrow strikes with 0% Critical Chance
-			new CharacterBuilder(this).CriticalChance(0).buildSAA().attack(enemy, 1); // Attack, Targeted, 1x Damage (0% crit)
-		}
-		// If the attack (Arrow 1) hits, now calculate Damage
-		else {
-			// Calculates the percentage in which the Armor/Armor Piercing affects the overall Damage scaler, then multiplies it in
-			double armorEffect;
-			armorEffect = calcArmorEffect(enemy, true); // Armor Applies
-			scaler*=armorEffect;
-			
-			// Find if attack critically hit (will affect both)
-			boolean didCrit = landCrit(enemy);
-			
-			if (didCrit) {
-				scaler *= 2;
-				if (this.getCriticalChance()>100) {
-					scaler += (this.getCriticalChance() - 100)/100; // This was changed to divide by 100
-				}
-			}
-			
-			// Calculates the final damage dealt over the deviation range
-			int damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
-			
-			// Damages the enemy and determines whether enemy died
-			this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
-			
-			
-			// The second arrow strikes with a 60% chance to ignore all armor.
-			scaler = 1;
-			
-			Dice percent = new Dice(100);
-			// Attack ignores all armor, crits if first crit.
-			if (percent.roll() <= 60) {
-				// Calculates the percentage in which the Armor/Armor Piercing affects the overall Damage scaler, then multiplies it in
-				armorEffect = calcArmorEffect(enemy, false); // Ignores Armor
-				scaler*=armorEffect;
-				
-				if (didCrit) {
-					scaler *= 2;
-					if (this.getCriticalChance()>100) {
-						scaler += (this.getCriticalChance() - 100)/100; // This was changed to divide by 100
-					}
-				}
-				
-				// Calculates the final damage dealt over the deviation range
-				damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
-				
-				// Damages the enemy and determines whether enemy died
-				this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
-			}
-			// Otherwise, same thing but attack does not ignore all armor
-			else {
-				// Calculates the percentage in which the Armor/Armor Piercing affects the overall Damage scaler, then multiplies it in
-				armorEffect = calcArmorEffect(enemy, true); // Armor Applies
-				scaler*=armorEffect;
-				
-				if (didCrit) {
-					scaler *= 2;
-					if (this.getCriticalChance()>100) {
-						scaler += (this.getCriticalChance() - 100)/100; // This was changed to divide by 100
-					}
-				}
-				
-				// Calculates the final damage dealt over the deviation range
-				damageDealt = this.calcDeviatedDamage(enemy, this.getDamage(), scaler, didCrit);
-				
-				// Damages the enemy and determines whether enemy died
-				this.dealDamage(enemy, damageDealt, AttackType.TRUE, didCrit);
-			}
-		}
-		*/
+		// Add all other new commands for Abilities (the usual check for rank > 0 is sufficient)
+		this.addCommand(new AbilityCommand(this.MultiShot));
+		this.addCommand(new AbilityCommand(this.DoubleShredder));
+		this.addCommand(new AbilityCommand(this.Concentrate));
+		this.addCommand(new AbilityCommand(this.FlipTrickShot));
+		this.addCommand(new AbilityCommand(this.RainOfArrows));
+	}
+	public SentinelArcArcher(Character copy, int qsRank, int fRank, int crRank, int asRank, int msRank, int dsRank, int cRank, int ftsRank, int roaRank) {
+		this(copy.getName(), copy.getLevel(), copy.getHealth(), copy.getDamage(), copy.getArmor(), copy.getArmorPiercing(), copy.getAccuracy(), copy.getDodge(), copy.getBlock(), copy.getCriticalChance(), copy.getSpeed(), copy.getAttackSpeed(), copy.getRange(), copy.getThreat(), copy.getTacticalThreat(), copy.getSTDdown(), copy.getSTDup(), copy.getBaseDmgType(), copy.getResistances(), copy.getVulnerabilities(), copy.getTypes(), qsRank, fRank, crRank, asRank, msRank, dsRank, cRank, ftsRank, roaRank);
+	}
+	public SentinelArcArcher(SentinelArcArcher copy) {
+		this(copy, copy.getAbilityRank(SentinelArcArcher.AbilityNames.QuickShot), copy.getAbilityRank(SentinelArcArcher.AbilityNames.Flawlessness), copy.getAbilityRank(SentinelArcArcher.AbilityNames.CombatRoll), copy.getAbilityRank(SentinelArcArcher.AbilityNames.AttackSpeed), copy.getAbilityRank(SentinelArcArcher.AbilityNames.MultiShot), copy.getAbilityRank(SentinelArcArcher.AbilityNames.DoubleShredder), copy.getAbilityRank(SentinelArcArcher.AbilityNames.Concentrate), copy.getAbilityRank(SentinelArcArcher.AbilityNames.FlipTrickShot), copy.getAbilityRank(SentinelArcArcher.AbilityNames.RainOfArrows));
 	}
 	
-	// Returns a new Character with improved stats based on the "Concentration" Ability (Ability 3) for purposes of Calculation only.
-	public SentinelArcArcher useConcentrationEnhancement(boolean usingQuickShot) {
-		if (usingQuickShot) {
-			return new CharacterBuilder(this).Damage((int) Math.round(this.getDamage() * .5)).buildSAA();
-		}
-		else {
-			return new CharacterBuilder(this).Damage((int) Math.round(this.getDamage() * 1.25)).buildSAA();
-		}
+	
+	// Functions for interaction between Abilities:
+	// Functions to use an Ability
+	public void useAbility(SentinelArcArcher.AbilityNames name, int version) {
+		Ability chosen = this.abilities.get(name);
+		chosen.use(version);
+	}
+	public void useAbility(SentinelArcArcher.AbilityNames name) {
+		this.useAbility(name, 1);
 	}
 	
-	// Deals the Damage from the "Flip Trick Shot" Ability (Ability 4)
-	public void useFlipTrickShot(Character enemy) {
-		//this.attack(enemy, 1.2); // Attack, Targeted, 1.2x Damage
+	// Function to set an ability's Cooldown
+	public void setAbilityCD(SentinelArcArcher.AbilityNames name, int turnsRemaining) {
+		Ability chosen = this.abilities.get(name);
+		chosen.setTurnsRemaining(turnsRemaining);
 	}
 	
-	// Deals the Damage from the "Rain of Arrows" ULTIMATE Ability to multiple enemies
-	public void useRainOfArrows(List<Character> enemies) {
-		/*
-		for (int x = 0; x < enemies.size() - 1; x++) {
-			Character enemy = enemies.get(x);
-			this.attackAOE(enemy, .5); // Attack, AOE, .5x Damage
-		}
-		this.attackAOE(enemies.get(enemies.size()-1), .75); // Attack, AOE, .75x Damage
-		*/
+	// Function to get the rank of an Ability
+	public int getAbilityRank(SentinelArcArcher.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.rank();
+	}
+	
+	// Function to get the duration of an Ability
+	public int getAbilityDuration(SentinelArcArcher.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.getDuration();
+	}
+	
+	// Function to get whether or not an Ability is active
+	public boolean isAbilityActive(SentinelArcArcher.AbilityNames name) {
+		Ability chosen = this.abilities.get(name);
+		return chosen.isActive();
 	}
 }

@@ -153,7 +153,6 @@ class EmpoweredArrows extends Ability {
 			}
 			// Frozen Arrow
 			else if (ability == 2) {
-				//DE use Frozen Arrow
 				this.owner.useAbilityEmpowered(SentinelSpecialist.AbilityNames.FrozenArrow, this.getMultAbilityScaler() / toUse.size(), false);
 			}
 			// Exploding Arrow
@@ -586,7 +585,6 @@ class MultiPurposed extends Ability {
 	
 	// Additional Variables
 	private Condition abilityDamageBonus;
-	//DE either here or in Character, need a set/list of the distinct Abilities used
 	private double scalerBonusPerCooldown;
 	private double critAccBonusPerCooldown;
 	private int uniqueRequirement;
@@ -4326,7 +4324,7 @@ public class SentinelSpecialist extends Character {
 	private HashSet<String> uniqueAbilities;
 	private boolean baIsAltered;
 	
-	// These first two methods help set up the Steel Legion Warrior subclass.
+	// These first two methods help set up the Sentinel Specialist subclass.
 	public SentinelSpecialist(String nam, int lvl, int hp, int dmg, int arm, int armp, int acc, int dod, int blk, int crit, int spd, int atkspd, int range, int thrt, int tactthrt, int stdDown, int stdUp, Attack.DmgType dmgType, HashMap<Attack.DmgType,Double> resis, HashMap<Attack.DmgType,Double> vuls, LinkedList<Type> types, int eaRank, int maRank, int sRank, int mpRank, int fireRank, int iceRank, int exRank, int pRank, int blackRank, int raRank) {
 		// Calls the super constructor to create the Character
 		super(nam, lvl, hp, dmg, arm, armp, acc, dod, blk, crit, spd, atkspd, range, thrt, tactthrt, stdDown, stdUp, dmgType, resis, vuls, types);
@@ -4364,8 +4362,6 @@ public class SentinelSpecialist extends Character {
 		this.abilities.put(SentinelSpecialist.AbilityNames.PenetrationArrow, this.PenetrationArrow);
 		this.abilities.put(SentinelSpecialist.AbilityNames.BlackArrow, this.BlackArrow);
 		this.abilities.put(SentinelSpecialist.AbilityNames.RestorationArrow, this.RestorationArrow);
-		
-		//DE Initialize abilities as "charged" if they have multiple charges (based on Multi-Purposed rank)
 		
 		// Initialize the Unique Abilities set, set baIsAltered to false
 		this.uniqueAbilities = new HashSet<>();
@@ -4483,7 +4479,6 @@ public class SentinelSpecialist extends Character {
 				if (a.onCooldown()) {
 					total += a.turnsRemaining();
 				}
-				//DE Add extra from charges?
 			}
 		}
 		
@@ -4976,7 +4971,7 @@ class SentinelSpecialistBuilder extends CharacterBuilder {
 			}
 		}
 		
-		// Calculate the bonus stats given by certain Abilities //DE Do this
+		// Calculate the bonus stats given by certain Abilities
 		if (this.MasterworkArrowsRank > 0) {
 			MasterworkArrows ma = new MasterworkArrows(this.MasterworkArrowsRank);
 			this.bDamage += ma.getDamageBonus();

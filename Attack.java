@@ -598,7 +598,7 @@ public class Attack {
 	
 	// Executes the attack
 	public AttackResult execute() {
-		// Make sure neither target is dead:
+		// Check for stop conditions (make sure neither target is dead):
 		if (this.getAttacker().isDead()) {
 			System.out.println(this.getAttacker().getName() + " is dead. Thus, " + this.getAttacker().getName() + " is incapable of attacking.");
 			System.out.println("Continue with attack anyway?");
@@ -637,6 +637,38 @@ public class Attack {
 		// Apply Pre-Attack Effects
 		this.getAttacker().applyPreAttackEffects(this);
 		this.getDefender().applyPreAttackEffects(this);
+		
+		// Check for stop Conditions again as things may have changed from pre-attack effects:
+		if (this.getAttacker().isDead()) {
+			System.out.println(this.getAttacker().getName() + " is dead. Thus, " + this.getAttacker().getName() + " is incapable of attacking.");
+			System.out.println("Continue with attack anyway?");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return AttackResult.EMPTY;
+			}
+		}
+		if (this.getDefender().isDead()) {
+			System.out.println(this.getDefender().getName() + " is already dead. The attack would have no effect.");
+			System.out.println("Continue with attack anyway?");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return AttackResult.EMPTY;
+			}
+		}
+		
+		// Make sure the attacker can attack and the defender is targetable
+		if (!this.getAttacker().canAttack()) {
+			System.out.println(this.getAttacker().getName() + " cannot attack due to crowd control.");
+			System.out.println("Continue with attack anyway?");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return AttackResult.EMPTY;
+			}
+		}
+		if (!this.getDefender().isTargetable()) {
+			System.out.println(this.getDefender().getName() + " cannot be attacked due to crowd control.");
+			System.out.println("Continue with attack anyway?");
+			if (!BattleSimulator.getInstance().askYorN()) {
+				return AttackResult.EMPTY;
+			}
+		}
 		
 		// Apply the single attack (this attack only) Conditions
 		this.applyAttackerConditions();

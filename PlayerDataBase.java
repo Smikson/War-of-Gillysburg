@@ -59,6 +59,20 @@ public class PlayerDataBase {
 			.setBlackArrowRank(1)
 			.build();
 	
+	public static final SentinelArcArcher TYLER = new SentinelArcArcherBuilder()
+			.Name("Tyler")
+			.Level(10)
+			.setQuickShotRank(1)
+			.setFlawlessnessRank(1)
+			.setCombatRollRank(1)
+			.setAttackSpeedRank(1)
+			.setMultiShotRank(2)
+			.setDoubleShredderRank(2)
+			.setConcentrateRank(2)
+			.setFlipTrickShotRank(2)
+			.setRainOfArrowsRank(1)
+			.build();
+	
 	
 	public static final SilentDeathShadow JAIME = new CharacterBuilder()
 			.Name("Jaime")
@@ -92,23 +106,6 @@ public class PlayerDataBase {
 			.TacticalThreat(7)
 			.buildKOT();
 	
-	
-	
-	public static final SentinelArcArcher TYLER = new CharacterBuilder()
-			.Name("Tyler")
-			.Level(1)
-			.Health(383)
-			.Damage(103)
-			.Armor(135)
-			.ArmorPiercing(134)
-			.Accuracy(160)
-			.Dodge(43)
-			.CriticalChance(7)
-			.Speed(6)
-			.AttackSpeed(35)
-			.Threat(6)
-			.TacticalThreat(19)
-			.buildSAA();
 	
 	public static final KinitchuOrderDragonFireWizard PETER = new CharacterBuilder()
 			.Name("Peter")
