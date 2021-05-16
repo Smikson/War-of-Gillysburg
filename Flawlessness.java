@@ -83,6 +83,9 @@ public class Flawlessness extends Ability {
 		return this.bonusDodgeStat;
 	}
 	
+	//DE At rank 15 refreshes Cooldown of Flip Trick Shot if never miss for 5 turns
+	
+	
 	// Returns the full information about the ability
 	public String getDescription() {
 		String ret = super.getDescription();

@@ -8,6 +8,7 @@ public class QuickShot extends Ability {
 	
 	// Additional Variables
 	private Condition enemyPreAttack;
+	private Condition selfPreAttack;
 	private double affectAllyChance;
 	
 	// Constructor
@@ -21,6 +22,7 @@ public class QuickShot extends Ability {
 		
 		// Set the enemy pre-attack condition and chance to occur on allies
 		this.setEnemyPreAttackCondition();
+		this.setSelfPreAttackBonus();
 		this.setAffectAllyChance();
 	}
 	
@@ -84,6 +86,30 @@ public class QuickShot extends Ability {
 		this.enemyPreAttack.addStatusEffect(accRed);
 	}
 	
+	// Sets the pre-attack bonus for the Ability at rank 4/5
+	private void setSelfPreAttackBonus() {
+		// The amount will be 0 until rank 4
+		int amount = 0;
+		if (this.rank() == 4) {
+			amount = 10;
+		}
+		if (this.rank() == 5) {
+			amount = 15;
+		}
+		
+		// Create the two Status Effects using the amount (percent Armor Piercing and flat Critical Chance)
+		StatusEffect apBonus = new StatusEffect(Stat.Version.ARMOR_PIERCING, amount, StatusEffect.Type.OUTGOING);
+		apBonus.makePercentage();
+		StatusEffect critBonus = new StatusEffect(Stat.Version.CRITICAL_CHANCE, amount, StatusEffect.Type.OUTGOING);
+		critBonus.makeFlat();
+		
+		// Create the Condition, duration of 0 since its only used for the one attack
+		this.selfPreAttack = new Condition("Quick Shot: Pre Attack Bonus", 0);
+		this.selfPreAttack.setSource(this.owner);
+		this.selfPreAttack.addStatusEffect(apBonus);
+		this.selfPreAttack.addStatusEffect(critBonus);
+	}
+	
 	// Sets the chance this Ability will affect allies
 	private void setAffectAllyChance() {
 		// The amount is always 0 until ranks 4 and 5 where it is 5% and 15% respectively
@@ -105,10 +131,25 @@ public class QuickShot extends Ability {
 	public Condition getEnemyPreAttackEffects() {
 		return new Condition(this.enemyPreAttack);
 	}
+	public Condition getSelfPreAttackBonus() {
+		return new Condition(this.selfPreAttack);
+	}
+	public Stun getStun() {
+		Stun chanceStun = new Stun("Quick Shot: Chance Stun", 1);
+		chanceStun.makeEndOfTurn();
+		return chanceStun;
+	}
 	
 	public double getAffectAllyChance() {
 		return this.affectAllyChance;
 	}
+	
+	
+	//DE Will need a new type of function for chance to occur for allies (also used by Concentrate).
+	//DE Basically the rest can all be done in Pre-Attack Effects
+	
+	
+	
 	
 	// Returns the full information about the ability
 	public String getDescription() {

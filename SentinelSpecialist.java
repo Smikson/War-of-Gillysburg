@@ -573,7 +573,7 @@ class Survivable extends Ability {
 		ret += this.rank() >= 2? ("\n\tBonus Dodge Stat: " + this.getDodgeBonus()) : "";
 		ret += "\n\tBlock Chance: " + (this.getBlockChance() * 100.0) + "%";
 		ret += "\n\tHealing Percentage (missing health): " + this.getHealingPercentage() + "%";
-		ret += "\n\t" + this.getNextAttackBonus();
+		ret += "\n\t" + this.getNextAttackBonus().toString();
 		return ret;
 	}
 }

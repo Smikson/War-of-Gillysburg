@@ -4,7 +4,7 @@ import java.util.*;
 import WyattWitemeyer.WarOfGillysburg.Character.Type;
 
 // The Sentinel Arc Archer itself:
-public class SentinelArcArcher extends Character{
+public class SentinelArcArcher extends Character {
 	// Enumerates the names of the abilities so Cooldown and use functions can be called
 	public static enum AbilityNames {
 		QuickShot, Flawlessness, CombatRoll, AttackSpeed, MultiShot, DoubleShredder, Concentrate, FlipTrickShot, RainOfArrows

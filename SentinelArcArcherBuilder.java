@@ -222,20 +222,18 @@ public class SentinelArcArcherBuilder extends CharacterBuilder {
 			}
 		}
 		
-		// Calculate the bonus stats given by certain Abilities //DE Do this
-		/*
-		if (this.MasterworkArrowsRank > 0) {
-			MasterworkArrows ma = new MasterworkArrows(this.MasterworkArrowsRank);
-			this.bDamage += ma.getDamageBonus();
-			this.bArmorPiercing += ma.getArmorPiercingBonus();
-			this.bAccuracy += ma.getAccuracyBonus();
+		// Calculate the bonus stats given by certain Abilities
+		if (this.FlawlessnessRank > 0) {
+			Flawlessness fl = new Flawlessness(this.FlawlessnessRank);
+			this.bCriticalChance += fl.getCritBonus();
+			this.bAccuracy += fl.getAccuracyBonus();
+			this.bDodge += fl.getDodgeBonus();
 		}
-		if (this.SurvivableRank > 0) {
-			Survivable sb = new Survivable(this.SurvivableRank);
-			this.bHealth += sb.getHealthBonus();
-			this.bArmor += sb.getArmorBonus();
-			this.bDodge += sb.getDodgeBonus();
-		}*/
+		if (this.CombatRollRank > 0) {
+			CombatRoll cr = new CombatRoll(this.CombatRollRank);
+			this.bDodge += cr.getDodgeBonus();
+			this.bSpeed += cr.getSpeedBonus();
+		}
 	}
 	
 	// Finishes the build by returning a SentinelArcArcher Character
